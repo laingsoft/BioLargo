@@ -1,0 +1,37 @@
+Biolargo Data Storage project preliminary User Stories.
+
+US 1 -- Scientists
+US 2 -- Administrators
+
+US 1 -- As a Scientist I want to ...
+   1.01 -- Upload Data...
+        1.01.01 -- With a CSV file I have created
+        1.01.02 -- Through a Web interface provided by the server
+        1.01.02 -- By directly uploading the output of an analytical device
+   1.02 -- Create Templates to tell the computer how to use my data..
+        1.02.01 -- With varying schemas
+        1.02.02 -- By extending or modifying existing templates
+        1.02.03 -- With an easy to use interface
+   1.03 -- Analyze data
+        1.03.01 -- By Sorting all of my data...
+                1.03.01.01 - By Data
+                1.03.01.02 - By Template Type
+                1.03.01.03 - By Researcher
+                1.03.01.04 - By Name
+        1.03.02 -- By Exporting Data...
+                1.03.02.01 - To CSV
+                1.03.02.01 - To .XLSX
+                1.03.02.01 - To Raw Files
+        1.03.03 -- Using an Ipython Notebook
+   
+US 2 -- As an Administrator, I want to...
+   2.01 -- Manage Users
+        2.01.01 -- Create Users
+        2.01.02 -- Update Users
+        2.01.03 -- Delete Users
+   2.02 -- Manage Data
+        2.02.01 -- Delete Data
+        2.02.02 -- Update Data
+        2.02.03 -- Backup Data
+        
+        
