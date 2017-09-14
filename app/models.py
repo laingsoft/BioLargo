@@ -9,7 +9,19 @@ class Scientist(models.Model):
     #More Scientist Data Here
 
 class Experiment(models.Model):
-    scientist = models.ForeignKey(Scientist)
-    experimentMeta = JSONField()
-    experimentData = JSONField()
+	scientist = models.ForeignKey(Scientist)
+    #~ experimentMeta = JSONField()
+    
+	person = models.CharField(max_length = 255)
+	reactor_diameter = models.FloatField("Reactor Diameter [inch]")
+	reactor_length = models.FloatField("Reactor Length [inch]")
+	num_chambers = models.IntegerField("# Chambers")
+	date = models.DateField("Date (d/m/y)")
+	removal_target = models.CharField("Removal Target", max_length = 255)
+	reactor_age = models.FloatField("Age of Reactor")
+	
+	
+class ExperimentData(models.Model):
+	experiment = models.ForeignKey(Experiment)
+	experimentData = JSONField()
     #More Experiment Data Here

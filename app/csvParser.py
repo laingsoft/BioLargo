@@ -1,11 +1,12 @@
 import csv
 from ast import literal_eval
-#from models import Experiment
+from models import Experiment, ExperimentData
 import json
+import datetime
 
 #Constants
 
-METAFIELDS = ["Person", 
+FIELDS = ["Person", 
 "Reactor Diameter [inch]", 
 "Reactor Length [inch]", 
 "#Chambers", 
@@ -23,8 +24,12 @@ def readCSV(fileName):
 	reader = csv.DictReader(data)
 	
 	metadata = next(reader)
-	del metadata[''] # remove empty key from trailing comma
 	
+	try:
+		del metadata[''] # remove empty key from trailing comma
+	except:
+		pass
+		
 	# data type conversion
 	for item in metadata:
 		try:
@@ -46,18 +51,27 @@ def readCSV(fileName):
 		
 	data.close()
 	
-	metadata, edata = reformatData(metadata, eData)
-
-	exp = Experiment(experimentMeta = json.dumps(metadata), 
-	experimentData = json.dumps(eData))
+	reformatData(metadata, eData)
+	
+	exp = Experiment(person = metadata[FIELDS[0]],
+    reactor_diameter = metadata[FIELDS[1]],
+    reactor_length = metadata[FIELDS[2]],
+    num_chambers = metadata[FIELDS[3]],
+	date = dateParser(metadata[FIELDS[4]]),
+	removal_target = metadata[FIELDS[5]],
+	reactor_age = metadata[FIELDS[6]])
+	
 	exp.save()
+
+	expData = ExperimentData(experiment = exp.id, experimentData = json.dumps(eData))
+	expData.save()
 	
-	
+
 # moves extra metadata fields to the experiment data
 # inputs: 
 # 1. metadata dictionary
 # 2. list of dictionaries of experiment data
-# returns: same as inputs. 
+# returns: nothing. Items are modified directly.
 
 def reformatData(metadata, eData):
 	
@@ -66,16 +80,28 @@ def reformatData(metadata, eData):
 	metaKeys = metadata.keys()
 	# check for any extra metadata fields and delete.
 	for field in metaKeys:
-		if field not in METAFIELDS:
+		if field not in FIELDS:
 			move[field] = metadata[field]
 			del metadata[field]
-			
 
 	 # add the extra metadata fields to the experiment data
-	for exp in eData:
-		exp.update(move)
-		
-	return metadata, eData
+	for item in eData:
+		item.update(move)
 	
 	
+# parses date string. Exists because the delimiter isn't the same
+# for all files.
+# input: date as a string
+# returns: datetime.date object
+
+def dateParser(dateString):
+	# find the delimiter
+	delimiter = "" 
+	for char in dateString:
+		if not char.isdigit():
+			delimiter = char
+			break
+			
+	dateFormat = "%d{0}%m{0}%Y".format(delimiter)
 	
+	return datetime.datetime.strptime(dateString, dateFormat).date()
