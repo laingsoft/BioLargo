@@ -1,6 +1,6 @@
 import csv
 from ast import literal_eval
-from models import Experiment, ExperimentData
+from .models import Experiment, ExperimentData
 import json
 import datetime
 
@@ -19,6 +19,7 @@ FIELDS = ["Person",
 # returns: experiment id
 
 def read_csv(csv_file):
+    
 	reader = csv.DictReader(csv_file)
 	
 	metadata = next(reader)
@@ -34,7 +35,7 @@ def read_csv(csv_file):
 			metadata[item] = literal_eval(metadata[item])
 		except: 
 			pass
-	reader = csv.DictReader(data)
+	reader = csv.DictReader(csv_file)
 	
 	eData = []
 	
@@ -65,7 +66,6 @@ def read_csv(csv_file):
 		expData = ExperimentData(experiment = exp, experimentData = json.dumps(line))
 		expData.save()
         
-    return exp.id
 	
 
 # moves extra metadata fields to the experiment data

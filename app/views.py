@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
-from .forms.import csvUpload
-from csvParser import read_csv
+from .forms import csvUpload
+from .csvParser import read_csv
 from .models import Experiment, ExperimentData
  
 # Create your views here.
@@ -24,13 +24,16 @@ def upload_csv(request):
         if form.is_valid():
             exp_id = read_csv(request.FILES['csv_file'])
             return HTTPResponseRedirect('/success/' + str(exp_id))
-        else:
-            form = csvUpload()
+    else:
+        form = csvUpload()
         
-        return render(request, 'upload_csv.html', {'form': form})
+    return render(request, 'app/upload_csv.html', {'form': form})
             
 def upload_success(request):
     template = loader.get_template('app/upload_success.html')
 
     return HttpResponse(template.render({'exp_id':exp_id}, request))
 
+def experiment(request):
+    template = loader.get_template('app/index.html')
+    return HttpResponse(template.render(request))
