@@ -3,6 +3,8 @@ Biolargo Data Storage project preliminary User Stories.
 US 1 -- Scientists
 US 2 -- Administrators
 
+US 4 -- Tests
+
 US 1 -- As a Scientist I want to ...
    1.01 -- Upload Data...
         1.01.01 -- With a CSV file I have created
@@ -33,5 +35,25 @@ US 2 -- As an Administrator, I want to...
         2.02.01 -- Delete Data
         2.02.02 -- Update Data
         2.02.03 -- Backup Data
-        
+
+
+US 4 -- Tests
+   4.01 -- Scientist Tests
+        4.01.01 -- File Uploads
+                4.01.01.01 -- Uploads via CSV
+                           Parser + Interface
+                4.01.01.02 -- Uploads through web interface
+                           Parser + Interface
+        4.01.02 -- Template Creation
+        4.01.03 -- Data Analysis
+   4.02 -- Administrator Tests
+        4.02.01 -- Data Management
+        4.02.02 -- User Management
+        4.02.03 -- Template Management
+   4.03 -- General Tests
+        4.02.01 -- HTML Consistencies
+        4.02.01 -- Dead Functions
+        4.02.03 -- Dead Code Analysis
+        4.02.03 -- Documentation Analysis
+        4.02.03 -- Pydoc generation and update
         

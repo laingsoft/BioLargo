@@ -6,7 +6,6 @@ body {
     text-align: center;
 }
 
-//Sidebar for the index
 .sidebar{
     position: fixed;
     top: 51px;
@@ -17,10 +16,11 @@ body {
     overflow-x: hidden;
     overflow-y: auto;
     border-right: 1px solid #eee;
-    
-    
-    
+    padding-left: 0;
+    padding-right: 0;
+}
 
-
+.sidebar .nav-item {
+    width: 100%;
 
 }
