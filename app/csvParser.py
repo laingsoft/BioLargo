@@ -19,52 +19,42 @@ FIELDS = ["Person",
 # returns: experiment id
 
 def read_csv(csv_file):
+    reader = csv.DictReader(csv_file)
+	
+    metadata = next(reader)
+	
+    try:
+        del metadata[''] # remove empty key from trailing comma
+    except KeyError:
+        pass
+		
+    reader = csv.DictReader(csv_file)
+	
+    eData = []
+	
+    for line in reader:
+        eData.append(line)
+		
+    csv_file.close()
+	
+    reformat_data(metadata, eData)
     
-	reader = csv.DictReader(csv_file)
-	
-	metadata = next(reader)
-	
-	try:
-		del metadata[''] # remove empty key from trailing comma
-	except KeyError:
-		pass
-		
-	# data type conversion
-	for item in metadata:
-		try:
-			metadata[item] = literal_eval(metadata[item])
-		except: 
-			pass
-	reader = csv.DictReader(csv_file)
-	
-	eData = []
-	
-	for line in reader:
-		for item in line:
-			try:
-				line[item] = literal_eval(line[item])
-			except:
-				pass
-				
-		eData.append(line)
-		
-	data.close()
-	
-	reformatData(metadata, eData)
-	
-	exp = Experiment(person = metadata[FIELDS[0]],
+    exp = Experiment(
+    person = metadata[FIELDS[0]],
     reactor_diameter = metadata[FIELDS[1]],
     reactor_length = metadata[FIELDS[2]],
     num_chambers = metadata[FIELDS[3]],
-	date = dateParser(metadata[FIELDS[4]]),
-	removal_target = metadata[FIELDS[5]],
-	reactor_age = metadata[FIELDS[6]])
+    date = date_parser(metadata[FIELDS[4]]),
+    removal_target = metadata[FIELDS[5]],
+    reactor_age = metadata[FIELDS[6]] if isinstance(metadata[FIELDS[6]], float) else 0)
 	
-	exp.save()
+    exp.save()
 	
-	for line in eData:
-		expData = ExperimentData(experiment = exp, experimentData = json.dumps(line))
-		expData.save()
+    for line in eData:
+        expData = ExperimentData(experiment = exp, experimentData = json.dumps(line))
+        expData.save()
+        
+    return exp.id
         
 	
 
@@ -76,19 +66,20 @@ def read_csv(csv_file):
 
 def reformat_data(metadata, eData):
 	
-	move = dict()
+    move = dict()
 	
-	metaKeys = metadata.keys()
+    metaKeys = metadata.keys()
 	# check for any extra metadata fields and delete.
-	for field in metaKeys:
-		if field not in FIELDS:
-			move[field] = metadata[field]
-			del metadata[field]
+    for field in metaKeys:
+        if field not in FIELDS:
+            move[field] = metadata[field]
+            del metadata[field]
+            
+    # add the extra metadata fields to the experiment data
+    for item in eData:
+        item.update(move)
 
-	 # add the extra metadata fields to the experiment data
-	for item in eData:
-		item.update(move)
-	
+
 	
 # parses date string. Exists because the delimiter isn't the same
 # for all files.

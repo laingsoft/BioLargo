@@ -4,6 +4,8 @@ from django.template import loader
 from .forms import csvUpload
 from .csvParser import read_csv
 from .models import Experiment, ExperimentData
+from io import TextIOWrapper
+
  
 # Create your views here.
 
@@ -22,18 +24,13 @@ def upload_csv(request):
     if request.method == 'POST':
         form = csvUpload(request.POST, request.FILES)
         if form.is_valid():
-            exp_id = read_csv(request.FILES['csv_file'])
-            return HTTPResponseRedirect('/success/' + str(exp_id))
+            data = TextIOWrapper(request.FILES['csv_file'].file, encoding=request.encoding)
+            exp_id = read_csv(data)
+            return HttpResponseRedirect('/upload/success/' + str(exp_id))
     else:
         form = csvUpload()
         
     return render(request, 'app/upload_csv.html', {'form': form})
             
-def upload_success(request):
-    template = loader.get_template('app/upload_success.html')
-
-    return HttpResponse(template.render({'exp_id':exp_id}, request))
-
-def experiment(request):
-    template = loader.get_template('app/index.html')
-    return HttpResponse(template.render(request))
+def upload_success(request, exp_id):
+    return render(request, 'app/upload_success.html', {'exp_id': exp_id})

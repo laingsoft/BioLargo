@@ -9,7 +9,7 @@ class Scientist(models.Model):
     #More Scientist Data Here
 
 class Experiment(models.Model):
-    scientist = models.ForeignKey(Scientist)
+    #~ scientist = models.ForeignKey(Scientist)
     #~ experimentMeta = JSONField()
     
     person = models.CharField(max_length = 255)
