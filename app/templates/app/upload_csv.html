@@ -1,0 +1,13 @@
+<!--
+Extends base template
+{% extends 'base_template' %}
+-->
+{% block content %}
+
+<h1>Upload CSV</h1>
+<form method="POST">
+    {% csrf_token %}
+    {{ form }}
+</form>
+
+{% endblock %}

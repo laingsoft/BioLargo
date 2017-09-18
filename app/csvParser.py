@@ -16,25 +16,23 @@ FIELDS = ["Person",
 
 # Reads the CSV data and adds data read to database
 # inputs: a filename
-# returns: Nothing
+# returns: experiment id
 
-def readCSV(fileName):
-		
-	data = open(fileName, 'r')
-	reader = csv.DictReader(data)
+def read_csv(csv_file):
+	reader = csv.DictReader(csv_file)
 	
 	metadata = next(reader)
 	
 	try:
 		del metadata[''] # remove empty key from trailing comma
-	except:
+	except KeyError:
 		pass
 		
 	# data type conversion
 	for item in metadata:
 		try:
 			metadata[item] = literal_eval(metadata[item])
-		except:
+		except: 
 			pass
 	reader = csv.DictReader(data)
 	
@@ -62,9 +60,12 @@ def readCSV(fileName):
 	reactor_age = metadata[FIELDS[6]])
 	
 	exp.save()
-
-	expData = ExperimentData(experiment = exp.id, experimentData = json.dumps(eData))
-	expData.save()
+	
+	for line in eData:
+		expData = ExperimentData(experiment = exp, experimentData = json.dumps(line))
+		expData.save()
+        
+    return exp.id
 	
 
 # moves extra metadata fields to the experiment data
@@ -73,7 +74,7 @@ def readCSV(fileName):
 # 2. list of dictionaries of experiment data
 # returns: nothing. Items are modified directly.
 
-def reformatData(metadata, eData):
+def reformat_data(metadata, eData):
 	
 	move = dict()
 	
@@ -94,7 +95,7 @@ def reformatData(metadata, eData):
 # input: date as a string
 # returns: datetime.date object
 
-def dateParser(dateString):
+def date_parser(dateString):
 	# find the delimiter
 	delimiter = "" 
 	for char in dateString:
