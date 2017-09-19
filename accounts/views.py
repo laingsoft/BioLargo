@@ -2,24 +2,36 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.shortcuts import render, redirect
 # Create your views here.
 
-def login(request):
-    return HttpResponse("LoginPage")
-
 def register(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        if request.method == 'POST':
+            form = UserCreationForm(request.POST)
+            if form.is_valid():
+                form.save()
+                username = form.cleaned_data.get('username')
+                raw_password = form.cleaned_data.get('password1')
+                user = authenticate(username=username, password=raw_password)
+                auth_login(request, user)
+                return redirect('/app')
+        else:
+            form = UserCreationForm()
+            login_form = AuthenticationForm()
+            return render(request, 'accounts/login.html', {'form':form, 'login_form':login_form})
+
+
+def login(request):
+    if request.method == "POST":
+        form.AuthenticationForm(request.POST)
         if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
+            username.form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
-            auth_login(request, user)
+            auth_login(request,user)
             return redirect('/app')
     else:
         form = UserCreationForm()
-    return render(request, 'accounts/register.html', {'form':form})
-
+        login_form = AuthenticationForm()
+        return render(request, 'accounts/login.html', {'form':form, 'login_form':login_form})

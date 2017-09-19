@@ -5,7 +5,7 @@ from .forms import csvUpload
 from .csvParser import read_csv
 from .models import Experiment, ExperimentData
 from io import TextIOWrapper
-
+from django.contrib.auth import get_user
  
 # Create your views here.
 
@@ -15,9 +15,13 @@ def index(request):
     all of the available data to the researcher, and allow them to link to 
     other resources, such as uploading and analysis
     '''
+    user = get_user(request)
     template = loader.get_template('app/index.html')
-    list = [1,2,3,4,5,6]
-    context = {"list":list, "header_list":["Researcher", "Diameter", "Flow Rate", "KI"], "experiment_data":[["Chuck",'1"', "8mL/min","5 ppm"],["Ted",'6"',"16mL/Min","30 ppm"]]}
+    context = {
+               "header_list":["Researcher", "Diameter", "Flow Rate", "KI"],
+               "experiment_data":[["Chuck",'1"', "8mL/min","5 ppm"],["Ted",'6"',"16mL/Min","30 ppm"]],
+               "username": user.username,
+    }
     return HttpResponse(template.render(context,request))
     
 def upload_csv(request):
