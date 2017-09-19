@@ -17,10 +17,12 @@ def index(request):
     '''
     user = get_user(request)
     template = loader.get_template('app/index.html')
-    context = {
-               "header_list":["Researcher", "Diameter", "Flow Rate", "KI"],
-               "experiment_data":[["Chuck",'1"', "8mL/min","5 ppm"],["Ted",'6"',"16mL/Min","30 ppm"]],
+    experiments = Experiment.objects.all()
+    header_list = Experiment._meta.get_fields()
+    
+    context = {"experiments":experiments,
                "username": user.username,
+               "header_list":header_list,
     }
     return HttpResponse(template.render(context,request))
     
@@ -38,3 +40,9 @@ def upload_csv(request):
             
 def upload_success(request, exp_id):
     return render(request, 'app/upload_success.html', {'exp_id': exp_id})
+
+def experiment(request, exp_id):
+    this_experiment = Experiment.objects.get(pk=exp_id)
+    data = this_experiment.ExperimentData
+    return render(request, {"this_experiment":this_experiment, "data":data})
+    
