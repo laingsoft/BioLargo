@@ -17,7 +17,9 @@ def index(request):
     '''
     user = get_user(request)
     template = loader.get_template('app/index.html')
-    experiments = Experiment.objects.all()
+    experiments = [[1,2,3,4,5,6,7, 8, 9]]
+   # experiments = Experiment.objects.all()
+   
     header_list = Experiment._meta.get_fields()
     
     context = {"experiments":experiments,
