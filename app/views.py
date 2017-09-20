@@ -17,10 +17,10 @@ def index(request):
     '''
     user = get_user(request)
     template = loader.get_template('app/index.html')
-    experiments = [[1,2,3,4,5,6,7, 8, 9]]
-   # experiments = Experiment.objects.all()
+    #experiments = [[1,2,3,4,5,6,7, 8, 9]]
+    experiments = Experiment.objects.values_list()
    
-    header_list = Experiment._meta.get_fields()
+    header_list = ["ID", "Chambers","Diameter","Length","Target","Age (mL)"]
     
     context = {"experiments":experiments,
                "username": user.username,

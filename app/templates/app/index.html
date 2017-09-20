@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 {% extends 'app/base_template.html' %}
+
+
 {% block content %}
+{% load static %}
+<script src="{% static '/app/index.js' %}"></script>
   <div class = "table-responsive">
-    <table class="table table-striped">
+    <table class="table table-hover">
       <thead>
         <tr>
           {% for header in header_list %}
@@ -12,9 +16,9 @@
       </thead>
       <tbody>
         {% for i in experiments %}
-        <tr>
+        <tr class="metadatarow">
           {% for y in i %}
-          <td> {{y}}</td>
+          <td>{{y}}</td>
           {% endfor %}
         </tr>
         {% endfor %}
