@@ -1,0 +1,12 @@
+{% extends accounts/base_template.html %}
+{% block content %}
+<div class = "card mx-auto">
+  <form method = "POST">
+    {% csrf token %}
+    {{form.as_p}}
+    <button type="submit" class="btn btn-primary">Login</button>
+  </form>
+{% endblock %}
+  
+                                                               
+    
