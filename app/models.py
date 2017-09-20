@@ -25,3 +25,12 @@ class ExperimentData(models.Model):
     experimentData = JSONField()
     #More Experiment Data Here
 
+# to make sure we have consistent field naming for searching
+class Fields(models.Model):
+    name = models.CharField(max_length = 255)
+
+# to keep from having to add the same fields every time.
+class Template(models.Model):
+    name = models.CharField(max_length = 255)
+    fields = models.ManyToManyField(Fields)
+    

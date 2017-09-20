@@ -1,0 +1,54 @@
+{% extends 'app/base_template.html' %}
+{% load staticfiles %}
+
+{% block content %}
+<div id="input-table">
+<h1>Upload Experiment</h1>
+<form method="POST" enctype=multipart/form-data>
+    {% csrf_token %}
+    <h2>Metadata</h2>
+    {{ meta_form }} 
+    <hr>
+    <h2>Experiment Data</h2>
+    
+    {{ exp_form }} 
+    
+    <table id="data" class="table" >
+        <thead>
+           {% for header in fixed_headers%}
+           <th>{{ header }}</th>
+           {% endfor %}
+           
+           {% for header in template%}
+           <th><input value='{{ header }}' required></input></th>
+           {% endfor %}
+           <th></th>
+        </thead>
+        
+        <tr>
+            {% for i in num_headers%}
+                <td><input></input></td>
+            {% endfor %}
+            
+            <td><span class="delete-row"><b>X</b></span></td>
+        </tr>
+        
+        <tr class="hide">
+            {% for i in num_headers%}
+                <td><input></input></td>
+            {% endfor %}
+            <td><span class="delete-row"><b>X</b></span></td>
+
+        </tr>
+    </table>
+    
+</form>
+<button onClick="add_col()">Add Variable</button>
+<button onClick="add_row()">Add Row</button>
+<button onclick="" class="button">Submit</button> 
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'app/js/exp_input.js'%}"></script>
+{% endblock %}
