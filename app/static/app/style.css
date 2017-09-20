@@ -24,3 +24,14 @@ body {
     width: 100%;
 
 }
+
+.hide {
+    display: none;
+}
+
+
+.delete-row {
+    cursor: pointer;
+    color: #6F0000;
+    
+}

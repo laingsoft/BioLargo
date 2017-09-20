@@ -8,14 +8,12 @@ class csvUpload(forms.Form):
 class MetadataForm(forms.ModelForm):
     class Meta:
         model = Experiment
-        fields = ['person', 'reactor_diameter', 'reactor_length', 
-        'num_chambers', 'date','removal_target', 'reactor_age']
+        exclude = []
          
 
 #~ The default fields in Experiment data.
-class ExperimentDataForm(forms.ModelForm):
-    class Meta:
-        model = ExperimentData
-        exclude = ['experiment']
+class ExperimentDataForm(forms.Form):
+    json = forms.HiddenInput()
+        
     
     
