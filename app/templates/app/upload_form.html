@@ -1,0 +1,29 @@
+<!--
+Extends base template
+{% extends 'app/base_template.html' %}
+-->
+{% block content %}
+
+<h1>Upload CSV</h1>
+<form method="POST" enctype=multipart/form-data>
+    {% csrf_token %}
+    <h2>Metadata</h2>
+    {{ meta_form }} 
+    <hr>
+    
+    <table id="data" class="table" contenteditable="true">
+        <!--TODO: filling headers.-->
+        <thead>
+            <th contenteditable="false">Some headers.</th>
+            <th>List of editable headers from template.</th>
+        </thead>
+        
+        <tr>
+            
+        </tr>
+    </table>
+    
+    <button id="add-row" class="button">Add Row</button>
+</form>
+
+{% endblock %}
