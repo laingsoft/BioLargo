@@ -7,20 +7,21 @@
 <form method="POST" enctype=multipart/form-data id="exp-form" onSubmit="parse_input()">
     {% csrf_token %}
     <h2>Metadata</h2>
-    {{ meta_form.as_p }} 
+    {{ meta_form.as_p }}
+    {{ exp_form }} 
     <hr>
     <h2>Experiment Data</h2>
     
-    {{ exp_form }}
-    
-    <table id="data" class="table" >
+
+    <table id="data" class="table-responsive" >
         <thead>
            {% for header in fixed_headers%}
            <th class="input-cell">{{ header }}</th>
            {% endfor %}
            
            {% for header in template%}
-           <th><textarea class='input-cell' value='{{ header }}' required></textarea></th>
+
+           <th><textarea class = "form-control col-xs-2 "  value='{{ header }}' required></textarea></th>
            {% endfor %}
            <th>Comments</th>
            <th></th>
@@ -28,26 +29,29 @@
         
         <tr>
             {% for i in num_headers%}
-                <td><input class='input-cell'></input></td>
+
+                <td><input class = 'form-control col-xs-2 input-cell'></input></td>
             {% endfor %}
             
-            <td><textarea class='input-cell'></textarea></td>
+            <td><textarea class='form-control col-xs-2 input-cell'></textarea></td>
             
             <td><span class="delete-row"><b>X</b></span></td>
         </tr>
         
         <tr class="hide">
             {% for i in num_headers%}
-                <td><input class='input-cell'></input></td>
+                <td><input class='form-control col-xs-2 input-cell'></input></td>
             {% endfor %}
-            <td><textarea class='input-cell'></textarea></td>
+            <td><textarea class='form-control col-xs-2 input-cell'></textarea></td>
             <td><span class="delete-row"><b>X</b></span></td>
 
         </tr>
     </table>
+
     <button type="button" onClick="add_col()">Add Variable</button>
     <button type="button" onClick="add_row()">Add Row</button>
     <button type="submit">Submit</button>
+
 
 </form>
 

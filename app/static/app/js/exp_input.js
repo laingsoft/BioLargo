@@ -14,10 +14,10 @@ function add_col() {
   for (var i = 0; i < rows.length; i++){
     cell = rows[i].insertCell(rows[i].cells.length - 2);
     if (i === 0){
-      cell.innerHTML = "<textarea class='header-box' required></textarea>";
+      cell.innerHTML = "<textarea class='form-control col-xs-2' required></textarea>";
     }
     else {
-      cell.innerHTML = "<input class='input-form'></input>";
+      cell.innerHTML = "<input class='form-control col-xs-2 input-cell'></input>";
     }
   }
 }

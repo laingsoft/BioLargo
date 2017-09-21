@@ -3,7 +3,9 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-
+class Scientist (models.Model):
+	user = models.ForeignKey(User)
+	
 class Customer(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
