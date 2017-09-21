@@ -40,7 +40,7 @@
         <ul class="navbar-nav">
           <li class="nav-item">
             {% if username %}
-            <a class="nav-link" href="/accounts/user/?">Hello {{username}}</a>
+            <a class="nav-link" href="/accounts/user/{{usr_id}}">Hello {{username}}</a>
             {% else %}
             <a class="nav-link" href="/accounts/login/">Login</a>
             {% endif %}

@@ -29,6 +29,7 @@ def index(request):
     context = {"experiments":experiments,
                "username": user.username,
                "header_list":header_list,
+               "usr_id":user.id,
     }
     return HttpResponse(template.render(context,request))
     
@@ -90,3 +91,6 @@ def experiment(request, exp_id):
     data = this_experiment.ExperimentData
     return render(request, {"this_experiment":this_experiment, "data":data})
     
+
+def userpage(request, usr_id):
+    return HttpResponse(usr_id)
