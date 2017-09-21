@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -24,13 +24,18 @@ def register(request):
 
 def login(request):
     if request.method == "POST":
-        form.AuthenticationForm(request.POST)
+        form = AuthenticationForm(data = request.POST)
         if form.is_valid():
-            username.form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=raw_password)
             auth_login(request,user)
-            return redirect('/app')
+            return HttpResponseRedirect('/app')
+        else:
+            return HttpResponseRedirect('/accounts/login')
+
+
+
     else:
         form = UserCreationForm()
         login_form = AuthenticationForm()

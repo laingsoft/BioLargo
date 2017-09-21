@@ -12,22 +12,21 @@
     <h2>Experiment Data</h2>
     
     {{ exp_form }} 
-    
-    <table id="data" class="table" >
+    <table id="data" class="table-responsive" >
         <thead>
            {% for header in fixed_headers%}
            <th>{{ header }}</th>
            {% endfor %}
            
            {% for header in template%}
-           <th><input value='{{ header }}' required></input></th>
+           <th><input class = "form-control col-xs-2"  value='{{ header }}' required></input></th>
            {% endfor %}
            <th></th>
         </thead>
         
         <tr>
             {% for i in num_headers%}
-                <td><input></input></td>
+                <td><input class = "form-control col-xs-2"></input></td>
             {% endfor %}
             
             <td><span class="delete-row"><b>X</b></span></td>
@@ -41,7 +40,6 @@
 
         </tr>
     </table>
-    
 </form>
 <button onClick="add_col()">Add Variable</button>
 <button onClick="add_row()">Add Row</button>

@@ -16,7 +16,7 @@
       </thead>
       <tbody>
         {% for i in experiments %}
-        <tr class="metadatarow">
+        <tr class="metadatarow" data-href="/experiment/{{ i.0 }}">
           {% for y in i %}
           <td>{{y}}</td>
           {% endfor %}
