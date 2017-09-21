@@ -13,7 +13,7 @@ class MetadataForm(forms.ModelForm):
 
 #~ The default fields in Experiment data.
 class ExperimentDataForm(forms.Form):
-    json = forms.HiddenInput()
+    json = forms.CharField(widget=forms.HiddenInput())
         
     
     
