@@ -1,14 +1,16 @@
-<!--
-Extends base template
+
 {% extends 'app/base_template.html' %}
--->
+
 {% block content %}
-
-<h1>Upload CSV</h1>
-<form method="POST" enctype=multipart/form-data>
-    {% csrf_token %}
-    {{ form }}</br>
-    <button type="submit">Upload</button>    
-</form>
-
+<div class = "card">
+  <div class = "card-header">Upload CSV</div>
+  <div class = "card-block my-2 ml-2">
+    <h6 class = "card-title"> Choose a .CSV file to upload</h6>
+    <form method="POST" enctype=multipart/form-data>
+      {% csrf_token %}
+      {{ form }}
+      <button class="btn btn-primary" type="submit">Upload</button>
+    </form>
+  </div>
+</div>
 {% endblock %}
