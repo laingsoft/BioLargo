@@ -51,7 +51,7 @@ def upload_form(request):
     user = get_user(request)
     REQUIRED = ['Time [min]', 'FlowRate [mL/min]', 'Current [A]', 
     'Voltage [V]', 'KI Conc [ppm]',	'StockCFU [CFU/mL]',
-    'RemainingCFU [CFU/mL]', 'Comments']
+    'RemainingCFU [CFU/mL]']
     
     #~ template = Template.objects.filter(id = template)
     
@@ -72,6 +72,7 @@ def upload_form(request):
             return HttpResponseRedirect('/app/upload/success/' + str(metadata.id))
             
         #~ return some error if form not valid
+
     else:
         metadata_form = MetadataForm(prefix='metadata')
         exp_form = ExperimentDataForm(prefix='exp_data')
@@ -80,13 +81,14 @@ def upload_form(request):
         'fixed_headers' : REQUIRED, 'template' : [], 
                    'num_headers' : range(len(REQUIRED)),
         'usr':user}    
+
         
     return render(request, 'app/upload_form.html', context )
         
         
 #~ TODO: update to return a 404 if exp_id doesn't exist
 def upload_success(request, exp_id):
-    return render(request, '/app/upload_success.html', {'exp_id': exp_id})
+    return render(request, 'app/upload_success.html', {'exp_id': exp_id})
 
 def experiment(request, exp_id):
     user = get_user(request)
