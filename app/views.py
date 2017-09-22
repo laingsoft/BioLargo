@@ -29,7 +29,7 @@ def index(request):
     context = {"experiments":experiments,
                "username": user.username,
                "header_list":header_list,
-               "usr_id":user.id,
+               "usr":user,
     }
     return HttpResponse(template.render(context,request))
     
@@ -87,9 +87,9 @@ def upload_success(request, exp_id):
     return render(request, '/app/upload_success.html', {'exp_id': exp_id})
 
 def experiment(request, exp_id):
-    this_experiment = Experiment.objects.get(pk=exp_id)
-    data = this_experiment.ExperimentData
-    return render(request, {"this_experiment":this_experiment, "data":data})
+    this_experiment = Experiment.objects.get(id=exp_id)
+    data = this_experiment.reactor_age
+    return render(request,"app/experiment.html", {"this_experiment":this_experiment, "data":data})
     
 
 def userpage(request, usr_id):
