@@ -1,64 +1,52 @@
 {% extends 'app/base_template.html' %}
 {% load staticfiles %}
 
+{% block header%}
+<link rel='stylesheet' media="screen" href=" https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.34.4/handsontable.full.min.css">
+{% endblock %}
+
 {% block content %}
-<div id="input-table">
+
 <h1>Upload Experiment</h1>
-<form method="POST" enctype=multipart/form-data id="exp-form" onSubmit="parse_input()">
+<form method="POST" enctype=multipart/form-data id="exp-form" onSubmit="parse_data()">
     {% csrf_token %}
     <h2>Metadata</h2>
     {{ meta_form.as_p }}
-    {{ exp_form }} 
     <hr>
     <h2>Experiment Data</h2>
     
+    {{ exp_form }} 
 
-    <table id="data" class="table-responsive" >
-        <thead>
-           {% for header in fixed_headers%}
-           <th class="input-cell">{{ header }}</th>
-           {% endfor %}
-           
-           {% for header in template%}
+    
+    
+    <label>
+        Template
+    <select id="template-select">
+        {% for template in templates %}
+            <option value="{{ template }}">{{template}}</option>
+        {% endfor %}
+    </select>
+    </label>
+    
+    <div style="float:right">
+    <button type="button" id="add-row" >Add Row</button>
+    <button type="button" id="add-var" >Add Variable</button>
+    <button type="button" id="template-save">Save Template</button>
+    </div>
 
-           <th><textarea class = "form-control col-xs-2 "  value='{{ header }}' required></textarea></th>
-           {% endfor %}
-           <th>Comments</th>
-           <th></th>
-        </thead>
-        
-        <tr>
-            {% for i in num_headers%}
-
-                <td><input class = 'form-control col-xs-2 input-cell'></input></td>
-            {% endfor %}
-            
-            <td><textarea class='form-control col-xs-2 input-cell'></textarea></td>
-            
-            <td><span class="delete-row"><b>X</b></span></td>
-        </tr>
-        
-        <tr class="hide">
-            {% for i in num_headers%}
-                <td><input class='form-control col-xs-2 input-cell'></input></td>
-            {% endfor %}
-            <td><textarea class='form-control col-xs-2 input-cell'></textarea></td>
-            <td><span class="delete-row"><b>X</b></span></td>
-
-        </tr>
-    </table>
-
-    <button type="button" onClick="add_col()">Add Variable</button>
-    <button type="button" onClick="add_row()">Add Row</button>
-    <button type="submit">Submit</button>
-
-
+    <div id="data-table">
+<!--
+        table goes here.
+-->
+    </div>
+    
+    <button type="submit" id="form-submit">Submit</button>
 </form>
 
 
-</div>
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.34.4/handsontable.full.min.js"></script>
 <script src="{% static 'app/js/exp_input.js'%}"></script>
 {% endblock %}

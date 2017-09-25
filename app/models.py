@@ -24,7 +24,6 @@ class ExperimentData(models.Model):
 class Fields(models.Model):
     name = models.CharField(max_length = 255)
 
-# to keep from having to add the same fields every time.
 class Template(models.Model):
     name = models.CharField(max_length = 255)
     fields = models.ManyToManyField(Fields)

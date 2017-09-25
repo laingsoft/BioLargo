@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.template import loader
 from .forms import csvUpload
 from .csvParser import read_csv
@@ -12,6 +13,8 @@ from .models import Template
 from django.contrib.auth import get_user
 
 # Create your views here.
+
+DEFAULT_TEMPLATE = "Disinfection (bacteria)" 
 
 def index(request):
     '''
@@ -48,12 +51,6 @@ def upload_csv(request):
             
     
 def upload_form(request):
-    REQUIRED = ['Time [min]', 'FlowRate [mL/min]', 'Current [A]', 
-    'Voltage [V]', 'KI Conc [ppm]',	'StockCFU [CFU/mL]',
-    'RemainingCFU [CFU/mL]']
-    
-    #~ template = Template.objects.filter(id = template)
-    
     if request.method == 'POST':
         metadata_form = MetadataForm(request.POST, prefix='metadata')
         exp_form = ExperimentDataForm(request.POST, prefix='exp_data')
@@ -74,14 +71,28 @@ def upload_form(request):
 
     metadata_form = MetadataForm(prefix='metadata')
     exp_form = ExperimentDataForm(prefix='exp_data')
+    templates = Template.objects.all()
+    templates = [t.name for t in templates]
     
-    context = {'meta_form' : metadata_form, 'exp_form' : exp_form, 
-    'fixed_headers' : REQUIRED, 'template' : [], 
-    'num_headers' : range(len(REQUIRED))}    
+    context = {'meta_form' : metadata_form, 'exp_form' : exp_form, 'templates':templates}
         
     return render(request, 'app/upload_form.html', context )
         
+def get_template(request):
+    if request.method == 'GET':
+        template_name = request.GET.get('template', None)
         
+        if template_name:
+            fields = Template.objects.filter(name = template_name)[0].fields.all()
+            
+        else:
+            fields = Template.objects.filter(name = DEFAULT_TEMPLATE)[0].fields.all()
+            
+        fields = [field.name for field in fields]
+        
+    return JsonResponse({'fields' : fields})
+    
+    
 #~ TODO: update to return a 404 if exp_id doesn't exist
 def upload_success(request, exp_id):
     return render(request, 'app/upload_success.html', {'exp_id': exp_id})

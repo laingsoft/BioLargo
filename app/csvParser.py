@@ -40,11 +40,11 @@ def read_csv(csv_file):
     reformat_data(metadata, eData)
     
     exp = Experiment(
-    person = metadata[FIELDS[0]],
+    #person = metadata[FIELDS[0]],
     reactor_diameter = metadata[FIELDS[1]],
     reactor_length = metadata[FIELDS[2]],
     num_chambers = metadata[FIELDS[3]],
-    date = date_parser(metadata[FIELDS[4]]),
+    #date = date_parser(metadata[FIELDS[4]]),
     removal_target = metadata[FIELDS[5]],
     reactor_age = metadata[FIELDS[6]] if isinstance(metadata[FIELDS[6]], float) else 0)
 	

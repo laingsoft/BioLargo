@@ -1,59 +1,61 @@
-//~ from https://codepen.io/ashblue/pen/mCtuA
+var container = document.getElementById('data-table');
+var templates;
 
-var $TABLE = $('#input-table');
-
-function add_row() {
-  var $clone = $TABLE.find('tr.hide').clone(true).removeClass('hide table-line');
-  $TABLE.find('table').append($clone);
-}
-
-function add_col() {
-  var table = document.getElementById('data');
-  var rows = table.rows;
-
-  for (var i = 0; i < rows.length; i++){
-    cell = rows[i].insertCell(rows[i].cells.length - 2);
-    if (i === 0){
-      cell.innerHTML = "<textarea class='form-control col-xs-2' required></textarea>";
-    }
-    else {
-      cell.innerHTML = "<input class='form-control col-xs-2 input-cell'></input>";
-    }
-  }
-}
-
-function parse_input(){
-    var attributes = [];
-    var table = document.getElementById('data');
-    //~ get headers
-    headers = table.rows[0].cells
-    
-    for (var i = 0; i < headers.length -1; i++){
-        var inputField = headers[i].getElementsByClassName("textarea")[0];
-        
-        if(inputField){
-            attributes.push(inputField.value);
-        }
-        else {
-            attributes.push(headers[i].innerText);
-        }
-    }
-    
-    exp_data = [];
-    
-    for (i = 1; i < table.rows.length - 1; i++) {
-        var data = {};
-        for (var j = 0; j < attributes.length; j++) {
-            data[attributes[j]] = table.rows[i].cells[j].getElementsByClassName("input-cell")[0].value;
-        }
-        
-        exp_data.push(data);
-    }
-    
-    hidden_field = document.getElementById("id_exp_data-json");
-    hidden_field.value = JSON.stringify(exp_data);
-    
-}
-$('.delete-row').click(function () {
-  $(this).parents('tr').detach();
+var hot = new Handsontable(container, {
+    data : [[]],
+    rowHeaders:true,
+    colHeaders: true,
+    contextMenu: true,
 });
+
+window.onload = get_template(null)
+
+function load_template(template) {
+    fields = template.fields;
+    col = fields.map(function(field) {
+        {data : field};
+        });
+    hot.updateSettings({colHeaders:fields, columns: col});
+}
+
+function get_template(template_name) {
+    $.get("/app/get_template", {template : template_name}, load_template);
+}
+
+function parse_data() {
+    headers = hot.getColHeader();
+    data = hot.getData();
+    
+    var parsed = [];
+    for (row = 0; row < data.length; row++){
+        d = {};
+        for (h = 0; h < headers.length; h++){
+            d[headers[h]] = data[row][h];
+        }
+        parsed.push(d);
+    }
+    
+    $("#id_exp_data-json").val(JSON.stringify(parsed));
+};
+    
+$('#add-var').click(function(){
+    name = prompt("Please Enter Variable Name");
+    if (name !== 'null') {
+        headers = hot.getColHeader();
+        headers.splice(-1,0, name);
+        col.splice(-1,0, {data : name})
+        hot.updateSettings({colHeaders : headers});
+    }
+});
+
+$('#add-row').click(function(){
+    hot.alter('insert_row', 1);
+    });
+
+$('#emplate-select').change(function(){
+    get_template($(this).value);
+    });
+
+$('#template-save').click(function(){
+    prompt("this does something");
+    });
