@@ -52,8 +52,8 @@ $('#add-row').click(function(){
     hot.alter('insert_row', 1);
     });
 
-$('#emplate-select').change(function(){
-    get_template($(this).value);
+$('#template-select').change(function(){
+    get_template($(this).val());
     });
 
 $('#template-save').click(function(){
