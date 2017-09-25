@@ -21,7 +21,7 @@
     
     <label>
         Template
-    <select id="template-select">
+    <select class="form-control" id="template-select">
         {% for template in templates %}
             <option value="{{ template }}">{{template}}</option>
         {% endfor %}
@@ -29,9 +29,9 @@
     </label>
     
     <div style="float:right">
-    <button type="button" id="add-row" >Add Row</button>
-    <button type="button" id="add-var" >Add Variable</button>
-    <button type="button" id="template-save">Save Template</button>
+    <button class="btn" type="button" id="add-row" >Add Row</button>
+    <button class="btn" type="button" id="add-var" >Add Variable</button>
+    <button class="btn" type="button" id="template-save">Save Template</button>
     </div>
 
     <div id="data-table">
@@ -39,8 +39,8 @@
         table goes here.
 -->
     </div>
-    
-    <button type="submit" id="form-submit">Submit</button>
+       <button class="btn btn-primary" type="button" id="form-submit">Submit</button>
+ 
 </form>
 
 

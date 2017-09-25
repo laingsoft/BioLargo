@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^get_template', views.get_template),
     url(r'^experiment/(?P<exp_id>[0-9]+)', views.experiment),
     url(r'^experimentjs/(?P<exp_id>[0-9]+)', views.experiment_json),
+    url(r'^save_template', views.save_template),
     ]

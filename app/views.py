@@ -9,14 +9,16 @@ from io import TextIOWrapper
 from .forms import MetadataForm
 from .forms import ExperimentDataForm
 import json
-from .models import Template
+from .models import Template, Fields
 from django.contrib.auth import get_user
 import json
 
 # Create your views here.
 
+
 DEFAULT_TEMPLATE = "Disinfection (bacteria)"
 HEADER_LIST = ["ID", "Chambers","Diameter","Length","Target","Age (mL)"]
+
 
 def index(request):
     '''
@@ -89,17 +91,44 @@ def get_template(request):
     if request.method == 'GET':
         template_name = request.GET.get('template', None)
         
-        if template_name:
-            fields = Template.objects.filter(name = template_name)[0].fields.all()
-            
-        else:
-            fields = Template.objects.filter(name = DEFAULT_TEMPLATE)[0].fields.all()
-            
+        fields = Template.objects.filter(name = template_name)[0].fields.all()
         fields = [field.name for field in fields]
         
     return JsonResponse({'fields' : fields})
     
-    
+def save_template(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        name = data['name']
+        fields = data['fields']
+       
+        if name and fields:
+            # check if name already exists
+            if Template.objects.filter(name=name).exists():
+                return JsonResponse({'success': False, 'error': "Name already exists"})
+                
+            template = Template(name = name)
+                
+            f = []
+            for field in fields:
+                f.append(Fields.objects.get_or_create(name=field)[0])
+                
+                
+            #~ TODO: add a check to see if the template already exists with a different name if it's not too resource intensive
+            
+            
+            template.save()
+            
+            for field in f:
+                field.save()
+                template.fields.add(field)
+                
+            template.save()
+            
+            return JsonResponse({'success' : True})
+            
+        return JsonResponse({'success' : False, 'error': "Error saving template"})
+            
 #~ TODO: update to return a 404 if exp_id doesn't exist
 def upload_success(request, exp_id):
     return render(request, 'app/upload_success.html', {'exp_id': exp_id})

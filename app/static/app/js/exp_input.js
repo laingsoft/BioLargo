@@ -6,9 +6,34 @@ var hot = new Handsontable(container, {
     rowHeaders:true,
     colHeaders: true,
     contextMenu: true,
+    preventOverflow: 'horizontal',
 });
 
-window.onload = get_template(null)
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+    }
+});
+
+
+window.onload = get_template($('#template-select').val())
 
 function load_template(template) {
     fields = template.fields;
@@ -52,10 +77,13 @@ $('#add-row').click(function(){
     hot.alter('insert_row', 1);
     });
 
-$('#emplate-select').change(function(){
-    get_template($(this).value);
+$('#template-select').change(function(){
+    get_template($(this).val());
     });
 
 $('#template-save').click(function(){
-    prompt("this does something");
+    template_name = prompt("Enter template name");
+    
+    $.post("/app/save_template", 
+    JSON.stringify({name : template_name, fields : hot.getColHeader()}));
     });
