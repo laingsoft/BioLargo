@@ -4,7 +4,7 @@
 
 {% block content %}
 {% load static %}
-<script src="{% static '/app/index.js' %}"></script>
+<script src="{% static '/app/js/index.js' %}"></script>
   <div class = "table-responsive">
     <table class="table table-hover">
       <thead>
@@ -16,7 +16,7 @@
       </thead>
       <tbody>
         {% for i in experiments %}
-        <tr class="metadatarow" data-href="/experiment/{{ i.0 }}">
+        <tr class="metadatarow" data-href="/app/experiment/{{ i.0 }}">
           {% for y in i %}
           <td>{{y}}</td>
           {% endfor %}

@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^upload/form', views.upload_form),
     url(r'^upload', views.upload_csv),
     url(r'^get_template', views.get_template),
+    url(r'^experiment/(?P<exp_id>[0-9]+)', views.experiment),
     ]

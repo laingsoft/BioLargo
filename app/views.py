@@ -30,14 +30,14 @@ def index(request):
     header_list = ["ID", "Chambers","Diameter","Length","Target","Age (mL)"]
     
     context = {"experiments":experiments,
-               "username": user.username,
                "header_list":header_list,
-               "usr_id":user.id,
+               "usr":user,
     }
     return HttpResponse(template.render(context,request))
     
    
 def upload_csv(request):
+    user = get_user(request)
     if request.method == 'POST':
         form = csvUpload(request.POST, request.FILES)
         if form.is_valid():
@@ -47,10 +47,15 @@ def upload_csv(request):
     else:
         form = csvUpload()
         
-    return render(request, 'app/upload_csv.html', {'form': form})
+    return render(request, 'app/upload_csv.html', {'form': form, "usr":user})
             
     
 def upload_form(request):
+    user = get_user(request)
+    REQUIRED = ['Time [min]', 'FlowRate [mL/min]', 'Current [A]', 
+    'Voltage [V]', 'KI Conc [ppm]',	'StockCFU [CFU/mL]',
+    'RemainingCFU [CFU/mL]']
+    
     if request.method == 'POST':
         metadata_form = MetadataForm(request.POST, prefix='metadata')
         exp_form = ExperimentDataForm(request.POST, prefix='exp_data')
@@ -98,9 +103,10 @@ def upload_success(request, exp_id):
     return render(request, 'app/upload_success.html', {'exp_id': exp_id})
 
 def experiment(request, exp_id):
-    this_experiment = Experiment.objects.get(pk=exp_id)
-    data = this_experiment.ExperimentData
-    return render(request, {"this_experiment":this_experiment, "data":data})
+    user = get_user(request)
+    this_experiment = Experiment.objects.get(id=exp_id)
+    data = this_experiment.reactor_age
+    return render(request,"app/experiment.html", {"this_experiment":this_experiment, "data":data, "usr":user})
     
 
 def userpage(request, usr_id):
