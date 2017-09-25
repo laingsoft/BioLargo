@@ -11,10 +11,12 @@ from .forms import ExperimentDataForm
 import json
 from .models import Template
 from django.contrib.auth import get_user
+import json
 
 # Create your views here.
 
-DEFAULT_TEMPLATE = "Disinfection (bacteria)" 
+DEFAULT_TEMPLATE = "Disinfection (bacteria)"
+HEADER_LIST = ["ID", "Chambers","Diameter","Length","Target","Age (mL)"]
 
 def index(request):
     '''
@@ -27,10 +29,10 @@ def index(request):
     #experiments = [[1,2,3,4,5,6,7, 8, 9]]
     experiments = Experiment.objects.values_list()
    
-    header_list = ["ID", "Chambers","Diameter","Length","Target","Age (mL)"]
+    
     
     context = {"experiments":experiments,
-               "header_list":header_list,
+               "header_list":HEADER_LIST,
                "usr":user,
     }
     return HttpResponse(template.render(context,request))
@@ -104,10 +106,16 @@ def upload_success(request, exp_id):
 
 def experiment(request, exp_id):
     user = get_user(request)
-    this_experiment = Experiment.objects.get(id=exp_id)
-    data = this_experiment.reactor_age
-    return render(request,"app/experiment.html", {"this_experiment":this_experiment, "data":data, "usr":user})
+    this_experiment = Experiment.objects.values_list().filter(id=exp_id)
+    return render(request,"app/experiment.html", {"this_experiment":this_experiment, "usr":user, "header_list": HEADER_LIST})
     
+
+def experiment_json(request, exp_id):
+    data = ExperimentData.objects.filter(experiment=exp_id)
+    newval = {}
+    newval = {k: json.loads(v.experimentData) for k,v in enumerate(data) }
+    return JsonResponse(newval)
+
 
 def userpage(request, usr_id):
     return HttpResponse(usr_id)

@@ -1,5 +1,37 @@
 {% extends 'app/base_template.html' %}
 
+
+
+
 {% block content %}
-{{data}}
+  <div class = "table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          {% for header in header_list %}
+          <th>{{header}}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="metadatarow">
+        {% for i in this_experiment %}
+          {% for y in i %}
+          <td>{{y}}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div  class="experimental-data">
+      <table id = "experimental-data" class = "table table-responsive">
+
+
+      </table>
+    </div>
+  </div>
+
+  <script>var id={{this_experiment.0.0}};</script>
+  {% load static %}
+  <script src = "{% static '/app/js/experiment.js' %}"></script>
 {% endblock %}
