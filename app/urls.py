@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^upload', views.upload_csv),
     url(r'^get_template', views.get_template),
     url(r'^experiment/(?P<exp_id>[0-9]+)', views.experiment),
+    url(r'^save_template', views.save_template),
     ]
