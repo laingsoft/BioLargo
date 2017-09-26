@@ -16,7 +16,7 @@ import json, csv
 # Create your views here.
 
 
-DEFAULT_TEMPLATE = "Disinfection (bacteria)"
+DEFAULT_TEMPLATE = "Disinfection(bacteria)"
 HEADER_LIST = ["ID", "Chambers","Diameter","Length","Target","Age (mL)"]
 
 
@@ -69,7 +69,7 @@ def upload_form(request):
             
             # check if data is empty and remove empty rows 
             temp = []
-            for row in temp:
+            for row in data:
                 if any(row.values()):
                     temp.append(row)
             if len(temp) == 0:
@@ -111,7 +111,7 @@ def get_template(request):
     if request.method == 'GET':
         template_name = request.GET.get('template', None)
         if not template_name:
-            return JsonResponse({'fields' : ['']})
+            template_name = DEFAULT_TEMPLATE
         
         fields = Template.objects.filter(name = template_name)[0].fields.all()
         fields = [field.name for field in fields]

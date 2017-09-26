@@ -22,7 +22,7 @@
     
     <label>
         Template
-    <select class="form-control id="template-select">
+    <select id="template-select" class="form-control">
         {% for template in templates %}
             <option value="{{ template }}">{{template}}</option>
         {% endfor %}
@@ -31,8 +31,8 @@
     
     <div style="float:right">
     <button type="button" class="btn btn-default" id="add-row" >Add Row</button>
-    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#var_modal" >Add Variable</button>
-    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#template_modal" >Save Template</button>
+    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#var-modal" >Add Variable</button>
+    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#template-modal" >Save Template</button>
     </div>
 
     <div id="data-table">
@@ -44,7 +44,7 @@
     <button class="btn btn-primary" type="submit" id="form-submit">Submit</button>
 </form>
 
-<div id="var_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="var-modal" style="display: none;" aria-hidden="true">
+<div id="var-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="var-modal" style="display: none;" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -55,19 +55,19 @@
       </div>
       <div class="modal-body">
         <label> Variable Name
-            <input class="form-control" id="var_name" placeholder="Variable name">
+            <input class="form-control" id="var-name" placeholder="Variable name">
         </label>
         
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" id="var_save"class="btn btn-primary">Save</button>
+        <button type="button" id="var-save"class="btn btn-primary">Save</button>
       </div>
     </div>
   </div>
 </div>
 
-<div id="template_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="template-modal" style="display: none;" aria-hidden="true">
+<div id="template-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="template-modal" style="display: none;" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">

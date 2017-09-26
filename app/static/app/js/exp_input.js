@@ -1,8 +1,10 @@
 var container = document.getElementById('data-table');
 var templates;
+var data = [[]];
+var col;
 
 var hot = new Handsontable(container, {
-    data : [[]],
+    data : data,
     rowHeaders:true,
     colHeaders: true,
     contextMenu: true,
@@ -26,6 +28,11 @@ function getCookie(name) {
 }
 var csrftoken = getCookie('csrftoken');
 
+// for editing.
+function getData(id){
+    $.get("/app/experimentjs/" + id)
+}
+
 $.ajaxSetup({
     beforeSend: function(xhr, settings) {
         xhr.setRequestHeader("X-CSRFToken", csrftoken);
@@ -38,7 +45,7 @@ window.onload = get_template($('#template-select').val())
 function load_template(template) {
     fields = template.fields;
     col = fields.map(function(field) {
-        {data : field};
+        return {data : field};
         });
     hot.updateSettings({colHeaders:fields, columns: col});
 }
@@ -67,13 +74,14 @@ $('#var-save').click(function(){
     name = $('#var-name').val();
     if (name) {
         headers = hot.getColHeader();
-    
+        headers = headers.filter(function(e){return e;});
         headers.splice(-1,0, name);
+        col = col.filter(function(e){return e;});
         col.splice(-1,0, {data : name})
-        hot.updateSettings({colHeaders : headers});
+        hot.updateSettings({colHeaders : headers, columns: col});
     }
-    $('#var_name').val('');
-    $('#var_modal').modal('hide')
+    $('#var-name').val('');
+    $('#var-modal').modal('hide')
 });
 
 $('#add-row').click(function(){
@@ -92,6 +100,6 @@ $('#template-save').click(function(){
         JSON.stringify({name : name, fields : hot.getColHeader()}));
         }
         
-    $('#template_name').val('');
-    $('#template_modal').modal('hide')
+    $('#template-name').val('');
+    $('#template-modal').modal('hide')
     });
