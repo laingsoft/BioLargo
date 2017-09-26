@@ -1,6 +1,6 @@
 import csv
 from ast import literal_eval
-from .models import Experiment, ExperimentData
+from .models import *
 import json
 import datetime
 
@@ -38,6 +38,12 @@ def read_csv(csv_file):
     csv_file.close()
 	
     reformat_data(metadata, eData)
+    
+    
+    # add fields to database if it doesn't exist.
+    #~ f = eData[0].keys()
+    #~ for field in f:
+        #~ Fields.objects.get_or_create(name=field)[0].save()
     
     exp = Experiment(
     #person = metadata[FIELDS[0]],

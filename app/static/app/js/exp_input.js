@@ -63,14 +63,17 @@ function parse_data() {
     $("#id_exp_data-json").val(JSON.stringify(parsed));
 };
     
-$('#add-var').click(function(){
-    name = prompt("Please Enter Variable Name");
-    if (name !== 'null') {
+$('#var-save').click(function(){
+    name = $('#var-name').val();
+    if (name) {
         headers = hot.getColHeader();
+    
         headers.splice(-1,0, name);
         col.splice(-1,0, {data : name})
         hot.updateSettings({colHeaders : headers});
     }
+    $('#var_name').val('');
+    $('#var_modal').modal('hide')
 });
 
 $('#add-row').click(function(){
@@ -82,8 +85,13 @@ $('#template-select').change(function(){
     });
 
 $('#template-save').click(function(){
-    template_name = prompt("Enter template name");
+    name = $('#template-name').val();
     
-    $.post("/app/save_template", 
-    JSON.stringify({name : template_name, fields : hot.getColHeader()}));
+    if (name) {
+        $.post("/app/save_template", 
+        JSON.stringify({name : name, fields : hot.getColHeader()}));
+        }
+        
+    $('#template_name').val('');
+    $('#template_modal').modal('hide')
     });

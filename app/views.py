@@ -11,7 +11,7 @@ from .forms import ExperimentDataForm
 import json
 from .models import Template, Fields
 from django.contrib.auth import get_user
-import json
+import json, csv
 
 # Create your views here.
 
@@ -65,14 +65,34 @@ def upload_form(request):
         exp_form = ExperimentDataForm(request.POST, prefix='exp_data')
         
         if metadata_form.is_valid() and exp_form.is_valid():
+            data = json.loads(exp_form.cleaned_data.get('json'))
+            
+            # check if data is empty and remove empty rows 
+            temp = []
+            for row in temp:
+                if any(row.values()):
+                    temp.append(row)
+            if len(temp) == 0:
+                return HttpResponseRedirect('/app/upload/error/')
+                
+            data = temp
+            
             metadata = metadata_form.save(commit=False)
             # add missing fields to metadata here
             metadata.save()
-            data = json.loads(exp_form.cleaned_data.get('json'))
             for row in data:
-                exp_data = json.dumps(row)
+                parsed = {}
+                for item in row:
+                    try:
+                        parsed[item] = ast.literal_eval(row[item])
+                    except:
+                        parsed[item] = row[item]
+                    
+                exp_data = json.dumps(parsed)
+                
                 data = ExperimentData(experiment=metadata, 
                 experimentData=exp_data)
+                data.save()
         
             return HttpResponseRedirect('/app/upload/success/' + str(metadata.id))
             
@@ -90,6 +110,8 @@ def upload_form(request):
 def get_template(request):
     if request.method == 'GET':
         template_name = request.GET.get('template', None)
+        if not template_name:
+            return JsonResponse({'fields' : ['']})
         
         fields = Template.objects.filter(name = template_name)[0].fields.all()
         fields = [field.name for field in fields]
@@ -146,5 +168,18 @@ def experiment_json(request, exp_id):
     return JsonResponse(newval)
 
 
-def userpage(request, usr_id):
-    return HttpResponse(usr_id)
+def get_csv(request, exp_id, header=0):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="'+exp_id+'.csv"'
+    vals = ExperimentData.objects.filter(experiment=exp_id)
+    newdata = []
+    [newdata.append(json.loads(i.experimentData)) for i in vals]
+    fieldnames = []
+    [fieldnames.append(k) for k in newdata[0]]
+    writer = csv.DictWriter(response, fieldnames)
+    writer.writeheader()
+    [writer.writerow(i) for i in newdata]
+    return response
+        
+    
+    
