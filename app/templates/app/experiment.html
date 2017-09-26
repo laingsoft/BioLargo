@@ -4,38 +4,47 @@
 
 
 {% block content %}
-<h2><u>Overview</u></h2>
+<h2>Overview</h2>
 <div class="row">
-  <canvas id="removalChart" class= "col-md-3 mr-auto" width="100" height = "100"></canvas>
-  <div class = "card col-md-8 my-auto mr-auto">
+  <canvas id="removalChart" class= "col-md-3" width="100" height = "100"></canvas>
+  <div class = "card col-md-8 mb-5 ml-5">
     <h2 class = "card-title">Experiment {{this_experiment.0.0}} </h2>
-  <div class = "table-responsive">
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          {% for header in header_list %}
-          <th>{{header}}</th>
+    <div class = "table-responsive card-block">
+      <table class="table table-responsive">
+        <thead>
+          <tr>
+            {% for header in header_list %}
+            <th>{{header}}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="metadatarow">
+            {% for i in this_experiment %}
+            {% for y in i %}
+            <td>{{y}}</td>
+            {% endfor %}
+          </tr>
           {% endfor %}
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="metadatarow">
-        {% for i in this_experiment %}
-          {% for y in i %}
-          <td>{{y}}</td>
-          {% endfor %}
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
+    <form action="/app/experiment/csv/{{this_experiment.0.0}}">
+    <div class="form-group col-sm-4">
+      <input type="checkbox" class="form-check-input">Include Header</input>
+      <button type="submit" class="btn btn-primary">Export CSV</button>
+    </div>
+    </form>
   </div>
-  </div>
-  </div>
-  <h2>Experimental data</h2>
-  <div  class="table-responsive">
-    <table id = "experimental-data" class = "table table-responsive">
-    </table>
-  </div>
+
+</div>
+<div class="card">
+     <h2 class = "card-header">Data</h2>
+     <div class="table-responsive">
+       <table id = "experimental-data" class = "table table-responsive">
+       </table>
+     </div>
+</div>
 </div>
 
   <script>var id={{this_experiment.0.0}};</script>

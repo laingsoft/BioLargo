@@ -11,7 +11,7 @@ from .forms import ExperimentDataForm
 import json
 from .models import Template, Fields
 from django.contrib.auth import get_user
-import json
+import json, csv
 
 # Create your views here.
 
@@ -146,5 +146,18 @@ def experiment_json(request, exp_id):
     return JsonResponse(newval)
 
 
-def userpage(request, usr_id):
-    return HttpResponse(usr_id)
+def get_csv(request, exp_id, header=0):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="'+exp_id+'.csv"'
+    vals = ExperimentData.objects.filter(experiment=exp_id)
+    newdata = []
+    [newdata.append(json.loads(i.experimentData)) for i in vals]
+    fieldnames = []
+    [fieldnames.append(k) for k in newdata[0]]
+    writer = csv.DictWriter(response, fieldnames)
+    writer.writeheader()
+    [writer.writerow(i) for i in newdata]
+    return response
+        
+    
+    
