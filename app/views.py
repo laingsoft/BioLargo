@@ -47,7 +47,7 @@ def upload_csv(request):
         if form.is_valid():
             data = TextIOWrapper(request.FILES['csv_file'].file, encoding=request.encoding)
             exp_id = read_csv(data)
-            return HttpResponseRedirect('/app/upload/success/' + str(exp_id))
+            return HttpResponseRedirect('/app/upload_success/' + str(exp_id))
     else:
         form = csvUpload()
         
@@ -94,7 +94,7 @@ def upload_form(request):
                 experimentData=exp_data)
                 data.save()
         
-            return HttpResponseRedirect('/app/upload/success/' + str(metadata.id))
+            return HttpResponseRedirect('/app/upload_success/' + str(metadata.id))
             
         #~ return some error if form not valid
 
@@ -113,9 +113,12 @@ def get_template(request):
         if not template_name:
             template_name = DEFAULT_TEMPLATE
         
-        fields = Template.objects.filter(name = template_name)[0].fields.all()
-        fields = [field.name for field in fields]
-        
+        try:
+            fields = Template.objects.filter(name = template_name)[0].fields.all()
+            fields = [field.name for field in fields]
+        except IndexError:
+            fields = ['']
+            
     return JsonResponse({'fields' : fields})
     
 def save_template(request):
@@ -168,6 +171,13 @@ def experiment_json(request, exp_id):
     return JsonResponse(newval)
 
 
+def fields_autocomplete(request):
+    if request.method == "GET":
+        q = request.GET.get("q")
+        result = Fields.objects.all().filter(name__icontains = q)
+        
+        return JsonResponse({'data' : [str(item) for item in result]})
+    
 def get_csv(request, exp_id, header=0):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="'+exp_id+'.csv"'
@@ -180,6 +190,3 @@ def get_csv(request, exp_id, header=0):
     writer.writeheader()
     [writer.writerow(i) for i in newdata]
     return response
-        
-    
-    

@@ -23,8 +23,14 @@ class ExperimentData(models.Model):
 # to make sure we have consistent field naming for searching
 class Fields(models.Model):
     name = models.CharField(max_length = 255)
+    
+    def __str__(self):
+        return self.name
 
 class Template(models.Model):
     name = models.CharField(max_length = 255)
     fields = models.ManyToManyField(Fields)
+   
+    def __str__(self):
+        return self.name
     
