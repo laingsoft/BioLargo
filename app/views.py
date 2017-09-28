@@ -56,9 +56,6 @@ def upload_csv(request):
     
 def upload_form(request):
     user = get_user(request)
-    REQUIRED = ['Time [min]', 'FlowRate [mL/min]', 'Current [A]', 
-    'Voltage [V]', 'KI Conc [ppm]',	'StockCFU [CFU/mL]',
-    'RemainingCFU [CFU/mL]']
     
     if request.method == 'POST':
         metadata_form = MetadataForm(request.POST, prefix='metadata')

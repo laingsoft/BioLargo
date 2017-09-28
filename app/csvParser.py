@@ -41,9 +41,9 @@ def read_csv(csv_file):
     
     
     # add fields to database if it doesn't exist.
-    #~ f = eData[0].keys()
-    #~ for field in f:
-        #~ Fields.objects.get_or_create(name=field)[0].save()
+    f = eData[0].keys()
+    for field in f:
+        Fields.objects.get_or_create(name=field)[0].save()
     
     exp = Experiment(
     #person = metadata[FIELDS[0]],
