@@ -118,6 +118,7 @@ $('#var-save').click(function() {
 });
 
 $('#add-row').click(function() {
+    console.log("test");
     hot.alter('insert_row', 1);
 });
 
@@ -140,3 +141,13 @@ $('#template-save').click(function() {
     $('#template-modal').modal('hide')
 });
 
+$(function() {
+
+    var url = "http://localhost:8000/app/upload/";
+
+    $(".nav-link").each(function(){
+        if (url == (this.href)){
+            $(this).addClass("active");
+        }
+    });
+});

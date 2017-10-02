@@ -14,7 +14,9 @@
     <div>
     {% csrf_token %}
     <h2>Metadata</h2>
-    {{ meta_form.as_p }}
+    <div class="row">
+      {{ meta_form }}
+    </div>
     <hr>
     <h2>Experiment Data</h2>
     

@@ -100,7 +100,7 @@ def upload_form(request):
     templates = Template.objects.all()
     templates = [t.name for t in templates]
     
-    context = {'meta_form' : metadata_form, 'exp_form' : exp_form, 'templates':templates}
+    context = {'meta_form' : metadata_form, 'exp_form' : exp_form, 'templates':templates, 'usr':get_user(request)}
         
     return render(request, 'app/upload_form.html', context )
         

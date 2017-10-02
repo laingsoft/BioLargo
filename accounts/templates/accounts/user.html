@@ -1,6 +1,9 @@
 {% extends "app/base_template.html" %}
 {% block content %}
-
-{{userdata}}
+<form action="." method ="post">
+  {% csrf_token %}
+  {{form.as_p}}
+  <button type="submit">Update Profile</button>
+</form>
 
 {% endblock %}
