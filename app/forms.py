@@ -9,6 +9,7 @@ class MetadataForm(forms.ModelForm):
     class Meta:
         model = Experiment
         exclude = []
+        widgets = {'group' : forms.TextInput()}
          
 
 #~ The default fields in Experiment data.

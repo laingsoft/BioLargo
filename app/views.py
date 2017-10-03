@@ -47,7 +47,7 @@ def upload_csv(request):
         if form.is_valid():
             data = TextIOWrapper(request.FILES['csv_file'].file, encoding=request.encoding)
             exp_id = read_csv(data)
-            return HttpResponseRedirect('/app/upload_success/' + str(exp_id))
+            return HttpResponseRedirect('/app/upload/success/' + str(exp_id))
     else:
         form = csvUpload()
         
@@ -91,7 +91,7 @@ def upload_form(request):
                 experimentData=exp_data)
                 data.save()
         
-            return HttpResponseRedirect('/app/upload_success/' + str(metadata.id))
+            return HttpResponseRedirect('/app/upload/success/' + str(metadata.id))
             
         #~ return some error if form not valid
 
@@ -175,6 +175,11 @@ def fields_autocomplete(request):
         
         return JsonResponse({'data' : [str(item) for item in result]})
     
+def groups_list(request):
+    result = [str(i) for i in Group.objects.all()]
+    
+    return JsonResponse({'data' : result})
+
 def get_csv(request, exp_id, header=0):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="'+exp_id+'.csv"'
