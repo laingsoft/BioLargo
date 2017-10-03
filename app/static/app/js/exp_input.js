@@ -13,17 +13,27 @@ new autoComplete({
     }
 });
 
-
-
-var group_autocomplete;
 new autoComplete({
-    selector: '#id_matadata-group',
-    minChars: 1,
-    source: function(term, response){
-        try { group_autocomplete.abort(); } catch(e){}
-        group_autocomplete = $.getJSON('/app/groups-autocomplete', { q: term }, function(data){ response(data.data); });
+    selector: '#id_metadata-group',
+    minChars: 0,
+    source: function(term, suggest){
+        term = term.toLowerCase();
+        var choices = ['a', 'b'];
+        //~ $.getJSON('/app/groups_list', function(data){choices = data.data})
+        var suggestions = [];
+        for (i=0;i<choices.length;i++)
+            if (~(choices[i][0]+' '+choices[i][1]).toLowerCase().indexOf(term)) suggestions.push(choices[i]);
+        suggest(suggestions);
+    },
+    renderItem: function (item, search){
+        return '<div class="autocomplete-suggestion" data-group-name = "' + item[0]+'" ">'+item[0]+'</div>';
+
+    },
+     onSelect: function(e, term, item){
+        $('#id_metadata-group').val(item.getAttribute('data-group-name'));
     }
 });
+
 
 var hot = new Handsontable(container, {
     data: data,
@@ -35,12 +45,6 @@ var hot = new Handsontable(container, {
     manualRowMove: true,
 });
 
-// for editing existing data.
-function getData(id) {
-    $.get("/app/experimentjs/" + id, function(data) {
-        console.log(data)
-    });
-}
 
 function getCookie(name) {
     var cookieValue = null;

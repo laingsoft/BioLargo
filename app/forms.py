@@ -3,6 +3,7 @@ from .models import Experiment, ExperimentData
 from .models import Template
 
 class csvUpload(forms.Form):
+    group = forms.CharField()
     csv_file = forms.FileField()
 
 class MetadataForm(forms.ModelForm):

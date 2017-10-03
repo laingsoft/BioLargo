@@ -2,14 +2,15 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import JsonResponse
 from django.template import loader
-from .forms import csvUpload
 from .csvParser import read_csv
 from .models import Experiment, ExperimentData
+from .models import Template, Fields
+from .models import Group
 from io import TextIOWrapper
 from .forms import MetadataForm
 from .forms import ExperimentDataForm
-import json
-from .models import Template, Fields
+from .forms import csvUpload
+
 from django.contrib.auth import get_user
 import json, csv
 
@@ -176,9 +177,9 @@ def fields_autocomplete(request):
         return JsonResponse({'data' : [str(item) for item in result]})
     
 def groups_list(request):
-    result = [str(i) for i in Group.objects.all()]
-    
-    return JsonResponse({'data' : result})
+    if request.method == "GET":
+        result = [str(i) for i in Group.objects.all()]
+        return JsonResponse({'data' : result})
 
 def get_csv(request, exp_id, header=0):
     response = HttpResponse(content_type='text/csv')
