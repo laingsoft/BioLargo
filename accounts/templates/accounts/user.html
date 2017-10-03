@@ -1,9 +1,25 @@
 {% extends "app/base_template.html" %}
 {% block content %}
-<form action="." method ="post">
-  {% csrf_token %}
-  {{form.as_p}}
-  <button type="submit">Update Profile</button>
-</form>
+{% load accounts_tags %}
+{% load static %}
 
-{% endblock %}
+<div class = "card col-md-3 mx-auto">
+  <div class="mx-auto mb-2">{{userdata.email | gravatar:200 }}</div>
+  <p class = "card-text mx-auto" id="profileUsername">{{userdata.username}}</p>
+  <div class = "card-text">
+    <div class = "mx-auto">
+      <div class="row mb-2">
+        <div class="col text-center">
+          <img src="{% static 'accounts/svg/person.svg' %}">
+          {{userdata.first_name}}
+          {{userdata.last_name}}
+        </div>
+      </div>
+      <div class="col text-center">
+        <img src="{% static 'accounts/svg/inbox.svg' %}">
+        {{userdata.email}}
+      </div>
+      
+    </div>
+  </div>
+  {% endblock %}
