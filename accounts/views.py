@@ -6,6 +6,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user
 from django.contrib.auth.models import User
+from .models import Scientist
+from .forms import profileForm
 # Create your views here.
 
 def register(request):
@@ -16,6 +18,8 @@ def register(request):
                 username = form.cleaned_data.get('username')
                 raw_password = form.cleaned_data.get('password1')
                 user = authenticate(username=username, password=raw_password)
+                scientist = Scientist(user=user)
+                scientist.save()
                 auth_login(request, user)
                 return redirect('/app')
         else:
@@ -44,4 +48,15 @@ def login(request):
         return render(request, 'accounts/login.html', {'form':form, 'login_form':login_form})
 
 def userpage(request, usr_id):
-        return render(request, 'accounts/user.html',{'userdata':User.objects.values_list()})
+        return render(request, 'accounts/user.html',{'userdata':Scientist.objects.get(user=get_user(request)), 'usr':get_user(request)})
+
+
+def profile(request):
+        if request.method == "POST":
+                form = profileForm(data=request.POST, instance = request.user)
+                if form.is_valid():
+                        form.save()
+                        return redirect("/accounts/user/"+str(get_user(request).id))
+        else:
+                form = profileForm(instance = request.user)
+                return render(request, 'accounts/profile.html',{'userdata':Scientist.objects.get(user=get_user(request)), 'usr':get_user(request), "form":form})

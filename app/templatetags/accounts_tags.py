@@ -14,7 +14,7 @@ register = template.Library()
 def gravatar_url(email, size=40):
   default = "https://example.com/static/images/defaultavatar.jpg"
   email = email.encode('utf-8')
-  return "https://www.gravatar.com/avatar/%s?%s" % (hashlib.md5(email.lower()).hexdigest(), urllib.parse.urlencode({'d':default, 's':str(size)}))
+  return "https://www.gravatar.com/avatar/%s?%s" % (hashlib.md5(email.lower()).hexdigest(), urllib.parse.urlencode({'s':str(size)}))
  
 # return an image tag with the gravatar
 # TEMPLATE USE:  {{ email|gravatar:150 }}
