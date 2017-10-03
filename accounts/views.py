@@ -56,7 +56,7 @@ def profile(request):
                 form = profileForm(data=request.POST, instance = request.user)
                 if form.is_valid():
                         form.save()
-                        return redirect("/accounts/user/"+str(get_user(request).id))
+                        return redirect("/accounts/profile/")
         else:
                 form = profileForm(instance = request.user)
                 return render(request, 'accounts/profile.html',{'userdata':Scientist.objects.get(user=get_user(request)), 'usr':get_user(request), "form":form})
