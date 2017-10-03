@@ -1,0 +1,38 @@
+{% extends "app/base_template.html" %}
+{% block content %}
+{% load accounts_tags %}
+{% load css_tag %}
+<div class = "card col-md-6 mx-auto">
+  <div class="mx-auto mb-2">{{usr.email | gravatar:200 }}</div>
+  <p class = "card-text mx-auto" id="profileUsername">{{usr.username}}</p>
+  <div class = "card-text">
+    <div class = "mx-auto">
+      <form action="." method ="post">
+        {% csrf_token %}
+        <div class="input-group mb-2">
+          <span class="input-group-addon" id ="basic-addon1">@</span>
+          {{form.username | addclass:"form-control" }}
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <label for="id_first_name">{{form.first_name.label}}</label>
+            <div class="input-group">
+              {{form.first_name | addclass:"form-control" }}
+            </div>
+          </div>
+          <div class = "col-sm-6">
+            <label for="id_last_name">{{form.last_name.label}}</label>
+            <div class="input-group">
+              {{form.last_name | addclass:"form-control"}}
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-2">
+          <span class="input-group-addon" id ="basic-addon1">E-Mail</span>
+          {{form.email | addclass:"form-control" }}
+        </div>
+        <button type="submit" class="btn btn-primary col align-self-end ">Update Profile</button>
+      </form>
+    </div>
+  </div>
+  {% endblock %}
