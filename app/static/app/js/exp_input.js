@@ -3,6 +3,11 @@ var templates;
 var data = [[]];
 var col;
 
+var groups;
+
+$.getJSON('/app/groups_list', function(data){groups = data.data})
+
+
 var var_autocomplete;
 new autoComplete({
     selector: '#var-name',
@@ -18,8 +23,7 @@ new autoComplete({
     minChars: 0,
     source: function(term, suggest){
         term = term.toLowerCase();
-        var choices = ['a', 'b'];
-        //~ $.getJSON('/app/groups_list', function(data){choices = data.data})
+        choices = groups;
         var suggestions = [];
         for (i=0;i<choices.length;i++)
             if (~(choices[i][0]+' '+choices[i][1]).toLowerCase().indexOf(term)) suggestions.push(choices[i]);
@@ -69,7 +73,6 @@ $.ajaxSetup({
     }
 });
 
-
 window.onload = get_template($('#template-select').val())
 
 function load_template(template) {
@@ -108,41 +111,7 @@ function parse_data() {
     $("#id_exp_data-json").val(JSON.stringify(parsed));
 };
 
-$('#var-save').click(function() {
-    name = $('#var-name').val();
-    if (name) {
-        headers = hot.getColHeader();
-        headers = headers.filter(function(e) {
-            return e;
-        });
-        
-        if (headers.length === 0){
-            col = []
-        }
-        headers.splice(-1, 0, name);
-    
-        col.splice(-1, 0, {
-            data: name
-        })
-        hot.updateSettings({
-            colHeaders: headers,
-            columns: col
-        });
-    }
-    $('#var-name').val('');
-    $('#var-modal').modal('hide')
-});
-
-$('#add-row').click(function() {
-    console.log("test");
-    hot.alter('insert_row', 1);
-});
-
-$('#template-select').change(function() {
-    get_template($(this).val());
-});
-
-$('#template-save').click(function() {
+function save_template() {
     name = $('#template-name').val();
 
     if (name) {
@@ -155,15 +124,44 @@ $('#template-save').click(function() {
 
     $('#template-name').val('');
     $('#template-modal').modal('hide')
-});
+}
 
-$(function() {
+function add_var() {
+    name = $('#var-name').val();
 
-    var url = "http://localhost:8000/app/upload/";
-
-    $(".nav-link").each(function(){
-        if (url == (this.href)){
-            $(this).addClass("active");
-        }
+    headers = hot.getColHeader();
+    headers = headers.filter(function(e) {
+        return e;
     });
+    
+    if (headers.length === 0){
+        col = []
+    }
+    headers.push(name);
+
+    col.push({data: name
+    })
+    hot.updateSettings({
+        colHeaders: headers,
+        columns: col
+    });
+    
+    $('#var-name').val('');
+    $('#var-modal').modal('hide')
+}
+
+$('#add-row').click(function() {
+    console.log("test");
+    hot.alter('insert_row', 1);
 });
+
+$('#template-select').change(function() {
+    get_template($(this).val());
+});
+
+
+$("input[type=radio]").change(function(){
+        var current = $("#form > .upload_fields");
+        $("#form").append($("#hidden_fields > .upload_fields"));
+        $("#hidden_fields").append(current);
+    });

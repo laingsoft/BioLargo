@@ -41,7 +41,7 @@ def index(request):
     return HttpResponse(template.render(context,request))
     
    
-def upload_csv(request):
+def upload(request):
     user = get_user(request)
     if request.method == 'POST':
         form = csvUpload(request.POST, request.FILES)
@@ -49,16 +49,8 @@ def upload_csv(request):
             data = TextIOWrapper(request.FILES['csv_file'].file, encoding=request.encoding)
             exp_id = read_csv(data)
             return HttpResponseRedirect('/app/upload/success/' + str(exp_id))
-    else:
-        form = csvUpload()
-        
-    return render(request, 'app/upload_csv.html', {'form': form, "usr":user})
             
-    
-def upload_form(request):
-    user = get_user(request)
-    
-    if request.method == 'POST':
+            
         metadata_form = MetadataForm(request.POST, prefix='metadata')
         exp_form = ExperimentDataForm(request.POST, prefix='exp_data')
         
@@ -96,14 +88,18 @@ def upload_form(request):
             
         #~ return some error if form not valid
 
-    metadata_form = MetadataForm(prefix='metadata')
-    exp_form = ExperimentDataForm(prefix='exp_data')
-    templates = Template.objects.all()
-    templates = [t.name for t in templates]
-    
-    context = {'meta_form' : metadata_form, 'exp_form' : exp_form, 'templates':templates, 'usr':get_user(request)}
+    else:
+        metadata_form = MetadataForm(prefix='metadata')
+        exp_form = ExperimentDataForm(prefix='exp_data')
+        templates = Template.objects.all()
+        csv = csvUpload()
+        templates = [t.name for t in templates]
         
-    return render(request, 'app/upload_form.html', context )
+        context = {'meta_form' : metadata_form, 'exp_form' : exp_form, 'templates':templates, 'usr':get_user(request), 'csv_form' : csv}
+            
+            
+        return render(request, 'app/upload_csv.html', context)
+            
         
 def get_template(request):
     if request.method == 'GET':
