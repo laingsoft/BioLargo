@@ -3,13 +3,25 @@ var templates;
 var data = [[]];
 var col;
 
-var xhr;
+var var_autocomplete;
 new autoComplete({
     selector: '#var-name',
     minChars: 1,
     source: function(term, response){
-        try { xhr.abort(); } catch(e){}
-        xhr = $.getJSON('/app/fields-autocomplete', { q: term }, function(data){ response(data.data); });
+        try { var_autocomplete.abort(); } catch(e){}
+        var_autocomplete = $.getJSON('/app/fields-autocomplete', { q: term }, function(data){ response(data.data); });
+    }
+});
+
+
+
+var group_autocomplete;
+new autoComplete({
+    selector: '#id_matadata-group',
+    minChars: 1,
+    source: function(term, response){
+        try { group_autocomplete.abort(); } catch(e){}
+        group_autocomplete = $.getJSON('/app/groups-autocomplete', { q: term }, function(data){ response(data.data); });
     }
 });
 
