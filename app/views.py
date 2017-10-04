@@ -31,8 +31,6 @@ def index(request):
     template = loader.get_template('app/index.html')
     #experiments = [[1,2,3,4,5,6,7, 8, 9]]
     experiments = Experiment.objects.values_list()
-   
-    
     
     context = {"experiments":experiments,
                "header_list":HEADER_LIST,
@@ -52,13 +50,13 @@ def upload(request):
         
         if groups_tags.is_valid():
             g = groups_tags.cleaned_data.get('group')
-            g = Group.objects.get_or_create(name=g)[0]
+            g = Group.objects.get_or_create(name__iexact=g)[0]
             
             t = groups_tags.cleaned_data.get('tags')
             t = t.split(',')
-    
+
             for tag in t:
-                tags.append(Tag.objects.get_or_create()[0])
+                tags.append(Tag.objects.get_or_create(name__iexact=tag)[0])
             
         else:
             return HttpResponseRedirect('/app/upload/error/')
@@ -159,7 +157,7 @@ def save_template(request):
                 
             f = []
             for field in fields:
-                f.append(Fields.objects.get_or_create(name=field)[0])
+                f.append(Fields.objects.get_or_create(name__iexact=field)[0])
             
             template.save()
             

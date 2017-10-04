@@ -1,54 +1,9 @@
 var container = document.getElementById('data-table');
+var data = [['']];
 var templates;
-var data = [[]];
 var col;
-
-var groups;
-
-$.getJSON('/app/groups_list', function(data){groups = data.data})
-
-
-var var_autocomplete;
-new autoComplete({
-    selector: '#var-name',
-    minChars: 1,
-    source: function(term, response){
-        try { var_autocomplete.abort(); } catch(e){}
-        var_autocomplete = $.getJSON('/app/fields-autocomplete', { q: term }, function(data){ response(data.data); });
-    }
-});
-
-new autoComplete({
-    selector: '#id_metadata-group',
-    minChars: 0,
-    source: function(term, suggest){
-        term = term.toLowerCase();
-        choices = groups;
-        var suggestions = [];
-        for (i=0;i<choices.length;i++)
-            if (~(choices[i][0]+' '+choices[i][1]).toLowerCase().indexOf(term)) suggestions.push(choices[i]);
-        suggest(suggestions);
-    },
-    renderItem: function (item, search){
-        return '<div class="autocomplete-suggestion" data-group-name = "' + item[0]+'" ">'+item[0]+'</div>';
-
-    },
-     onSelect: function(e, term, item){
-        $('#id_metadata-group').val(item.getAttribute('data-group-name'));
-    }
-});
-
-
-var hot = new Handsontable(container, {
-    data: data,
-    rowHeaders: true,
-    colHeaders: true,
-    contextMenu: true,
-    preventOverflow: 'horizontal',
-    manualColumnMove: true,
-    manualRowMove: true,
-});
-
+var hot;
+var csrftoken;
 
 function getCookie(name) {
     var cookieValue = null;
@@ -56,7 +11,7 @@ function getCookie(name) {
         var cookies = document.cookie.split(';');
         for (var i = 0; i < cookies.length; i++) {
             var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
+
             if (cookie.substring(0, name.length + 1) === (name + '=')) {
                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                 break;
@@ -65,15 +20,6 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-var csrftoken = getCookie('csrftoken');
-
-$.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-    }
-});
-
-window.onload = get_template($('#template-select').val())
 
 function load_template(template) {
     fields = template.fields;
@@ -150,17 +96,41 @@ function add_var() {
     $('#var-modal').modal('hide')
 }
 
-$('#add-row').click(function() {
+
+$(document).ready(function(){
+    
+    hot = new Handsontable(container, {
+    data: data,
+    rowHeaders: true,
+    colHeaders: true,
+    contextMenu: true,
+    preventOverflow: 'horizontal',
+    manualColumnMove: true,
+    manualRowMove: true,
+    });
+    
+    csrftoken = getCookie('csrftoken');
+    $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    });
+    
+    get_template($('#template-select').val())
+    
+    $('#add-row').click(function() {
     hot.alter('insert_row', 1);
-});
+    });
 
-$('#template-select').change(function() {
+    $('#template-select').change(function() {
     get_template($(this).val());
-});
+    });
 
 
-$("input[type=radio]").change(function(){
+    $("input[type=radio]").change(function(){
         var current = $("#form > .upload_fields");
         $("#form").append($("#hidden_fields > .upload_fields"));
         $("#hidden_fields").append(current);
     });
+})
+
