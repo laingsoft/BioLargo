@@ -108,7 +108,7 @@ function parse_data() {
         parsed.push(d);
     }
 
-    $("#id_exp_data-json").val(JSON.stringify(parsed));
+    $("#id_form-json").val(JSON.stringify(parsed));
 };
 
 function save_template() {
@@ -151,7 +151,6 @@ function add_var() {
 }
 
 $('#add-row').click(function() {
-    console.log("test");
     hot.alter('insert_row', 1);
 });
 

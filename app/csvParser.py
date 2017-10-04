@@ -18,7 +18,7 @@ FIELDS = ["Person",
 # inputs: a filename
 # returns: experiment id
 
-def read_csv(csv_file):
+def read_csv(csv_file, g):
     reader = csv.DictReader(csv_file)
 	
     metadata = next(reader)
@@ -52,7 +52,8 @@ def read_csv(csv_file):
     num_chambers = metadata[FIELDS[3]],
     #date = date_parser(metadata[FIELDS[4]]),
     removal_target = metadata[FIELDS[5]],
-    reactor_age = metadata[FIELDS[6]] if isinstance(metadata[FIELDS[6]], float) else 0)
+    reactor_age = metadata[FIELDS[6]] if is_float(metadata[FIELDS[6]]) else 0,
+    group = g)
 	
     exp.save()
 	
@@ -60,7 +61,7 @@ def read_csv(csv_file):
         expData = ExperimentData(experiment = exp, experimentData = json.dumps(line))
         expData.save()
         
-    return exp.id
+    return exp
         
 	
 
@@ -103,3 +104,12 @@ def date_parser(dateString):
 	dateFormat = "%d{0}%m{0}%Y".format(delimiter)
 	
 	return datetime.datetime.strptime(dateString, dateFormat).date()
+
+
+def is_float(val):
+    try:
+        float(val)
+    except ValueError:
+        return False
+        
+    return True
