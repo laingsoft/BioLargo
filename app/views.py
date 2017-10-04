@@ -2,14 +2,15 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import JsonResponse
 from django.template import loader
-from .forms import csvUpload
 from .csvParser import read_csv
 from .models import Experiment, ExperimentData
+from .models import Template, Fields
+from .models import Group
 from io import TextIOWrapper
 from .forms import MetadataForm
 from .forms import ExperimentDataForm
-import json
-from .models import Template, Fields
+from .forms import csvUpload
+
 from django.contrib.auth import get_user
 import json, csv
 
@@ -40,7 +41,7 @@ def index(request):
     return HttpResponse(template.render(context,request))
     
    
-def upload_csv(request):
+def upload(request):
     user = get_user(request)
     if request.method == 'POST':
         form = csvUpload(request.POST, request.FILES)
@@ -48,16 +49,8 @@ def upload_csv(request):
             data = TextIOWrapper(request.FILES['csv_file'].file, encoding=request.encoding)
             exp_id = read_csv(data)
             return HttpResponseRedirect('/app/upload/success/' + str(exp_id))
-    else:
-        form = csvUpload()
-        
-    return render(request, 'app/upload_csv.html', {'form': form, "usr":user})
             
-    
-def upload_form(request):
-    user = get_user(request)
-    
-    if request.method == 'POST':
+            
         metadata_form = MetadataForm(request.POST, prefix='metadata')
         exp_form = ExperimentDataForm(request.POST, prefix='exp_data')
         
@@ -95,14 +88,18 @@ def upload_form(request):
             
         #~ return some error if form not valid
 
-    metadata_form = MetadataForm(prefix='metadata')
-    exp_form = ExperimentDataForm(prefix='exp_data')
-    templates = Template.objects.all()
-    templates = [t.name for t in templates]
-    
-    context = {'meta_form' : metadata_form, 'exp_form' : exp_form, 'templates':templates, 'usr':get_user(request)}
+    else:
+        metadata_form = MetadataForm(prefix='metadata')
+        exp_form = ExperimentDataForm(prefix='exp_data')
+        templates = Template.objects.all()
+        csv = csvUpload()
+        templates = [t.name for t in templates]
         
-    return render(request, 'app/upload_form.html', context )
+        context = {'meta_form' : metadata_form, 'exp_form' : exp_form, 'templates':templates, 'usr':get_user(request), 'csv_form' : csv}
+            
+            
+        return render(request, 'app/upload_csv.html', context)
+            
         
 def get_template(request):
     if request.method == 'GET':
@@ -176,9 +173,9 @@ def fields_autocomplete(request):
         return JsonResponse({'data' : [str(item) for item in result]})
     
 def groups_list(request):
-    result = [str(i) for i in Group.objects.all()]
-    
-    return JsonResponse({'data' : result})
+    if request.method == "GET":
+        result = [str(i) for i in Group.objects.all()]
+        return JsonResponse({'data' : result})
 
 def get_csv(request, exp_id, header=0):
     response = HttpResponse(content_type='text/csv')
