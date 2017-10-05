@@ -13,6 +13,7 @@ from .forms import csvUpload
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
 import json, csv
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -31,6 +32,7 @@ def index(request):
     template = loader.get_template('app/index.html')
     #experiments = [[1,2,3,4,5,6,7, 8, 9]]
     experiments = Experiment.objects.values_list()
+    
    
     
     
