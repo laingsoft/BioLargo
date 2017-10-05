@@ -21,6 +21,12 @@ class Experiment(models.Model):
     removal_target = models.CharField("Removal Target", max_length = 255, default = 0)
     reactor_age = models.FloatField("Age of Reactor", default = 0)
     group = models.ForeignKey(Group)
+
+    def __str__(self):
+        return ("Experiment| Group: {0}, Chambers: {1}, Target: {2}".format(str(self.group), str(self.num_chambers),str(self.removal_target)))
+
+    def __repr__(self):
+        return ("Experiment| Group: {0}, Chambers: {1}, Target: {2}".format(str(self.group), str(self.num_chambers),str(self.removal_target)))
      	
 class ExperimentData(models.Model):
     experiment = models.ForeignKey(Experiment)

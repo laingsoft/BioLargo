@@ -14,7 +14,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import GroupsTags
 from django.contrib.auth import get_user
 import json, csv
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 
@@ -31,8 +31,17 @@ def index(request):
     '''
     user = get_user(request)
     template = loader.get_template('app/index.html')
+    exp_page = request.GET.get('page')
     #experiments = [[1,2,3,4,5,6,7, 8, 9]]
-    experiments = Experiment.objects.values_list()
+    experiment_page = Paginator(Experiment.objects.values_list(), 10)
+
+    try:
+        experiments = experiment_page.page(exp_page)
+    except PageNotAnInteger:
+        experiments = experiment_page.page(1)
+    except EmptyPage:
+        experiments = experiment_page(1)
+
     
     context = {"experiments":experiments,
                "header_list":HEADER_LIST,
