@@ -49,14 +49,14 @@ def upload(request):
         tags = []
         
         if groups_tags.is_valid():
+            
             g = groups_tags.cleaned_data.get('group')
-            g = Group.objects.get_or_create(name__iexact=g)[0]
+            g = Group.objects.get_or_create(name=g)[0]
             
             t = groups_tags.cleaned_data.get('tags')
-            t = t.split(',')
-
+            
             for tag in t:
-                tags.append(Tag.objects.get_or_create(name__iexact=tag)[0])
+                tags.append(Tag.objects.get_or_create(name=tag)[0])
             
         else:
             return HttpResponseRedirect('/app/upload/error/')
