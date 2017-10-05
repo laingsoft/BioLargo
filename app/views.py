@@ -6,11 +6,12 @@ from .csvParser import read_csv
 from .models import Experiment, ExperimentData
 from .models import Template, Fields
 from .models import Group
+from .models import Tag, ExperimentTag
 from io import TextIOWrapper
-from .forms import MetadataForm
-from .forms import ExperimentDataForm
+from .forms import uploadForm
 from .forms import csvUpload
 from django.contrib.auth.decorators import login_required
+from .forms import GroupsTags
 from django.contrib.auth import get_user
 import json, csv
 from django.core.paginator import Paginator
@@ -33,9 +34,6 @@ def index(request):
     #experiments = [[1,2,3,4,5,6,7, 8, 9]]
     experiments = Experiment.objects.values_list()
     
-   
-    
-    
     context = {"experiments":experiments,
                "header_list":HEADER_LIST,
                "usr":user,
@@ -46,31 +44,53 @@ def index(request):
 def upload(request):
     user = get_user(request)
     if request.method == 'POST':
-        form = csvUpload(request.POST, request.FILES)
-        if form.is_valid():
-            data = TextIOWrapper(request.FILES['csv_file'].file, encoding=request.encoding)
-            exp_id = read_csv(data)
-            return HttpResponseRedirect('/app/upload/success/' + str(exp_id))
-            
-            
-        metadata_form = MetadataForm(request.POST, prefix='metadata')
-        exp_form = ExperimentDataForm(request.POST, prefix='exp_data')
         
-        if metadata_form.is_valid() and exp_form.is_valid():
+        groups_tags = GroupsTags(request.POST, prefix="tags")
+
+        g = None
+        tags = []
+        
+        if groups_tags.is_valid():
+            g = groups_tags.cleaned_data.get('group')
+            g = Group.objects.get_or_create(name__iexact=g)[0]
+            
+            t = groups_tags.cleaned_data.get('tags')
+            t = t.split(',')
+
+            for tag in t:
+                tags.append(Tag.objects.get_or_create(name__iexact=tag)[0])
+            
+        else:
+            return HttpResponseRedirect('/app/upload/error/')
+        
+        csv_file = csvUpload(request.POST, request.FILES, prefix="csv")
+
+        if csv_file.is_valid():
+            data = TextIOWrapper(request.FILES['csv-csv_file'].file, encoding=request.encoding)
+            exp = read_csv(data, g)
+            
+            for tag in tags:
+                ExperimentTag(exp_id = exp, tag_id = tag).save()
+    
+            return HttpResponseRedirect('/app/upload/success/' + str(exp.id))
+            
+            
+        exp_form = uploadForm(request.POST, prefix='form')
+        
+        if exp_form.is_valid():
             data = json.loads(exp_form.cleaned_data.get('json'))
             
-            # check if data is empty and remove empty rows 
             temp = []
             for row in data:
                 if any(row.values()):
                     temp.append(row)
             if len(temp) == 0:
-                return HttpResponseRedirect('/app/upload/error/')
+                return HttpResponse(status="400")
                 
             data = temp
             
-            metadata = metadata_form.save(commit=False)
-            # add missing fields to metadata here
+            metadata = exp_form.save(commit=False)
+            metadata.group = g
             metadata.save()
             for row in data:
                 parsed = {}
@@ -85,22 +105,29 @@ def upload(request):
                 data = ExperimentData(experiment=metadata, 
                 experimentData=exp_data)
                 data.save()
+                
+            for tag in tags:
+                ExperimentTag(exp_id = metadata, tag_id = tag)
         
             return HttpResponseRedirect('/app/upload/success/' + str(metadata.id))
             
-        #~ return some error if form not valid
+        return HttpResponse('Unknown Error')
 
     else:
-        metadata_form = MetadataForm(prefix='metadata')
-        exp_form = ExperimentDataForm(prefix='exp_data')
+
         templates = Template.objects.all()
-        csv = csvUpload()
+        csv = csvUpload(prefix = 'csv')
+        groups_tags = GroupsTags(prefix = 'tags')
+        upload_form = uploadForm(prefix = 'form')
         templates = [t.name for t in templates]
         
-        context = {'meta_form' : metadata_form, 'exp_form' : exp_form, 'templates':templates, 'usr':get_user(request), 'csv_form' : csv}
+        context = {'upload_form' : upload_form, 
+        'templates':templates, 
+        'usr':get_user(request), 
+        'csv_form' : csv,
+        'groups_tags' : groups_tags }
             
-            
-        return render(request, 'app/upload_csv.html', context)
+        return render(request, 'app/upload.html', context)
             
 @login_required      
 def get_template(request):
@@ -133,11 +160,7 @@ def save_template(request):
                 
             f = []
             for field in fields:
-                f.append(Fields.objects.get_or_create(name=field)[0])
-                
-                
-            #~ TODO: add a check to see if the template already exists with a different name if it's not too resource intensive
-            
+                f.append(Fields.objects.get_or_create(name__iexact=field)[0])
             
             template.save()
             
