@@ -10,9 +10,11 @@ from .models import Tag, ExperimentTag
 from io import TextIOWrapper
 from .forms import uploadForm
 from .forms import csvUpload
+from django.contrib.auth.decorators import login_required
 from .forms import GroupsTags
 from django.contrib.auth import get_user
 import json, csv
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 
@@ -20,7 +22,7 @@ import json, csv
 DEFAULT_TEMPLATE = "Disinfection(bacteria)"
 HEADER_LIST = ["ID", "Chambers","Diameter","Length","Target","Age (mL)"]
 
-
+@login_required
 def index(request):
     '''
     Index should be the main landing page for the application. It will show
@@ -29,8 +31,17 @@ def index(request):
     '''
     user = get_user(request)
     template = loader.get_template('app/index.html')
+    exp_page = request.GET.get('page')
     #experiments = [[1,2,3,4,5,6,7, 8, 9]]
-    experiments = Experiment.objects.values_list()
+    experiment_page = Paginator(Experiment.objects.values_list(), 10)
+
+    try:
+        experiments = experiment_page.page(exp_page)
+    except PageNotAnInteger:
+        experiments = experiment_page.page(1)
+    except EmptyPage:
+        experiments = experiment_page(1)
+
     
     context = {"experiments":experiments,
                "header_list":HEADER_LIST,
@@ -38,7 +49,7 @@ def index(request):
     }
     return HttpResponse(template.render(context,request))
     
-   
+@login_required
 def upload(request):
     user = get_user(request)
     if request.method == 'POST':
@@ -127,7 +138,7 @@ def upload(request):
             
         return render(request, 'app/upload.html', context)
             
-        
+@login_required      
 def get_template(request):
     if request.method == 'GET':
         template_name = request.GET.get('template', None)
@@ -141,7 +152,8 @@ def get_template(request):
             fields = ['']
             
     return JsonResponse({'fields' : fields})
-    
+
+@login_required
 def save_template(request):
     if request.method == "POST":
         data = json.loads(request.body)
@@ -172,34 +184,37 @@ def save_template(request):
         return JsonResponse({'success' : False, 'error': "Error saving template"})
             
 #~ TODO: update to return a 404 if exp_id doesn't exist
+@login_required
 def upload_success(request, exp_id):
     return render(request, 'app/upload_success.html', {'exp_id': exp_id})
 
+@login_required
 def experiment(request, exp_id):
     user = get_user(request)
     this_experiment = Experiment.objects.values_list().filter(id=exp_id)
     return render(request,"app/experiment.html", {"this_experiment":this_experiment, "usr":user, "header_list": HEADER_LIST})
     
-
+@login_required
 def experiment_json(request, exp_id):
     data = ExperimentData.objects.filter(experiment=exp_id)
     newval = {}
     newval = {k: json.loads(v.experimentData) for k,v in enumerate(data) }
     return JsonResponse(newval)
 
-
+@login_required
 def fields_autocomplete(request):
     if request.method == "GET":
         q = request.GET.get("q")
         result = Fields.objects.all().filter(name__icontains = q)
         
         return JsonResponse({'data' : [str(item) for item in result]})
-    
+@login_required
 def groups_list(request):
     if request.method == "GET":
         result = [str(i) for i in Group.objects.all()]
         return JsonResponse({'data' : result})
 
+@login_required
 def get_csv(request, exp_id, header=0):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="'+exp_id+'.csv"'
