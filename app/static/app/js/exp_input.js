@@ -156,13 +156,34 @@ $(document).ready(function(){
         });
     
     $('#var-name').selectize({
-        preload: true,
+        valueField: 'value',
+        labelField: 'key',
+        searchField: 'value',
         plugins: ["restore_on_backspace"],
-        placeholder: 'Enter Experiment Group',
+        placeholder: 'Enter variable name',
         create: true,
         createOnBlur: true,
         maxItems: 1,
-        persist: false
+        persist: false,
+        options: [],
+        load: function(query, callback) {
+            if (!query.length) return callback();
+            $.ajax({
+            url: '/app/fields-autocomplete',
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                q: query
+            },
+            error: function() {
+                callback();
+            },
+            success: function(res) {
+                callback(res.data);
+            }
         });
+            
+        }
+    });
 })
 

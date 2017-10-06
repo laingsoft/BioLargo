@@ -25,14 +25,12 @@ class ModelSuggestField(forms.ModelChoiceField):
                     value.save()
                 else: 
                     raise ValidationError(self.error_messages['invalid_choice'], code='invalid_choice')
-            print(value)
             return value
 
 class ModelMultipleSuggestField(forms.ModelMultipleChoiceField):
     def __init__(self, queryset, model, to_field_name=None):
         super(ModelMultipleSuggestField, self).__init__(queryset, to_field_name=to_field_name)
         self.model = model
-        
         
     def clean(self, value):
         if self.required and not value:
@@ -44,11 +42,11 @@ class ModelMultipleSuggestField(forms.ModelMultipleChoiceField):
         key = self.to_field_name or 'pk'
         for pk in value:
             try:
-                self.queryset.filter(**{key: pk})
+                self.queryset.get(**{key: pk})
             except (ValueError, self.queryset.model.DoesNotExist):
                 obj = self.model(name = pk)
                 obj.save()
-                
+
         qs = self.queryset.filter(**{'%s__in' % key: value})
         pks = set([force_text(getattr(o, key)) for o in qs])
         for val in value:
@@ -67,7 +65,7 @@ class uploadForm(forms.ModelForm):
 
     class Meta:
         model = Experiment
-        exclude = ['group']
+        exclude = ['group', 'tags']
 
 
 class GroupsTags(forms.Form):

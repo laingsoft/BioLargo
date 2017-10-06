@@ -9,6 +9,12 @@ class Group(models.Model):
     
     def __str__(self):
         return self.name
+        
+        
+class Tag(models.Model):
+    name = models.CharField(max_length = 255)
+    def __str__(self):
+        return self.name
 
 class Experiment(models.Model):
     #~ scientist = models.ForeignKey(Scientist)
@@ -21,6 +27,8 @@ class Experiment(models.Model):
     removal_target = models.CharField("Removal Target", max_length = 255, default = 0)
     reactor_age = models.FloatField("Age of Reactor", default = 0)
     group = models.ForeignKey(Group)
+    tags = models.ManyToManyField(Tag)
+
      	
 class ExperimentData(models.Model):
     experiment = models.ForeignKey(Experiment)
@@ -41,13 +49,6 @@ class Template(models.Model):
     def __str__(self):
         return self.name
     
-class Tag(models.Model):
-    name = models.CharField(max_length = 255)
-    def __str__(self):
-        return self.name
-    
-class ExperimentTag(models.Model):
-    exp_id = models.ForeignKey(Experiment)
-    tag_id = models.ForeignKey(Tag)
 
+    
     
