@@ -9,8 +9,8 @@ from django.utils.encoding import force_text
 # custom choice fields for suggesting models/
 
 class ModelSuggestField(forms.ModelChoiceField):
-    def __init__(self, queryset, model, to_field_name=None):
-        super(ModelSuggestField, self).__init__(queryset, to_field_name=to_field_name)
+    def __init__(self, queryset, model, to_field_name=None, required=True):
+        super(ModelSuggestField, self).__init__(queryset, to_field_name=to_field_name, required=required)
         self.model = model
 
     def to_python(self, value):
@@ -28,8 +28,8 @@ class ModelSuggestField(forms.ModelChoiceField):
             return value
 
 class ModelMultipleSuggestField(forms.ModelMultipleChoiceField):
-    def __init__(self, queryset, model, to_field_name=None):
-        super(ModelMultipleSuggestField, self).__init__(queryset, to_field_name=to_field_name)
+    def __init__(self, queryset, model, to_field_name=None, required=True):
+        super(ModelMultipleSuggestField, self).__init__(queryset, to_field_name=to_field_name, required=required)
         self.model = model
         
     def clean(self, value):
@@ -70,4 +70,4 @@ class uploadForm(forms.ModelForm):
 
 class GroupsTags(forms.Form):
     group = ModelSuggestField(Group.objects.all(), Group, to_field_name="name")
-    tags = ModelMultipleSuggestField(Tag.objects.all(), Tag, to_field_name="name")
+    tags = ModelMultipleSuggestField(Tag.objects.all(), Tag, to_field_name="name", required=False)

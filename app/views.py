@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import JsonResponse
 from django.template import loader
@@ -174,8 +174,8 @@ def save_template(request):
             
         return JsonResponse({'success' : False, 'error': "Error saving template"})
             
-#~ TODO: update to return a 404 if exp_id doesn't exist
 def upload_success(request, exp_id):
+    get_object_or_404(Experiment, id=exp_id)
     return render(request, 'app/upload_success.html', {'exp_id': exp_id})
 
 def experiment(request, exp_id):
