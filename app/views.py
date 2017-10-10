@@ -6,7 +6,7 @@ from .csvParser import read_csv
 from .models import Experiment, ExperimentData
 from .models import Template, Fields
 from .models import Group
-from .models import Tag, ExperimentTag
+from .models import Tag
 from io import TextIOWrapper
 from .forms import uploadForm
 from .forms import csvUpload
@@ -78,8 +78,8 @@ def upload(request):
             data = TextIOWrapper(request.FILES['csv-csv_file'].file, encoding=request.encoding)
             exp = read_csv(data, g)
             
-            for tag in tags:
-                ExperimentTag(exp_id = exp, tag_id = tag).save()
+            exp.tags.add(*tags)
+            exp.save()
     
             return HttpResponseRedirect('/app/upload/success/' + str(exp.id))
             
@@ -101,6 +101,9 @@ def upload(request):
             metadata = exp_form.save(commit=False)
             metadata.group = g
             metadata.save()
+            metadata.tags.add(*tags)
+            metadata.save()
+            
             for row in data:
                 parsed = {}
                 for item in row:
@@ -114,9 +117,9 @@ def upload(request):
                 data = ExperimentData(experiment=metadata, 
                 experimentData=exp_data)
                 data.save()
-                
-            for tag in tags:
-                ExperimentTag(exp_id = metadata, tag_id = tag)
+            
+            
+            
         
             return HttpResponseRedirect('/app/upload/success/' + str(metadata.id))
             
@@ -206,13 +209,12 @@ def fields_autocomplete(request):
     if request.method == "GET":
         q = request.GET.get("q")
         result = Fields.objects.all().filter(name__icontains = q)
-        
         return JsonResponse({'data' : [str(item) for item in result]})
 @login_required
 def groups_list(request):
     if request.method == "GET":
         result = [str(i) for i in Group.objects.all()]
-        return JsonResponse({'data' : result})
+        return JsonResponse({'data' : [{'key':str(item), 'value':str(item)} for item in result]})
 
 @login_required
 def get_csv(request, exp_id, header=0):
