@@ -1,0 +1,9 @@
+#yaxis{
+    border-right: solid 1px;
+}
+
+#main_graph{
+    border-bottom: solid 1px;
+}
+#toolbox{
+    border-left: solid 1px;

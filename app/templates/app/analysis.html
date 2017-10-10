@@ -1,0 +1,30 @@
+{% extends 'app/base_template.html' %}
+{% load static %}
+{% block header %}
+<link rel="stylesheet" type="text/css" href="{% static 'app/analysis.css' %}"/>
+{% endblock %}
+
+{% block content %}
+
+<div class = "row">
+  <div class = "col-md-1 col-sm-1" id = "yaxis">
+    <p>aaaaaaa</p>
+  </div>
+  <div class = "col-md-7 col-sm-7" id = "main_graph">
+    <p>aaaaaaa</p>
+  </div>
+  <div class = "col-md-3 col-sm-3" id ="toolbox">
+    <p>aaaaaaa</p>
+  </div>
+</div>
+<div class="row">
+  <div class = "col-md-12 col-sm-12" id="x axis">
+    <p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+  </div>
+</div>
+
+
+
+<script src = "{% static '/app/js/analysis.js' %}"></script>
+
+{% endblock %}

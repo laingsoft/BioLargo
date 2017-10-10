@@ -16,3 +16,5 @@ class Customer(models.Model):
         plan = models.CharField(max_length=100)
         userObject = models.OneToOneField(User)
     
+        def __repr__(self):
+                return (self.userObject.username)

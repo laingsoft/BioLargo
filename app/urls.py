@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^save_template', views.save_template, name='save_template'),
     url(r'^experiment/csv/(?P<exp_id>[0-9]+)', views.get_csv, name='get_csv'),
     url(r'^fields-autocomplete', views.fields_autocomplete, name='field_autocomplete'),
+    url(r'^analysis', views.analysis_page, name = 'analysis_page'),
     ]

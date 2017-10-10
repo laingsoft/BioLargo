@@ -21,7 +21,11 @@ def register(request):
                 scientist = Scientist(user=user)
                 scientist.save()
                 auth_login(request, user)
-                return redirect('/app')
+                print("got here")
+                return HttpResponseRedirect('/app')
+            else:
+                HttpResponseRedirect('/accounts/login')
+                
         else:
             form = UserCreationForm()
             login_form = AuthenticationForm()
@@ -61,3 +65,11 @@ def profile(request):
         else:
                 form = profileForm(instance = request.user)
                 return render(request, 'accounts/profile.html',{'userdata':Scientist.objects.get(user=get_user(request)), 'usr':get_user(request), "form":form})
+
+
+
+def userlist(request):
+        usr = get_user(request)
+        usrlist = User.objects.all()
+
+        return render(request, 'accounts/users.html', {'user_list':usrlist , 'usr':usr})
