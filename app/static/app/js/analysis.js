@@ -7,17 +7,29 @@ function allowDrop(ev) {
 }
 
 function drag(ev) {
-    console.log(ev)
     ev.dataTransfer.setData("text", ev.target.id);
 }
 
-function drop(ev) {
+function drop(ev, el) {
+    ev.preventDefault()
     var data = ev.dataTransfer.getData("text");
-    console.log(data)
-    ev.target.appendChild(document.getElementById(data))
-    ev.preventDefault();
+    el.appendChild(document.getElementById(data))
     
 }
+
+//Filters the tags by Id. So they are searchable. 
+$('#tagFilter').on('change keyup paste',function(){
+    var value = $('#tagFilter').val();
+    if (value == ''){
+        $('.tag').show();
+        $('.group').show();
+    }else{
+        $('.tag').hide();
+        $('.group').hide();
+    }
+    $('div[id*="'+value+'" i]').show();
+    
+})
 
 $(document).ready(function(){
     //TODO: Choose Experiment Set
@@ -25,8 +37,9 @@ $(document).ready(function(){
     //TODO: Initialize the X and Y axis with potential columns
     //TODO: Download Session
     //TODO: Restore Session from file
-
+   
 
 
 
 })
+

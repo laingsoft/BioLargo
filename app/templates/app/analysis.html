@@ -11,24 +11,24 @@
     <p>Y-Axis Area</p>
   </div>
   <div class = "d-flex col-md-7 col-sm-7" id = "main_graph">
-    <div class="d-flex align-self-end col-md-12 sol-sm-12" id="experiment_selector" ondrop="drop(event)" ondragover="allowDrop(event)">
+    <div class="d-flex align-self-end col-md-12 sol-sm-12" id="experiment_selector" ondrop="drop(event, this)" ondragover="allowDrop(event)">
       <p>Selecting Data From: </p>
       <div></div>
     </div>
   </div>
   <div class = "col-md-3 col-sm-3" id ="toolbox">
-    <input class = "form-control" placeholder="Search Tags or Group" type="text">
+    <input class = "form-control" placeholder="Search Tags or Group" type="text" id="tagFilter">
     <div class = "row mt-2">
-      <div class = "col-sm-6" id = "tags" ondrop="drop(event)" ondragover="allowDrop(event)">
+      <div class = "col-sm-6" id = "tags" ondrop="drop(event, this)" ondragover="allowDrop(event)">
         <p>Tags</p>
         {% for i in tags %}
-        <div id = {{i}} draggable="true" ondragstart="drag(event)" class = "px-1"><span class = "badge badge-primary" >{{i}}</span></div>
+        <div id = {{i}} draggable="true" ondragstart="drag(event)" class = "px-1 tag"><span class = "badge badge-primary" >{{i}}</span></div>
         {% endfor %}
       </div>
-      <div class = "sol-sm-6" id="groups" ondrop="drop(event)" ondragover="allowDrop(event)">
+      <div class = "sol-sm-6" id="groups" ondrop="drop(event, this)" ondragover="allowDrop(event)">
         <p>Groups</p>
         {% for i in groups %}
-        <span class = "badge badge-info" draggable="true" ondragstart="drag(event)"> {{i}}</span>
+        <div id = {{i}} draggable="true" ondragstart="drag(event)" ondragover="none" class = "px-1 group"><span class = "badge badge-success" >{{i}}</span></div>
         {% endfor %}
       </div>
     </div>
