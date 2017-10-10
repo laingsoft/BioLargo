@@ -1,0 +1,27 @@
+{% extends "app/base_template.html" %}
+{% block content %}
+{% load accounts_tags %}
+{% load static %}
+<div class="row">
+  {% for userdata in user_list %}
+  <div class = "card col-md-3 mb-2 ml-2">
+    <div class="mx-auto mb-2 mt-2">{{userdata.email | gravatar:150 }}</div>
+    <p class = "card-text mx-auto" id="profileUsername"><a href="accounts/user/{{userdata.id}}">{{userdata.username}}</a></p>
+    <div class = "card-text">
+      <div class="row mb-2">
+        <div class="col text-center">
+          <img src="{% static 'accounts/svg/person.svg' %}">
+          {{userdata.first_name}}
+          {{userdata.last_name}}
+        </div>
+      </div>
+      <div class="col text-center">
+        <img src="{% static 'accounts/svg/inbox.svg' %}">
+        {{userdata.email}}
+      </div>
+      
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
