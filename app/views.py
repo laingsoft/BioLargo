@@ -231,4 +231,6 @@ def get_csv(request, exp_id, header=0):
     return response
 
 def analysis_page(request):
-    return render(request, "app/analysis.html", {"usr":get_user(request)})
+    all_tags = Tag.objects.all()
+    all_groups = Group.objects.all()
+    return render(request, "app/analysis.html", {"usr":get_user(request), "tags":all_tags, "groups":all_groups})
