@@ -229,3 +229,6 @@ def get_csv(request, exp_id, header=0):
     writer.writeheader()
     [writer.writerow(i) for i in newdata]
     return response
+
+def analysis_page(request):
+    return render(request, "app/analysis.html", {"usr":get_user(request)})
