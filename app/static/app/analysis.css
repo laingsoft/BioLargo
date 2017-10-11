@@ -1,5 +1,6 @@
 #yaxis{
     border-right: solid 1px;
+    border-bottom: solid 1px;
 }
 
 #main_graph{
@@ -7,3 +8,10 @@
 }
 #toolbox{
     border-left: solid 1px;
+}
+
+#experiment_selector{
+    border-top: solid 1px;
+
+}
+        
