@@ -16,11 +16,11 @@ To build and run, use:
 * Homepage: http://selectize.github.io/selectize.js/
 * Licence: [Apache 2.0](https://github.com/selectize/selectize.js/blob/master/LICENSE)
 
-## Chart.js
+### Chart.js
 * Homepage: http://www.chartjs.org/
 * Licence: [MIT](https://github.com/chartjs/Chart.js/blob/master/LICENSE.md)
 
-## Django
+### Django
 * Homepage: https://www.djangoproject.com/
 * Licence: [BSD] (https://github.com/django/django/blob/master/LICENSE)
 
