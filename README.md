@@ -22,5 +22,5 @@ To build and run, use:
 
 ### Django
 * Homepage: https://www.djangoproject.com/
-* Licence: [BSD] (https://github.com/django/django/blob/master/LICENSE)
+* Licence: [BSD](https://github.com/django/django/blob/master/LICENSE)
 
