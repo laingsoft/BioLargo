@@ -7,16 +7,15 @@ function recv_socket(e){
     console.log(columns);
     clear_axis();
     for (var i = 0; i< columns.length; i++){
-        $("#yaxis").append("<li><span class = 'badge badge-secondary'>"+columns[i]+"<span class='ml-2'><input type='checkbox'></span></span></li>");
-        $("#ax").append("<li class = 'list-inline-item'><span class = 'badge badge-secondary'>"+columns[i]+"<span class='ml-2'><input type='checkbox'></span></span></li>");
+       // $("#yaxis").append("<li id='"+columns[i]+"'><span class = 'badge badge-secondary ycol'>"+columns[i]+"<span class='ml-2'><input type='checkbox'></span></span></li>");
+        $("#listcol").append("<li id='"+columns[i]+"' class = 'list-inline-item colitem' draggable='true' ondragstart='drag(event)'><span class = 'badge badge-secondary'>"+columns[i]+"</span></li>");
     }
     
 
 }
 
 function clear_axis(){
-    $("#yaxis").empty();
-    $("#ax").empty();
+    $("#listcol").empty();
 
 }
 
@@ -43,7 +42,10 @@ function drag(ev) {
 function drop(ev, el) {
     ev.preventDefault()
     var data = ev.dataTransfer.getData("text");
+    //var nodecopy = document.getElementById(data).cloneNode(true);
+    //nodecopy.id = data;
     el.appendChild(document.getElementById(data))
+    //el.appendChild(nodecopy);
     fireWebsocket()
 }
 
@@ -71,6 +73,22 @@ $(document).ready(function(){
     socket.onmessage = function(e){
         recv_socket(e);
     }
+    var ctx = document.getElementById("chart").getContext("2d");
+    var test = {'type':'scatter','data':{'datasets':[{
+                label: "Test Set 1",
+                data: [{
+                    x: 1,
+                    y: 2,
+                }, {
+                    x: 2,
+                    y: 4,
+                }, {
+                    x: 3,
+                    y: 6,
+                }]
+    }]}};
+    window.scatter = new Chart(ctx, test);
+    
 
 
 })
