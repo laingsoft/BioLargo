@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import JsonResponse
 from django.template import loader
@@ -186,9 +186,9 @@ def save_template(request):
             
         return JsonResponse({'success' : False, 'error': "Error saving template"})
             
-#~ TODO: update to return a 404 if exp_id doesn't exist
 @login_required
 def upload_success(request, exp_id):
+    get_object_or_404(Experiment, id=exp_id)
     return render(request, 'app/upload_success.html', {'exp_id': exp_id})
 
 @login_required
@@ -209,7 +209,8 @@ def fields_autocomplete(request):
     if request.method == "GET":
         q = request.GET.get("q")
         result = Fields.objects.all().filter(name__icontains = q)
-        return JsonResponse({'data' : [str(item) for item in result]})
+        return JsonResponse({'data' : [{'key':str(item), 'value':str(item)} for item in result]})
+        
 @login_required
 def groups_list(request):
     if request.method == "GET":
@@ -234,3 +235,54 @@ def analysis_page(request):
     all_tags = Tag.objects.all()
     all_groups = Group.objects.all()
     return render(request, "app/analysis.html", {"usr":get_user(request), "tags":all_tags, "groups":all_groups})
+
+@login_required
+#~ From get request:
+    #~ pageIndex     // current page index
+    #~ pageSize      // the size of page
+    #~ sortField     // the name of sorting field
+    #~ sortOrder     // the order of sorting as string "asc"|"desc"
+
+#~ return
+
+#~ {
+    #~ data          // array of items
+    #~ itemsCount    // total items amount
+#~ }
+
+def index_results(request):
+    if request.method == 'GET':
+        
+        page = int(request.GET.get("pageIndex", 1))
+        size = int(request.GET.get("pageSize", 0))
+        offset = (page - 1) * size
+        
+        sort_field = request.GET.get("sortField", 'id')
+        sort_order = request.GET.get("sortOrder", 'asc')
+        
+        if sort_order == 'desc':
+            sort_field = '-' + sort_field
+        
+        data = Experiment.objects.all().values(
+        'id',
+        'reactor_diameter',
+        'reactor_length',
+        'num_chambers',
+        'removal_target',
+        'reactor_age',
+        'group__name').order_by(sort_field)
+        
+        try:
+            data = data.order_by(sort_field)
+        except django.core.exceptions.FieldError:
+            pass
+        
+        itemsCount = data.count()
+        tags = data.values('id', 'tags')
+        data = data[offset: offset + size]
+        data = list(data)
+        
+        for item in data:
+            item['tags'] = ', '.join([str(i) for i in tags.filter(id=item['id']).values_list('tags__name', flat=True)])
+
+        return JsonResponse({'data':data, 'itemsCoumt': [itemsCount]}) 

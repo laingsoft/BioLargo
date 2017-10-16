@@ -1,37 +1,19 @@
 <!DOCTYPE html>
 {% extends 'app/base_template.html' %}
+{% load static %}
 
+
+{% block header%}
+<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
+<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
+{% endblock%}
 
 {% block content %}
-{% load static %}
-<script src="{% static '/app/js/index.js' %}"></script>
-  <div class = "table-responsive">
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          {% for header in header_list %}
-          <th>{{header}}</th>
-          {% endfor %}
-        </tr>
-      </thead>
-      <tbody>
-        {% for i in experiments %}
-        <tr class="metadatarow" data-href="/app/experiment/{{ i.0 }}">
-          {% for y in i %}
-          <td>{{y}}</td>
-          {% endfor %}
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <ul class="pagination pagination-sm">
-      {% if experiments.has_previous %}
-      <li class="page-item"><a class="page-link" href="?page={{experiments.previous_page_number}}">Previous</a></li>
-      {% endif %}
-      {% if experiments.has_next %}
-      <li class="page-item"><a class="page-link" href="?page={{experiments.next_page_number}}">Next</a></li>
-      {% endif %}
-    </ul>
-  </div>
+<div id="experiments"></div>
 {% endblock %}
 
+
+{% block scripts %}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
+<script src="{% static '/app/js/index.js' %}"></script>
+{% endblock %}

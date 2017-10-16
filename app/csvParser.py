@@ -47,12 +47,12 @@ def read_csv(csv_file, g):
     
     exp = Experiment(
     #person = metadata[FIELDS[0]],
-    reactor_diameter = metadata[FIELDS[1]],
-    reactor_length = metadata[FIELDS[2]],
-    num_chambers = metadata[FIELDS[3]],
+    reactor_diameter = metadata[FIELDS[1]] if isFloat(metadata[FIELDS[1]]) else 0,
+    reactor_length = metadata[FIELDS[2]] if isFloat(metadata[FIELDS[2]]) else 0,
+    num_chambers = metadata[FIELDS[3]] if isFloat(metadata[FIELDS[3]]) else 0,
     #date = date_parser(metadata[FIELDS[4]]),
     removal_target = metadata[FIELDS[5]],
-    reactor_age = metadata[FIELDS[6]] if is_float(metadata[FIELDS[6]]) else 0,
+    reactor_age = metadata[FIELDS[6]] if isFloat(metadata[FIELDS[6]]) else 0,
     group = g)
 	
     exp.save()
@@ -63,7 +63,6 @@ def read_csv(csv_file, g):
         
     return exp
         
-	
 
 # moves extra metadata fields to the experiment data
 # inputs: 
@@ -72,7 +71,6 @@ def read_csv(csv_file, g):
 # returns: nothing. Items are modified directly.
 
 def reformat_data(metadata, eData):
-	
     move = dict()
 	
     metaKeys = metadata.keys()
@@ -85,8 +83,12 @@ def reformat_data(metadata, eData):
     # add the extra metadata fields to the experiment data
     for item in eData:
         item.update(move)
-
-
+        for col in item:
+            try:
+                item[col] = literal_eval(item[col])
+            except (SyntaxError, ValueError):
+                pass
+    
 	
 # parses date string. Exists because the delimiter isn't the same
 # for all files.
@@ -105,11 +107,11 @@ def date_parser(dateString):
 	
 	return datetime.datetime.strptime(dateString, dateFormat).date()
 
-
-def is_float(val):
+def isFloat(num):
     try:
-        float(val)
-    except ValueError:
+        float(num)
+    except:
         return False
         
     return True
+
