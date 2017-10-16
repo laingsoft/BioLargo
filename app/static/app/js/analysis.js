@@ -39,14 +39,32 @@ function drag(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
 }
 
-function drop(ev, el) {
-    ev.preventDefault()
+
+function drop_tag(ev, el) {
+    ev.preventDefault();
+    console.log(el.id);
     var data = ev.dataTransfer.getData("text");
     //var nodecopy = document.getElementById(data).cloneNode(true);
     //nodecopy.id = data;
-    el.appendChild(document.getElementById(data))
-    //el.appendChild(nodecopy);
-    fireWebsocket()
+    var originalDiv = document.getElementById(data);
+    console.log(originalDiv.className.split(' ')[1]);
+    if ((originalDiv.className.split(' ')[1] == 'tag') || (originalDiv.className.split(' ')[1] == 'group')) {
+        el.appendChild(originalDiv);
+        //el.appendChild(nodecopy);
+        fireWebsocket()
+    }else{
+        return;
+    }
+}
+function drop_axis(ev, el){
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    console.log(data);
+    var nodecopy = document.getElementById(data).cloneNode(true);
+    nodecopy.id = 'ax_x' + data;
+    el.appendChild(nodecopy);
+    //firewebsocket;
+
 }
 
 //Filters the tags by Id. So they are searchable. 
@@ -74,7 +92,7 @@ $(document).ready(function(){
         recv_socket(e);
     }
     var ctx = document.getElementById("chart").getContext("2d");
-    var test = {'type':'scatter','data':{'datasets':[{
+    var test = {'type':'line','data':{'datasets':[{
                 label: "Test Set 1",
                 data: [{
                     x: 1,

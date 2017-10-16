@@ -1,5 +1,9 @@
 // Experiment Javascript
 
+function deleteExperiment(){
+    alert('test');
+
+}
 
 function makeTable(jsondata){
     table = jQuery("#experimental-data"), row = null, data = null;
@@ -59,3 +63,5 @@ $.ajax({
         makeChart(data);
     }
 });
+
+

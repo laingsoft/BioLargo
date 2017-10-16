@@ -7,18 +7,19 @@
 {% block content %}
 <div class = "col-md-11 mx-auto">
 <div class = "row">
-  <div class = "col-md-1 col-sm-1" id="yaxbox">
+  <div class = "col-md-2 col-sm-2" id="yaxbox" ondragover="allowDrop(event)" ondrop="drop_axis(event, this)">
     <p>Y-Axis Area</p>
-    <ul class="list-unstyled" id="yaxis">
+    <ul class="list-unstyled" id="yaxis" >
     </ul>
   </div>
-    <div class = "col-md-1 col-sm-1" id="xaxis">
-    <p>X Axis Area</p>
-  </div>
-    <div class = "d-flex flex-column col-md-6 col-sm-6" id = "main_graph">
+    <div class = "col-md-2 col-sm-2" id="xaxbox" ondragover="allowDrop(event)" ondrop="drop_axis(event, this)">
+      <p>X Axis Area</p>
+      <ul class="list-unstyled" id="xaxis" >
+    </div>
+    <div class = "d-flex flex-column col-md-5 col-sm-5" id = "main_graph">
       <div class=""> <canvas id="chart" class="ml-2" width=400 height=300></canvas></div>
       <div class="">
-        <div class="d-flex align-self-end col-md-12 sol-sm-12" id="experiment_selector" ondrop="drop(event, this)" ondragover="allowDrop(event)">
+        <div class="d-flex align-self-end col-md-12 sol-sm-12" id="experiment_selector" ondrop="drop_tag(event, this)" ondragover="allowDrop(event)">
           <p>Selecting Data From: </p>
         </div>
       </div>
@@ -33,13 +34,13 @@
       <input class = "form-control" placeholder="Search Tags or Group" type="text" id="tagFilter">
     </div>
     <div class = "row mt-2">
-      <div class = "col-sm-6" id = "tags" ondrop="drop(event, this)" ondragover="allowDrop(event)">
+      <div class = "col-sm-6" id = "tags" ondrop="drop_tag(event, this)" ondragover="allowDrop(event)">
         <p>Tags</p>
         {% for i in tags %}
         <div id = "{{i}}" draggable="true" ondragstart="drag(event)" class = "px-1 tag"><span class = "badge badge-primary" >{{i}}</span></div>
         {% endfor %}
       </div>
-      <div class = "sol-sm-6" id="groups" ondrop="drop(event, this)" ondragover="allowDrop(event)">
+      <div class = "sol-sm-6" id="groups" ondrop="drop_tag(event, this)" ondragover="allowDrop(event)">
         <p>Groups</p>
         {% for i in groups %}
         <div id =" {{i}}" draggable="true" ondragstart="drag(event)" ondragover="none" class = "px-1 group"><span class = "badge badge-success" >{{i}}</span></div>

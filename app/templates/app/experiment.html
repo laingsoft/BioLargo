@@ -45,10 +45,38 @@
        </table>
      </div>
 </div>
+
+<div class="card mt-2">
+  <h2 class = "card-header">Dangerous Stuff </h2>
+    <div class = "card-block col-md-1 col-sm-1 my-2">
+      <button class = "btn btn-danger" data-toggle="modal" data-target="#expModal"> Delete This Experiment </button>
+    </div>
+</div>
 </div>
 
+<div class = "modal fade" id="expModal" tabindex="-1" role="dialog" aria-labelledby="expModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="titlelabel">Delete This Experiment?</h5>
+        <button type="button" class = "close" data-dismiss="modal" aria-label="close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p> Are you Sure? This can't be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button class = "btn" data-dismiss="modal">Don't Delete</button>
+        <button class="btn btn-danger" onclick = "deleteExperiment()">Delete </button>
+      </div>
+    </div>
+  </div>
+</div>
   <script>var id={{this_experiment.0.0}};</script>
   {% load static %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
   <script src = "{% static '/app/js/experiment.js' %}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
 {% endblock %}
