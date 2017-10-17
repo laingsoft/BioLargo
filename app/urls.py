@@ -12,5 +12,5 @@ urlpatterns = [
     url(r'^experiment/csv/(?P<exp_id>[0-9]+)', views.get_csv, name='get_csv'),
     url(r'^fields-autocomplete', views.fields_autocomplete, name='field_autocomplete'),
     url(r'^analysis', views.analysis_page, name = 'analysis_page'),
-    url(r'^experiments_list', views.index_results, name="index_results"),
+    url(r'^experiments_list', views.experiments_list, name="experiments_list"),
     ]
