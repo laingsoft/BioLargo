@@ -87,7 +87,7 @@ $(document).ready(function(){
     //TODO: Initialize the X and Y axis with potential columns
     //TODO: Download Session
     //TODO: Restore Session from file
-    socket = new WebSocket("ws://"+ window.location.host);
+    socket = new WebSocket("ws://"+ window.location.host + window.location.pathname);
     socket.onmessage = function(e){
         recv_socket(e);
     }
