@@ -7,26 +7,40 @@
 {% block content %}
 <div class = "col-md-11 mx-auto">
 <div class = "row">
-  <div class = "col-md-2 col-sm-2" id="yaxbox">
+  <div class = "col-md-2 col-sm-2" id="yaxbox" ondragover="allowDrop(event)" ondrop="drop_axis(event, this)">
     <p>Y-Axis Area</p>
-    <ul class="list-unstyled" id="yaxis">
+    <ul class="list-unstyled" id="yaxis" >
     </ul>
   </div>
-  <div class = "d-flex col-md-6 col-sm-6" id = "main_graph">
-    <div class="d-flex align-self-end col-md-12 sol-sm-12" id="experiment_selector" ondrop="drop(event, this)" ondragover="allowDrop(event)">
-      <p>Selecting Data From: </p>
+    <div class = "col-md-2 col-sm-2" id="xaxbox" ondragover="allowDrop(event)" ondrop="drop_axis(event, this)">
+      <p>X Axis Area</p>
+      <ul class="list-unstyled" id="xaxis" >
     </div>
+    <div class = "d-flex flex-column col-md-5 col-sm-5" id = "main_graph">
+      <div class=""> <canvas id="chart" class="ml-2" width=400 height=300></canvas></div>
+      <div class="">
+        <div class="d-flex align-self-end col-md-12 sol-sm-12" id="experiment_selector" ondrop="drop_tag(event, this)" ondragover="allowDrop(event)">
+          <p>Selecting Data From: </p>
+        </div>
+      </div>
   </div>
   <div class = "col-md-3 col-sm-3" id ="toolbox">
-    <input class = "form-control" placeholder="Search Tags or Group" type="text" id="tagFilter">
+    <div class = "row col">
+      <h6>Columns</h6>
+      <div id="listcol">
+      </div>
+    </div>
+    <div class = "row col">
+      <input class = "form-control" placeholder="Search Tags or Group" type="text" id="tagFilter">
+    </div>
     <div class = "row mt-2">
-      <div class = "col-sm-6" id = "tags" ondrop="drop(event, this)" ondragover="allowDrop(event)">
+      <div class = "col-sm-6" id = "tags" ondrop="drop_tag(event, this)" ondragover="allowDrop(event)">
         <p>Tags</p>
         {% for i in tags %}
         <div id = "{{i}}" draggable="true" ondragstart="drag(event)" class = "px-1 tag"><span class = "badge badge-primary" >{{i}}</span></div>
         {% endfor %}
       </div>
-      <div class = "sol-sm-6" id="groups" ondrop="drop(event, this)" ondragover="allowDrop(event)">
+      <div class = "sol-sm-6" id="groups" ondrop="drop_tag(event, this)" ondragover="allowDrop(event)">
         <p>Groups</p>
         {% for i in groups %}
         <div id =" {{i}}" draggable="true" ondragstart="drag(event)" ondragover="none" class = "px-1 group"><span class = "badge badge-success" >{{i}}</span></div>
@@ -36,14 +50,27 @@
   </div>
 </div>
 <div class="row">
-  <div class = "col-md-8 col-sm-8" id="x axis">
-    <p>X Axis Area</p>
-    <ul class = "list-inline list-unstyled" id="ax"></ul>
+  <div class = "col-md-11">
+    <p>ToolBox</p>
+    <div class = "d-flex ml-auto form-group col-md-3">
+      <label for="graphtype">Choose type of graph</label>
+      <select class = "form-control" id="graphtype">
+        <option>Scatter</option>
+        <option>Line</option>
+        <option>Bar</option>
+        <option>Stacked</option>
+        <option>Radar</option>
+        <option>Doughnut</option>
+        <option>Pie</option>
+        <option>Polar Area</option>
+        <option>Bubble</option>
+    </div>
   </div>
+        
 </div>
 </div>
 
 
 <script src = "{% static '/app/js/analysis.js' %}"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
 {% endblock %}
