@@ -42,6 +42,12 @@ class ExperimentData(models.Model):
     experimentData = JSONField()
     #More Experiment Data Here
 
+
+class ExperimentMetaData(models.Model):
+    experiment = models.ForeignKey(Experiment)
+    experimentMetaData = JSONField()
+
+
 # to make sure we have consistent field naming for searching
 class Fields(models.Model):
     name = models.CharField(max_length = 255)
