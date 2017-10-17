@@ -58,7 +58,7 @@ def read_csv(csv_file, g):
     exp.save()
 	
     for line in eData:
-        expData = ExperimentData(experiment = exp, experimentData = json.dumps(line))
+        expData = ExperimentData(experiment = exp, experimentData = line)
         expData.save()
         
     return exp

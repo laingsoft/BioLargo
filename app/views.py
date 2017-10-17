@@ -14,7 +14,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import GroupsTags
 from django.contrib.auth import get_user
 import json, csv
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import sys
 
 # Create your views here.
 
@@ -31,23 +31,16 @@ def index(request):
     '''
     user = get_user(request)
     template = loader.get_template('app/index.html')
-    exp_page = request.GET.get('page')
     #experiments = [[1,2,3,4,5,6,7, 8, 9]]
-    experiment_page = Paginator(Experiment.objects.values_list(), 10)
 
-    try:
-        experiments = experiment_page.page(exp_page)
-    except PageNotAnInteger:
-        experiments = experiment_page.page(1)
-    except EmptyPage:
-        experiments = experiment_page(1)
+   
 
     
-    context = {"experiments":experiments,
-               "header_list":HEADER_LIST,
-               "usr":user,
-    }
-    return HttpResponse(template.render(context,request))
+    #~ context = {"experiments":experiments,
+               #~ "header_list":HEADER_LIST,
+               #~ "usr":user,
+    #~ }
+    return HttpResponse(template.render({"usr" : user},request))
     
 @login_required
 def upload(request):
@@ -201,7 +194,7 @@ def experiment(request, exp_id):
 def experiment_json(request, exp_id):
     data = ExperimentData.objects.filter(experiment=exp_id)
     newval = {}
-    newval = {k: json.loads(v.experimentData) for k,v in enumerate(data) }
+    newval = {k: v.experimentData for k,v in enumerate(data) }
     return JsonResponse(newval)
 
 @login_required
@@ -236,21 +229,31 @@ def analysis_page(request):
     all_groups = Group.objects.all()
     return render(request, "app/analysis.html", {"usr":get_user(request), "tags":all_tags, "groups":all_groups})
 
-@login_required
+
 #~ From get request:
     #~ pageIndex     // current page index
     #~ pageSize      // the size of page
     #~ sortField     // the name of sorting field
     #~ sortOrder     // the order of sorting as string "asc"|"desc"
+    
+    #~ "id" : search
+    #~ "num_chambers" : search
+    #~ "reactor_diameter" : search
+    #~ "reactor_length" : search
+    #~ "removal_target" : search
+    #~ "reactor_age" : search
+    #~ "group__name" : search
+    #~ "tags[]" : search (list)
+    #~ "fields" : search (list)
 
-#~ return
+#~ returns
 
 #~ {
     #~ data          // array of items
     #~ itemsCount    // total items amount
 #~ }
-
-def index_results(request):
+@login_required
+def experiments_list(request):
     if request.method == 'GET':
         
         page = int(request.GET.get("pageIndex", 1))
@@ -262,8 +265,11 @@ def index_results(request):
         
         if sort_order == 'desc':
             sort_field = '-' + sort_field
-        
-        data = Experiment.objects.all().values(
+            
+            
+        query_dict = dict(request.GET)
+                    
+        qs = Experiment.objects.all().values(
         'id',
         'reactor_diameter',
         'reactor_length',
@@ -273,16 +279,44 @@ def index_results(request):
         'group__name').order_by(sort_field)
         
         try:
-            data = data.order_by(sort_field)
+            data = qs.order_by(sort_field)
         except django.core.exceptions.FieldError:
             pass
+            
+            
+        # parse the fields search if it exists.
+        try:
+            query_dict['fields[]']
+        except KeyError:
+            # do nothing if no field keywords.
+            pass
+            
+        #~ dictionary of all filters. 
+        filters = {
+            "id" : (lambda qs, q : qs.filter(id = q[0])),
+            "num_chambers" : (lambda qs, q :  qs.filter(num_chambers = q[0])),
+            "reactor_diameter" : (lambda qs, q :  qs.filter(reactor_diameter = q[0])),
+            "reactor_length" : (lambda qs, q :  qs.filter(reactor_length = q[0])),
+            "removal_target" : (lambda qs, q :  qs.filter(removal_target__contains = q[0])),
+            "reactor_age" : (lambda qs, q :  qs.filter(reactor_age = q[0])),
+            "group__name" : (lambda qs, q :  qs.filter(group__name__contains = q[0])),
+            "tags[]" : (lambda qs, q :  qs.filter(tags__name__in = q).distinct()),
+            "fields[]": (lambda qs , q : qs.filter(experimentdata__experimentData__contains = q).distinct())
+        }
         
-        itemsCount = data.count()
-        tags = data.values('id', 'tags')
-        data = data[offset: offset + size]
-        data = list(data)
+        for item in query_dict:
+            try:
+                qs = filters[item](qs, query_dict[item])
+            except KeyError:
+                # ignore any filters that are not in the filters dict
+                pass
+                
+        itemsCount = qs.count()
+        tags = qs.values('id', 'tags')
+        data = qs[offset: offset + size]
+        data = list(qs)
         
         for item in data:
             item['tags'] = ', '.join([str(i) for i in tags.filter(id=item['id']).values_list('tags__name', flat=True)])
 
-        return JsonResponse({'data':data, 'itemsCoumt': [itemsCount]}) 
+        return JsonResponse({'data':data, 'itemsCount': [itemsCount]}) 

@@ -3,11 +3,11 @@ var CONTAINER = $('#experiments')
 
 CONTAINER.jsGrid({
     width: "100%",
+    filtering : true,
     sorting: true,
     pageLoading: true,
     paging: true,
     autoload: true,
-    //~ data: [{"id": 1, "Chambers": 2,"Diameter":3,"Length":4,"Target":5,"Age (mL)": 5}],
     
     controller: {
         loadData:   function(filter){
@@ -28,7 +28,11 @@ CONTAINER.jsGrid({
         {name: "reactor_length", type:"number", align: "", title: "Length"},
         {name: "removal_target", type:"text", align: "", title: "Target"},
         {name: "reactor_age", type:"number", align: "", title: "Age (ml)"},
-        {name: "group__name", type:"test", align: "", title: "Group"},
-        {name: "tags", type:"test", align: "", title: "Tags"},
-    ]
+        {name: "group__name", type:"text", align: "", title: "Group"},
+        {name: "tags", type:"text", align: "", title: "Tags"},
+    ],
+    
+    rowClick: function(item){
+        window.location.href = "/app/experiment/" + item.item.id.toString();
+    }
 });
