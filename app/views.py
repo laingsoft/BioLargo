@@ -194,9 +194,15 @@ def experiment(request, exp_id):
 def experiment_json(request, exp_id):
     data = ExperimentData.objects.filter(experiment=exp_id)
     newval = {}
-    newval = {k: v.experimentData for k,v in enumerate(data) }
+    newval = {k: v.experimentData for k,v in enumerate(data)}
     return JsonResponse(newval)
 
+@login_required
+def experimentrm(request, exp_id):
+    data = Experiment.objects.filter(id=exp_id)
+    res = data.delete()
+    return JsonResponse({"result": res[0]>0})
+    
 @login_required
 def fields_autocomplete(request):
     if request.method == "GET":

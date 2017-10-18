@@ -24,3 +24,6 @@ To build and run, use:
 * Homepage: https://www.djangoproject.com/
 * Licence: [BSD](https://github.com/django/django/blob/master/LICENSE)
 
+### jsGrid
+* Homepage: http://js-grid.com/
+* Licence: [MIT](https://github.com/tabalinas/jsgrid/blob/master/LICENSE)

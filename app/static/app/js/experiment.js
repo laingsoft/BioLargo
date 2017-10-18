@@ -1,13 +1,48 @@
 // Experiment Javascript
 
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 function deleteExperiment(){
-    alert('test');
+    var csrftoken = getCookie('csrftoken');
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings){
+            if(!this.crossDomain){
+                xhr.setRequestHeader('X-CSRFToken', csrftoken);
+            }
+        }
+    });
+    $. ajax({
+        type: 'POST',
+        url: "/app/experimentrm/"+id,
+        dataType: 'json',
+        success: function(data) {
+            // console.log(data);
+            if(data.result){
+                window.location = '/app/';
+            }
+        }
+    })
 
 }
 
 function makeTable(jsondata){
     table = jQuery("#experimental-data"), row = null, data = null;
-    //console.log(jsondata);
+    console.log(jsondata);
+    //$.each(jsondata, function(key, obj){ $.each(jsondata, function(k, v){ console.log(v)})});
     makeHeaders(jsondata, table);
     $.each(jsondata, function(key, obj){
         row = $('<tr></tr>'); // Create a new row

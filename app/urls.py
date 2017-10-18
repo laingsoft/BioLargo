@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^get_template', views.get_template, name = 'get_template'),
     url(r'^experiment/(?P<exp_id>[0-9]+)', views.experiment, name='experiment'),
     url(r'^experimentjs/(?P<exp_id>[0-9]+)', views.experiment_json, name='experiment_json'),
+    url(r'^experimentrm/(?P<exp_id>[0-9]+)', views.experimentrm, name="experimentrm"),
     url(r'^save_template', views.save_template, name='save_template'),
     url(r'^experiment/csv/(?P<exp_id>[0-9]+)', views.get_csv, name='get_csv'),
     url(r'^fields-autocomplete', views.fields_autocomplete, name='field_autocomplete'),
