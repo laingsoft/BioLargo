@@ -30,6 +30,7 @@ CONTAINER.jsGrid({
         {name: "reactor_age", type:"number", align: "", title: "Age (ml)"},
         {name: "group__name", type:"text", align: "", title: "Group"},
         {name: "tags", type:"text", align: "", title: "Tags"},
+        {type: "control", itemTemplate: null}
     ],
     
     rowClick: function(item){

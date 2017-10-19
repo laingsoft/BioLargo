@@ -6,8 +6,7 @@ import json
 from django.core.exceptions import ValidationError
 from django.utils.encoding import force_text
 
-# custom choice fields for suggesting models/
-
+# custom choice fields for suggesting models
 class ModelSuggestField(forms.ModelChoiceField):
     def __init__(self, queryset, model, to_field_name=None, required=True):
         super(ModelSuggestField, self).__init__(queryset, to_field_name=to_field_name, required=required)
@@ -57,17 +56,29 @@ class ModelMultipleSuggestField(forms.ModelMultipleChoiceField):
             
         return qs
 
-class csvUpload(forms.Form):
-    csv_file = forms.FileField()
+# forms for uploading experiments.
+# ----------------------------------------------------------------------
 
-class uploadForm(forms.ModelForm):
+# for each individual row of experiment data
+class ExperimentDataRow(forms.Form):
     json = forms.CharField(widget=forms.HiddenInput())
+    
+# for metadata (from template)
+class ExperimentMetdadata(forms.Form):
+    name = forms.CharField(disabled=True)
+    value = forms.CharField()
 
+# for the required experiment data (date, scientist)
+class ExperimentForm(forms.ModelForm):
     class Meta:
         model = Experiment
-        exclude = ['group', 'tags']
+        exclude = ['user']
+        
+# For uploading files (of any type)
+class FileUpload(forms.Form):
+    upload_file = forms.FileField(label='Select file to upload')
 
-
+# For tag and group of experiments
 class GroupsTags(forms.Form):
     group = ModelSuggestField(Group.objects.all(), Group, to_field_name="name")
     tags = ModelMultipleSuggestField(Tag.objects.all(), Tag, to_field_name="name", required=False)

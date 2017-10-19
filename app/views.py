@@ -1,26 +1,12 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import JsonResponse
-from django.template import loader
-from .csvParser import read_csv
-from .models import Experiment, ExperimentData
-from .models import Template, Fields
-from .models import Group
-from .models import Tag
+from .parsers import Parser
+from .models import *
 from io import TextIOWrapper
-from .forms import uploadForm
-from .forms import csvUpload
 from django.contrib.auth.decorators import login_required
-from .forms import GroupsTags
 from django.contrib.auth import get_user
 import json, csv
-import sys
-
-# Create your views here.
-
-
-DEFAULT_TEMPLATE = "Disinfection(bacteria)"
-HEADER_LIST = ["ID", "Chambers","Diameter","Length","Target","Age (mL)"]
 
 @login_required
 def index(request):
@@ -29,111 +15,64 @@ def index(request):
     all of the available data to the researcher, and allow them to link to 
     other resources, such as uploading and analysis
     '''
-    user = get_user(request)
-    template = loader.get_template('app/index.html')
-    #experiments = [[1,2,3,4,5,6,7, 8, 9]]
-
-   
-
+    return render(request,'app/index.html', {})
     
-    #~ context = {"experiments":experiments,
-               #~ "header_list":HEADER_LIST,
-               #~ "usr":user,
-    #~ }
-    return HttpResponse(template.render({"usr" : user},request))
-    
+# --------------------Views used for uploading data---------------------
+# displays the upload page. Additional parts of the form and processing
+# is done in other views.
 @login_required
 def upload(request):
-    user = get_user(request)
-    if request.method == 'POST':
+    context = {
+    'groups_tags' : GroupsTags(prefix = 'tags') }
         
-        groups_tags = GroupsTags(request.POST, prefix="tags")
+    return render(request, 'app/upload.html', context)
 
-        g = None
-        tags = []
+
+# Renders and handles file uploads
+@login_required
+def upload_file(request):
+    if request.method == "POST":
+        groups_tags = GroupsTags(request.POST, prefix="tags")
+        file_upload = FileUpload(request.POST, request.FILES, prefix="file")
         
-        if groups_tags.is_valid():
-            
+        if group_tags.is_valid() and file_upload.is_valid():
+            # groups and tags are created/fetched on validation.
             g = groups_tags.cleaned_data.get('group')
-            g = Group.objects.get_or_create(name=g)[0]
-            
             t = groups_tags.cleaned_data.get('tags')
             
-            for tag in t:
-                tags.append(Tag.objects.get_or_create(name=tag)[0])
+            # parse the file.
+            try:
+                parser = Parser()
+            except KeyError:
+                return HttpResponseBadRequest('File type not supported')
+                
+            return HttpResponseRedirect('/app/upload/success/' + str(parser.get_experiment))
             
-        else:
-            return HttpResponseRedirect('/app/upload/error/')
-        
-        csv_file = csvUpload(request.POST, request.FILES, prefix="csv")
-
-        if csv_file.is_valid():
-            data = TextIOWrapper(request.FILES['csv-csv_file'].file, encoding=request.encoding)
-            exp = read_csv(data, g)
-            
-            exp.tags.add(*tags)
-            exp.save()
+        return HttpResponse("Error uploading experiment")
     
-            return HttpResponseRedirect('/app/upload/success/' + str(exp.id))
-            
-            
-        exp_form = uploadForm(request.POST, prefix='form')
+    if request.method == "GET":
+        # TODO: fill in the template here.
+        return HttpResponse(render_to_string('template here', {'form': FileUpload(prefix="file")}))
         
-        if exp_form.is_valid():
-            data = json.loads(exp_form.cleaned_data.get('json'))
-            
-            temp = []
-            for row in data:
-                if any(row.values()):
-                    temp.append(row)
-            if len(temp) == 0:
-                return HttpResponse(status="400")
-                
-            data = temp
-            
-            metadata = exp_form.save(commit=False)
-            metadata.group = g
-            metadata.save()
-            metadata.tags.add(*tags)
-            metadata.save()
-            
-            for row in data:
-                parsed = {}
-                for item in row:
-                    try:
-                        parsed[item] = ast.literal_eval(row[item])
-                    except:
-                        parsed[item] = row[item]
-                    
-                exp_data = json.dumps(parsed)
-                
-                data = ExperimentData(experiment=metadata, 
-                experimentData=exp_data)
-                data.save()
-            
-            
-            
-        
-            return HttpResponseRedirect('/app/upload/success/' + str(metadata.id))
-            
-        return HttpResponse('Unknown Error')
+    return HttpResponseNotFound('<h1>Page not found</h1>')
 
-    else:
-
-        templates = Template.objects.all()
-        csv = csvUpload(prefix = 'csv')
-        groups_tags = GroupsTags(prefix = 'tags')
-        upload_form = uploadForm(prefix = 'form')
-        templates = [t.name for t in templates]
+# Renders and handles form uploads
+@login_required
+def upload_form(request):
+    if request.method == "POST":
+        groups_tags = GroupsTags(request.POST, prefix="tags")
+        upload_form = UploadForm(request.POST, prefix="form")
         
-        context = {'upload_form' : upload_form, 
-        'templates':templates, 
-        'usr':get_user(request), 
-        'csv_form' : csv,
-        'groups_tags' : groups_tags }
-            
-        return render(request, 'app/upload.html', context)
-            
+        if group_tags.is_valid() and upload_form.is_valid():
+            pass
+        
+    if request.method == "GET":
+        # TODO: fill in the template here.
+        return HttpResponse(render_to_string('template here', {'form': UploadForm(prefix="form")}))
+
+    return HttpResponseNotFound('<h1>Page not found</h1>')
+
+# used to get template (used for form upload)
 @login_required      
 def get_template(request):
     if request.method == 'GET':
@@ -148,7 +87,8 @@ def get_template(request):
             fields = ['']
             
     return JsonResponse({'fields' : fields})
-
+    
+# used to save templates on upload form. TODO: RESTRICT TO ADMIN USERS 
 @login_required
 def save_template(request):
     if request.method == "POST":
@@ -178,7 +118,21 @@ def save_template(request):
             return JsonResponse({'success' : True})
             
         return JsonResponse({'success' : False, 'error': "Error saving template"})
+        
+@login_required
+def fields_autocomplete(request):
+    if request.method == "GET":
+        q = request.GET.get("q")
+        result = Fields.objects.all().filter(name__icontains = q)
+        return JsonResponse({'data' : [{'key':str(item), 'value':str(item)} for item in result]})
+        
+@login_required
+def groups_list(request):
+    if request.method == "GET":
+        result = [str(i) for i in Group.objects.all()]
+        return JsonResponse({'data' : [{'key':str(item), 'value':str(item)} for item in result]})    
             
+# Response for successful upload.
 @login_required
 def upload_success(request, exp_id):
     get_object_or_404(Experiment, id=exp_id)
@@ -197,18 +151,6 @@ def experiment_json(request, exp_id):
     newval = {k: v.experimentData for k,v in enumerate(data) }
     return JsonResponse(newval)
 
-@login_required
-def fields_autocomplete(request):
-    if request.method == "GET":
-        q = request.GET.get("q")
-        result = Fields.objects.all().filter(name__icontains = q)
-        return JsonResponse({'data' : [{'key':str(item), 'value':str(item)} for item in result]})
-        
-@login_required
-def groups_list(request):
-    if request.method == "GET":
-        result = [str(i) for i in Group.objects.all()]
-        return JsonResponse({'data' : [{'key':str(item), 'value':str(item)} for item in result]})
 
 @login_required
 def get_csv(request, exp_id, header=0):
@@ -297,9 +239,10 @@ def experiments_list(request):
             "num_chambers" : (lambda qs, q :  qs.filter(num_chambers = q[0])),
             "reactor_diameter" : (lambda qs, q :  qs.filter(reactor_diameter = q[0])),
             "reactor_length" : (lambda qs, q :  qs.filter(reactor_length = q[0])),
-            "removal_target" : (lambda qs, q :  qs.filter(removal_target__contains = q[0])),
+            "removal_target" : (lambda qs, q :  qs.filter(removal_target__icontains = q[0])),
             "reactor_age" : (lambda qs, q :  qs.filter(reactor_age = q[0])),
-            "group__name" : (lambda qs, q :  qs.filter(group__name__contains = q[0])),
+            "group__name" : (lambda qs, q :  qs.filter(group__name__icontains = q[0])),
+            "tags[]" : (lambda qs, q :  qs.filter(tags__name__in = q).distinct()),
             "tags[]" : (lambda qs, q :  qs.filter(tags__name__in = q).distinct()),
             "fields[]": (lambda qs , q : qs.filter(experimentdata__experimentData__contains = q).distinct())
         }

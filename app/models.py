@@ -35,7 +35,6 @@ class Experiment(models.Model):
     def __repr__(self):
         return ("Experiment| Group: {0}, Chambers: {1}, Target: {2}".format(str(self.group), str(self.num_chambers),str(self.removal_target)))
 
-
      	
 class ExperimentData(models.Model):
     experiment = models.ForeignKey(Experiment)
@@ -61,7 +60,11 @@ class Template(models.Model):
    
     def __str__(self):
         return self.name
-    
+        
+class Comment(models.Model):
+    user = models.ForeignKey(User)
+    experiment = models.ForeignKey(Experiment)
+    content = models.CharField(max_length = 255)
 
     
     
