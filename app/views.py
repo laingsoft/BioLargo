@@ -161,6 +161,13 @@ def experimentrm(request, exp_id):
     res = data.delete()
     return JsonResponse({"result": res[0]>0})
     
+
+@login_required
+def experimentrm(request, exp_id):
+    data = Experiment.objects.filter(id=exp_id)
+    res = data.delete()
+    return JsonResponse({"result": res[0]>0})
+    
 @login_required
 def get_csv(request, exp_id, header=0):
     response = HttpResponse(content_type='text/csv')
