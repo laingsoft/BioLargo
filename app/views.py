@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
 import json, csv
 
+HEADER_LIST = ["ID", "Chambers","Diameter","Length","Target","Age (mL)"]
+
 @login_required
 def index(request):
     '''
@@ -28,7 +30,7 @@ def upload(request):
     return render(request, 'app/upload.html', context)
 
 
-# Renders and handles file uploads
+# Renders form and handles file uploads
 @login_required
 def upload_file(request):
     if request.method == "POST":
@@ -56,7 +58,7 @@ def upload_file(request):
         
     return HttpResponseNotFound('<h1>Page not found</h1>')
 
-# Renders and handles form uploads
+# Renders form and handles form uploads
 @login_required
 def upload_form(request):
     if request.method == "POST":
@@ -138,6 +140,7 @@ def upload_success(request, exp_id):
     get_object_or_404(Experiment, id=exp_id)
     return render(request, 'app/upload_success.html', {'exp_id': exp_id})
 
+#------------------------Experiment Page Views--------------------------
 @login_required
 def experiment(request, exp_id):
     user = get_user(request)
@@ -148,10 +151,16 @@ def experiment(request, exp_id):
 def experiment_json(request, exp_id):
     data = ExperimentData.objects.filter(experiment=exp_id)
     newval = {}
-    newval = {k: v.experimentData for k,v in enumerate(data) }
+    newval = {k: v.experimentData for k,v in enumerate(data)}
     return JsonResponse(newval)
 
 
+@login_required
+def experimentrm(request, exp_id):
+    data = Experiment.objects.filter(id=exp_id)
+    res = data.delete()
+    return JsonResponse({"result": res[0]>0})
+    
 @login_required
 def get_csv(request, exp_id, header=0):
     response = HttpResponse(content_type='text/csv')
