@@ -18,7 +18,6 @@ class Tag(models.Model):
 
 class Experiment(models.Model):
     #~ scientist = models.ForeignKey(Scientist)
-    #~ experimentMeta = JSONField()
     #person = models.CharField(max_length = 255, default = '')
     reactor_diameter = models.FloatField("Reactor Diameter [inch]", default = 0)
     reactor_length = models.FloatField("Reactor Length [inch]", default = 0)
@@ -26,8 +25,11 @@ class Experiment(models.Model):
     #date = models.DateField("Date (d/m/y)", default = None)
     removal_target = models.CharField("Removal Target", max_length = 255, default = 0)
     reactor_age = models.FloatField("Age of Reactor", default = 0)
+    
+    
     group = models.ForeignKey(Group)
     tags = models.ManyToManyField(Tag)
+    metadata = JSONField(default = '') # remove the default later.
 
     def __str__(self):
         return ("Experiment| Group: {0}, Chambers: {1}, Target: {2}".format(str(self.group), str(self.num_chambers),str(self.removal_target)))
@@ -37,15 +39,9 @@ class Experiment(models.Model):
 
      	
 class ExperimentData(models.Model):
-    experiment = models.ForeignKey(Experiment)
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     experimentData = JSONField()
     #More Experiment Data Here
-
-
-class ExperimentMetaData(models.Model):
-    experiment = models.ForeignKey(Experiment)
-    experimentMetaData = JSONField()
-
 
 # to make sure we have consistent field naming for searching
 class Fields(models.Model):
@@ -63,7 +59,7 @@ class Template(models.Model):
         
 class Comment(models.Model):
     user = models.ForeignKey(User)
-    experiment = models.ForeignKey(Experiment)
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     content = models.CharField(max_length = 255)
 
     

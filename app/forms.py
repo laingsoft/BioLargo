@@ -5,6 +5,8 @@ from .models import Tag, Group
 import json
 from django.core.exceptions import ValidationError
 from django.utils.encoding import force_text
+from .parsers import JsonParser
+from io import StringIO
 
 # custom choice fields for suggesting models
 class ModelSuggestField(forms.ModelChoiceField):
@@ -55,25 +57,26 @@ class ModelMultipleSuggestField(forms.ModelMultipleChoiceField):
         self.run_validators(value)
             
         return qs
-
+        
+        
+class ExperimentField(forms.CharField):
+    def to_python(self, value):
+        value = super().to_python(value) # unicode string with excess spaces removed.
+        try:
+            parser = JsonParser(StringIO(value))
+            
+        except (TypeError, ValueError, KeyError):
+            raise ValidationError(self.error_messages['Invalid JSON'], code='Invalid JSON')
+            
+        return parser
+            
 # forms for uploading experiments.
 # ----------------------------------------------------------------------
 
-# for each individual row of experiment data
-class ExperimentDataRow(forms.Form):
-    json = forms.CharField(widget=forms.HiddenInput())
-    
-# for metadata (from template)
-class ExperimentMetdadata(forms.Form):
-    name = forms.CharField(disabled=True)
-    value = forms.CharField()
+# for metadata, experiment data. Might just write a custom field for this
+class ExperimentForm(forms.Form):
+    json = ExperimentField(widget=forms.HiddenInput())
 
-# for the required experiment data (date, scientist)
-class ExperimentForm(forms.ModelForm):
-    class Meta:
-        model = Experiment
-        exclude = ['user']
-        
 # For uploading files (of any type)
 class FileUpload(forms.Form):
     upload_file = forms.FileField(label='Select file to upload')

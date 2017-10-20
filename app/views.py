@@ -1,21 +1,25 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import JsonResponse
+from django.template.loader import render_to_string
 from .parsers import Parser
 from .models import *
 from io import TextIOWrapper
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
-import json, csv
+import json
+import csv
+from .forms import FileUpload, GroupsTags, ExperimentForm
 
 HEADER_LIST = ["ID", "Chambers","Diameter","Length","Target","Age (mL)"]
+metadata_fields = ["Reactor Diameter [inch]", "Reactor Length [inch]", "#Chambers",	"Date (d/m/y)",	"Removal Target", "Age of reactor [L]"]
 
 @login_required
 def index(request):
     '''
     Index should be the main landing page for the application. It will show
     all of the available data to the researcher, and allow them to link to 
-    other resources, such as uploading and analysis
+    other resources, such as uploading and analysis. 
     '''
     return render(request,'app/index.html', {})
     
@@ -54,23 +58,46 @@ def upload_file(request):
     
     if request.method == "GET":
         # TODO: fill in the template here.
-        return HttpResponse(render_to_string('template here', {'form': FileUpload(prefix="file")}))
+        return HttpResponse(render_to_string('app/file_upload.html', {'form': FileUpload(prefix="file")}))
         
-    return HttpResponseNotFound('<h1>Page not found</h1>')
+    return HttpResponseNotFound('<h1>Page not found</h1>') # change to more appropriate error later
 
 # Renders form and handles form uploads
 @login_required
 def upload_form(request):
     if request.method == "POST":
-        groups_tags = GroupsTags(request.POST, prefix="tags")
-        upload_form = UploadForm(request.POST, prefix="form")
+        group_tags = GroupsTags(request.POST, prefix="tags")
+        experiment_data = ExperimentForm(request.POST, prefix = 'data')
         
-        if group_tags.is_valid() and upload_form.is_valid():
+        if group_tags.is_valid() and experiment_data.is_valid():
             pass
+            
+            # get group and tags (created on validation)
+            # get metadata template
+            # try:
+            #    parse experiment data with JSON parser
+            # except TypeError:
+            #   return error
+            # parser.create_objects(group, tags)
+            
+            # return success 
+            
         
     if request.method == "GET":
-        # TODO: fill in the template here.
-        return HttpResponse(render_to_string('template here', {'form': UploadForm(prefix="form")}))
+        # get metdata template
+        # create ExperimentForm
+        
+      
+        experiment_data = ExperimentForm(prefix = 'data')
+        metadata = metadata_fields #TODO: get the template from database
+        
+        # put in dictionary
+        context = {
+            'experiment_data': experiment_data,
+            'metadata': metadata,
+            'templates': Template.objects.all().values_list('name')
+        }
+        return HttpResponse(render_to_string('app/form_upload.html', context))
 
     return HttpResponseNotFound('<h1>Page not found</h1>')
 
@@ -78,9 +105,7 @@ def upload_form(request):
 @login_required      
 def get_template(request):
     if request.method == 'GET':
-        template_name = request.GET.get('template', None)
-        if not template_name:
-            template_name = DEFAULT_TEMPLATE
+        template_name = request.GET.get('template', '')
         
         try:
             fields = Template.objects.filter(name = template_name)[0].fields.all()
@@ -121,6 +146,7 @@ def save_template(request):
             
         return JsonResponse({'success' : False, 'error': "Error saving template"})
         
+# autocomplete results for fields        
 @login_required
 def fields_autocomplete(request):
     if request.method == "GET":
@@ -128,6 +154,7 @@ def fields_autocomplete(request):
         result = Fields.objects.all().filter(name__icontains = q)
         return JsonResponse({'data' : [{'key':str(item), 'value':str(item)} for item in result]})
         
+# autocomplete results for groups
 @login_required
 def groups_list(request):
     if request.method == "GET":
@@ -164,7 +191,7 @@ def experimentrm(request, exp_id):
 
 @login_required
 def experimentrm(request, exp_id):
-    data = Experiment.objects.filter(id=exp_id)
+    data = Experiment.objects.get(id=exp_id)
     res = data.delete()
     return JsonResponse({"result": res[0]>0})
     

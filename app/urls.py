@@ -4,6 +4,8 @@ from . import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^upload/success/(?P<exp_id>[0-9]+)', views.upload_success, name='upload_success'),
+    url(r'^upload_form', views.upload_form, name ='upload_form'),
+    url(r'^upload_file', views.upload_file, name = 'upload_file' ),
     url(r'^upload', views.upload, name = 'upload'),
     url(r'^get_template', views.get_template, name = 'get_template'),
     url(r'^experiment/(?P<exp_id>[0-9]+)', views.experiment, name='experiment'),

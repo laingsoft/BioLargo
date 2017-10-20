@@ -1,0 +1,61 @@
+<!--
+The javascript files required for the form to work...
+-->
+<html>
+{%load static%}
+<head>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+
+<script src="{% static 'app/jquery-3.2.1.min.js' %}"></script>
+<script
+src="https://code.jquery.com/jquery-3.2.1.min.js"
+integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+crossorigin="anonymous">
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+<script src="{% static 'app/js/selectize.min.js' %}"></script>
+<script src="{% static 'app/js/exp_input.js'%}"></script>
+</head>
+
+<body>
+{{experiment_data}}
+<div class="form-group row">
+<!--
+    <legend>Metadata</legend>
+-->
+    {% for field in  metadata %}
+        <div class="col-sm-10">
+        <label for= id_{{field|slugify}}>{{ field }}</label>
+        <input class="form-control" type="text" name="{{ field|slugify}}_field" id = "id_{{field|slugify}}" placeholder = "Enter {{ field }}" required>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="form-group row">
+<!--
+    <legend>Experiment Data</legend>
+-->
+    <div class="form-group col-sm-10">
+        <label>
+            Template
+            <select id="template-select" class="custom-select">
+                {% for template in templates %}
+                    <option value="{{ template }}">{{template}}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <button type="button" class="btn btn-info btn-sm" id="add-row" >Add Row</button>
+        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#var-modal" >Add Variable</button>
+        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#template-modal" >Save Template</button>
+
+    </div>
+</div>
+
+    <div class="form-group" id="data-table"><!--Empty div will be filled with table using js--></div>
+
+</body></html>
