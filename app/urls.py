@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^upload_form', views.upload_form, name ='upload_form'),
     url(r'^upload_file', views.upload_file, name = 'upload_file' ),
     url(r'^upload', views.upload, name = 'upload'),
+    url(r'^get_metadata_template', views.get_metadata_template, name="get_metdata_template"),
     url(r'^get_template', views.get_template, name = 'get_template'),
     url(r'^experiment/(?P<exp_id>[0-9]+)', views.experiment, name='experiment'),
     url(r'^experimentjs/(?P<exp_id>[0-9]+)', views.experiment_json, name='experiment_json'),

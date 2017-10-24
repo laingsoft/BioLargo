@@ -165,8 +165,12 @@ This parser is used by the upload form (sends JSON to server)
 Does allow user to upload JSON as well, but who would do that...
 '''
 class JsonParser(BaseParser):
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
+        fp = kwargs.pop('fp')
+        metadata_fields = kwargs.pop('metadata_fields')
+        user = kwargs.pop('user')
         super().__init__(fp, metadata_fields, user)
+        self.parse()
         
     def parse(self):
         data = self.fp.read()

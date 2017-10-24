@@ -257,54 +257,23 @@ def experiments_list(request):
             
         query_dict = dict(request.GET)
                     
-        qs = Experiment.objects.all().values(
-        'id',
-        'reactor_diameter',
-        'reactor_length',
-        'num_chambers',
-        'removal_target',
-        'reactor_age',
-        'group__name').order_by(sort_field)
+        data = Experiment.objects.all().values('id','metadata')
         
-        try:
-            data = qs.order_by(sort_field)
-        except django.core.exceptions.FieldError:
-            pass
-            
-            
-        # parse the fields search if it exists.
-        try:
-            query_dict['fields[]']
-        except KeyError:
-            # do nothing if no field keywords.
-            pass
-            
-        #~ dictionary of all filters. 
-        filters = {
-            "id" : (lambda qs, q : qs.filter(id = q[0])),
-            "num_chambers" : (lambda qs, q :  qs.filter(num_chambers = q[0])),
-            "reactor_diameter" : (lambda qs, q :  qs.filter(reactor_diameter = q[0])),
-            "reactor_length" : (lambda qs, q :  qs.filter(reactor_length = q[0])),
-            "removal_target" : (lambda qs, q :  qs.filter(removal_target__icontains = q[0])),
-            "reactor_age" : (lambda qs, q :  qs.filter(reactor_age = q[0])),
-            "group__name" : (lambda qs, q :  qs.filter(group__name__icontains = q[0])),
-            "tags[]" : (lambda qs, q :  qs.filter(tags__name__in = q).distinct()),
-            "fields[]": (lambda qs , q : qs.filter(experimentdata__experimentData__contains = q).distinct())
-        }
-        
-        for item in query_dict:
-            try:
-                qs = filters[item](qs, query_dict[item])
-            except KeyError:
-                # ignore any filters that are not in the filters dict
-                pass
-                
-        itemsCount = qs.count()
-        tags = qs.values('id', 'tags')
-        data = qs[offset: offset + size]
-        data = list(qs)
+        # convert data to a list and format
+        data = list(data)
         
         for item in data:
-            item['tags'] = ', '.join([str(i) for i in tags.filter(id=item['id']).values_list('tags__name', flat=True)])
+            item.update(item['metadata'])
+            del item['metadata']
+
+        itemsCount = len(data)
 
         return JsonResponse({'data':data, 'itemsCount': [itemsCount]}) 
+        
+# TODO: implement this function.
+def get_metadata_template(request):
+    # get template from somewhere....
+    metadata = list(metadata_fields)
+    metadata.insert(0, 'id')
+    
+    return JsonResponse({'data': metadata})

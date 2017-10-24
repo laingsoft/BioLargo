@@ -69,8 +69,6 @@ function parse_data() {
 
 $("#template-save").click(function() {
     name = $('#template-name').val();
-    
-    alert(name);
 
     if (name) {
         $.post("/app/save_template",
