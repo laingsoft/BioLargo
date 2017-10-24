@@ -1,101 +1,138 @@
+var container = document.getElementById('experiment-data');
+var templates;
+var col;
+var hot;
 var csrftoken;
 
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
+//~ function getCookie(name) {
+    //~ var cookieValue = null;
+    //~ if (document.cookie && document.cookie !== '') {
+        //~ var cookies = document.cookie.split(';');
+        //~ for (var i = 0; i < cookies.length; i++) {
+            //~ var cookie = cookies[i].trim();
 
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
+            //~ if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                //~ cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                //~ break;
+            //~ }
+        //~ }
+    //~ }
+    //~ return cookieValue;
+//~ }
 
+//~ function load_template(template) {
+    //~ fields = template.fields;
+    //~ col = fields.map(function(field) {
+        //~ return {
+            //~ data: field
+        //~ };
+    //~ });
+    
+    //~ hot.updateSettings({
+        //~ colHeaders: fields,
+        //~ columns: col
+    //~ });
+//~ }
 
 function get_template(template_name) {
     $.get("/app/get_template", {
         template: template_name
-    }, function(response){
-        
-        });
+    }, load_template);
 }
 
-
-
-
-$(document).ready(function(){
-
-    csrftoken = getCookie('csrftoken');
-    $.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-    });
+function parse_data() {
+    headers = hot.getColHeader();
+    data = hot.getData();
     
+    metadata = document.getElementById("metadata-fields");
+    metadata = metadata.getElementsByTagName("input");
 
+    metadata_values = {}
+    
+    for (var i = 0 ; i < metadata.length; i++){
+        metadata_values[metadata[i].name] = metadata[i].value
+    }
+    
+    console.log(metadata_values);
+    
+    var parsed = [];
+    for (row = 0; row < data.length; row++) {
+        d = {};
+        for (h = 0; h < headers.length; h++) {
+            d[headers[h]] = data[row][h];
+        }
+        parsed.push(d);
+    }
 
-    //~ $("input[type=radio]").change(function(){
-        //~ var current = $("#form > .upload_fields");
-        //~ $("#form").append($("#hidden_fields > .upload_fields"));
-        //~ $("#hidden_fields").append(current);
+    document.getElementById("id_data-json").value = JSON.stringify({'metadata': metadata_values, 'data': parsed});
+};
+
+//~ function save_template() {
+    //~ name = $('#template-name').val();
+
+    //~ if (name) {
+        //~ $.post("/app/save_template",
+            //~ JSON.stringify({
+                //~ name: name,
+                //~ fields: hot.getColHeader()
+            //~ }));
+    //~ }
+
+    //~ $('#template-name').val('');
+    //~ $('#template-modal').modal('hide')
+//~ }
+
+//~ function add_var() {
+    //~ name = $('#var-name').val();
+
+    //~ headers = hot.getColHeader();
+    //~ headers = headers.filter(function(e) {
+        //~ return e;
     //~ });
     
-    //~ Autocomplete/tagging initalization
-    $('#id_tags-group').selectize({
-        preload: true,
-        plugins: ["restore_on_backspace"],
-        placeholder: 'Enter Experiment Group',
-        create: true,
-        createOnBlur: true,
-        maxItems: 1,
-        persist: false
+    //~ if (headers.length === 0){
+        //~ col = []
+    //~ }
+    //~ headers.push(name);
+
+    //~ col.push({data: name
+    //~ })
+    //~ hot.updateSettings({
+        //~ colHeaders: headers,
+        //~ columns: col
+    //~ });
+    
+    //~ $('#var-name').val('');
+    //~ $('#var-modal').modal('hide')
+//~ }
+
+
+document.addEventListener("DOMContentLoaded", function(event){
+    
+    hot = new Handsontable(container, {
+    data: [[]],
+    rowHeaders: true,
+    colHeaders: true,
+    contextMenu: true,
+    preventOverflow: 'horizontal',
+    manualColumnMove: true,
+    manualRowMove: true,
     });
     
-    $('#id_tags-tags').selectize({
-        preload: true,
-        placeholder: 'Enter Tags',
-        plugins: ['remove_button', "restore_on_backspace" ],
-        delimiter: ',',
-        create: true,
-        createOnBlur: true,
-        persist: false,
-        hideSelected: true
-        });
+    //~ csrftoken = getCookie('csrftoken');
+    //~ $.ajaxSetup({
+    //~ beforeSend: function(xhr, settings) {
+        //~ xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        //~ }
+    //~ });
     
-    $('#var-name').selectize({
-        valueField: 'value',
-        labelField: 'key',
-        searchField: 'value',
-        plugins: ["restore_on_backspace"],
-        placeholder: 'Enter variable name',
-        create: true,
-        createOnBlur: true,
-        maxItems: 1,
-        persist: false,
-        options: [],
-        load: function(query, callback) {
-            if (!query.length) return callback();
-            $.ajax({
-            url: '/app/fields-autocomplete',
-            type: 'GET',
-            dataType: 'json',
-            data: {
-                q: query
-            },
-            error: function() {
-                callback();
-            },
-            success: function(res) {
-                callback(res.data);
-            }
-        });
-            
-        }
-    });
+    document.getElementById('add-row').onclick = function() {
+    hot.alter('insert_row', 1);
+    };
+
+    //~ document.getElementById('template-select').onchange = function() {
+        //~ get_template($(this).val());
+    //~ };
+    
 })
 
