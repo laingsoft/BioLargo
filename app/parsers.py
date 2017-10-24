@@ -1,7 +1,7 @@
 from abc import ABC, abstractclassmethod
 import csv 
 from ast import literal_eval
-from app.models import Experiment, ExperimentData, Fields
+from app.models import Experiment, ExperimentData, Fields, Comment
 from magic import from_buffer
 import copy
 import json
@@ -24,6 +24,7 @@ class BaseParser(ABC):
         self.comments = [] # a list of strings
         self.user = user 
         self.experiment = None
+        print ("user =", self.user)
         
     @abstractclassmethod
     def parse(self):
@@ -33,35 +34,41 @@ class BaseParser(ABC):
         # move fields around if needed.  
         move = {} 
         for field in self.metadata.keys():
-            if field not in metadata:
-                move[field] = metadata[field]
-                del(metadata[field])
+            if field not in self.metadata:
+                move[field] = self.metadata[field]
+                del(self.metadata[field])
 
         # pull out comments + add extra fields to each row
         for row in self.data:
-            if row[self.comment_field]:
-                self.comments.append(row[self.comment_field])
+            try:
+                comment = row[self.comment_field]
+                if comment:
+                    self.comments.append(comment)
+                del row[self.comment_field]
+            except:
+                pass
+                # do nothing if no comment field or comment field name not correct.
             row.update(move)
         
     
     def create_objects(self, group, tags):
         # Create the fields if they don't already exist
-        for item in self.parsed[data][0].keys():
-            field = Field.objects.get_or_create(name=item.lower())
+        for item in self.data[0].keys():
+            field = Fields.objects.get_or_create(name=item.lower())
             
         # Create Experiment object
         self.experiment = Experiment(
             metadata = self.metadata, 
-            user = user) # TODO: add other parameters (forgot what else goes here)
+            group = group) # TODO: add other parameters
+        
+        self.experiment.save()
         
         # add tags
         self.experiment.tags.add(*tags)
-         
-        self.experiment.save()
         
         # create comments
         for comment in self.comments:
-            c = Comment(experiment = self.experiment, User = self.user, content = comment)
+            c = Comment(experiment = self.experiment, user = self.user, content = comment)
             c.save()
             
         # Create ExperimentData objects
@@ -94,35 +101,30 @@ The parser will assume the metadata is a separate line at the
 beginning of the file
 '''
 class CsvParser(BaseParser):
-    def __init__(self, fp, metadata_fields, user, comment_field = "comments"):
-        super().__init__(fp, user, metadata_fields)
-        try:
-            self.delimiter = find_delmiter()
-        except: 
-            raise ValueError 
-            
-        self.comment_field = comment_field
+    def __init__(self, fp, metadata_fields, user, comment_field = "Comments", delimiter=","):
+        super().__init__(fp = fp, user = user, metadata_fields = metadata_fields)
         
-        parse()
+        self.delimiter = delimiter
+        self.comment_field = comment_field
+        self.parse()
                 
     def parse(self):
-        reader = csv.DictReader(csv_file)
+        reader = csv.DictReader(self.fp)
         
         self.metadata = next(reader)
         
         try:
-            del metadata[''] # remove empty key from trailing comma
+            del self.metadata[''] # remove empty key from trailing comma
         except KeyError:
             # do nothing if there is no trailing comma
             pass
 
-        reader = csv.DictReader(csv_file)
+        reader = csv.DictReader(self.fp)
         
         for line in reader:
             self.data.append(line)
             
-        reformat_data()
-        
+        self.reformat_data()        
         
 '''
 JSON Parser
@@ -190,7 +192,7 @@ class Parser():
         if file_type:
             self.file_type = file_type
         else:
-            self.file_type = find_file_type() 
+            self.file_type = self.find_file_type() 
 
         # remember to catch the key error if file type not supported in view
         self.parser = parsers[self.file_type](**kwargs)
@@ -200,5 +202,4 @@ class Parser():
         
     # determines file type using MIME type, magic number and file extension 
     def find_file_type(self):
-        pass
-        
+        return "CSV" #TODO: implement this function.

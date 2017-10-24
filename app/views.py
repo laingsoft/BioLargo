@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from .parsers import Parser
@@ -41,18 +41,26 @@ def upload_file(request):
         groups_tags = GroupsTags(request.POST, prefix="tags")
         file_upload = FileUpload(request.POST, request.FILES, prefix="file")
         
-        if group_tags.is_valid() and file_upload.is_valid():
+        if groups_tags.is_valid() and file_upload.is_valid():
             # groups and tags are created/fetched on validation.
             g = groups_tags.cleaned_data.get('group')
             t = groups_tags.cleaned_data.get('tags')
             
             # parse the file.
             try:
-                parser = Parser()
+                parser = Parser(fp = TextIOWrapper(request.FILES['file-upload_file'], encoding=request.encoding), 
+                metadata_fields = metadata_fields, 
+                user = request.user,
+                file_type = "CSV"
+                )
             except KeyError:
                 return HttpResponseBadRequest('File type not supported')
                 
-            return HttpResponseRedirect('/app/upload/success/' + str(parser.get_experiment))
+            # show user the parsed data (Implement eventually)
+            parser = parser.get_parser()
+            parser.create_objects(g, t)
+
+            return HttpResponseRedirect('/app/upload/success/' + str(parser.get_experiment()))
             
         return HttpResponse("Error uploading experiment")
     
@@ -285,7 +293,6 @@ def experiments_list(request):
             "removal_target" : (lambda qs, q :  qs.filter(removal_target__icontains = q[0])),
             "reactor_age" : (lambda qs, q :  qs.filter(reactor_age = q[0])),
             "group__name" : (lambda qs, q :  qs.filter(group__name__icontains = q[0])),
-            "tags[]" : (lambda qs, q :  qs.filter(tags__name__in = q).distinct()),
             "tags[]" : (lambda qs, q :  qs.filter(tags__name__in = q).distinct()),
             "fields[]": (lambda qs , q : qs.filter(experimentdata__experimentData__contains = q).distinct())
         }
