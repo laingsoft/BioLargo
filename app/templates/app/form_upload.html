@@ -1,6 +1,6 @@
 {{experiment_data}}
 {% load static %}
-<div class="form-group row" id= "metadata-fields">
+<div class="form-group" id= "metadata-fields">
     <legend>Metadata</legend>
     {% for field in  metadata %}
         <div class="col-sm-10">
@@ -10,7 +10,7 @@
     {% endfor %}
 </div>
 
-<div class="form-group row">
+<div class="form-group">
     <legend>Experiment Data</legend>
     <div class="form-group col-sm-10">
         <label>
@@ -23,16 +23,16 @@
         </label>
 
 
-    <button type="button" class="btn btn-info btn-sm" id="add-row" >Add Row</button>
-    <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#var-modal" >Add Variable</button>
-    <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#template-modal" >Save Template</button>
+        <button type="button" class="btn btn-info btn-sm" id="add-row" >Add Row</button>
+        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#var-modal" >Add Variable</button>
+        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#template-modal" >Save Template</button>
 
 
     </div>
 </div>
 
-<div class="form-group" id="experiment-data">
+<div class="form-group" id="experiment-data"></div>
+
+
+
     
-    
-<script src="https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.34.4/handsontable.full.min.js"></script>
-<script src="{% static 'app/js/exp_input.js'%}"></script>

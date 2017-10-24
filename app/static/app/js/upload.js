@@ -1,14 +1,23 @@
+var url; 
 $("input[type=radio]").change(function(){
     url = $(this).val()
     $("#exp-form").attr("action", url);
+    if (url === "/app/upload_form"){
+        $.getScript("https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.34.4/handsontable.full.min.js", function(){
+            $.getScript("/static/app/js/exp_input.js");
+            });    
+        }
+    
     $.get(url, {}, function(result){
         form = $("#form");
         form.removeAttr("hidden");
         form.html(result);
         })
+        
+    
 });
 
-//~ Autocomplete/tagging initalization
+//~ Autocomplete initalization
 
     $('#id_tags-group').selectize({
     preload: true,
@@ -31,3 +40,36 @@ $('#id_tags-tags').selectize({
     hideSelected: true
     });
     
+    
+$('#var-name').selectize({
+        valueField: 'value',
+        labelField: 'key',
+        searchField: 'value',
+        plugins: ["restore_on_backspace"],
+        placeholder: 'Enter variable name',
+        create: true,
+        createOnBlur: true,
+        maxItems: 1,
+        persist: false,
+        options: [],
+        load: function(query, callback) {
+            if (!query.length) return callback();
+            $.ajax({
+            url: '/app/fields-autocomplete',
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                q: query
+            },
+            error: function() {
+                callback();
+            },
+            success: function(res) {
+                callback(res.data);
+            }
+        });
+            
+    }
+});
+
+

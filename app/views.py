@@ -103,7 +103,7 @@ def upload_form(request):
         context = {
             'experiment_data': experiment_data,
             'metadata': metadata,
-            'templates': Template.objects.all().values_list('name')
+            'templates': Template.objects.all().values_list('name', flat=True)
         }
         return HttpResponse(render_to_string('app/form_upload.html', context))
 
@@ -137,18 +137,13 @@ def save_template(request):
                 return JsonResponse({'success': False, 'error': "Name already exists"})
                 
             template = Template(name = name)
+            template.save()
                 
             f = []
             for field in fields:
-                f.append(Fields.objects.get_or_create(name__iexact=field)[0])
+                f.append(Fields.objects.get_or_create(name=field)[0])
             
-            template.save()
-            
-            for field in f:
-                field.save()
-                template.fields.add(field)
-                
-            template.save()
+            template.fields.add(*f)
             
             return JsonResponse({'success' : True})
             

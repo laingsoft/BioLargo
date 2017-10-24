@@ -179,7 +179,6 @@ class JsonParser(BaseParser):
         self.comments = data['comments']
         
 # dictionary of available parsers. 
-# the key is the first part of the output of the file command.
 parsers = {
     'CSV' : CsvParser,
     'JSON' : JsonParser,

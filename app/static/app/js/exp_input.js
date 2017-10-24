@@ -4,35 +4,35 @@ var col;
 var hot;
 var csrftoken;
 
-//~ function getCookie(name) {
-    //~ var cookieValue = null;
-    //~ if (document.cookie && document.cookie !== '') {
-        //~ var cookies = document.cookie.split(';');
-        //~ for (var i = 0; i < cookies.length; i++) {
-            //~ var cookie = cookies[i].trim();
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
 
-            //~ if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                //~ cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                //~ break;
-            //~ }
-        //~ }
-    //~ }
-    //~ return cookieValue;
-//~ }
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
-//~ function load_template(template) {
-    //~ fields = template.fields;
-    //~ col = fields.map(function(field) {
-        //~ return {
-            //~ data: field
-        //~ };
-    //~ });
+function load_template(template) {
+    fields = template.fields;
+    col = fields.map(function(field) {
+        return {
+            data: field
+        };
+    });
     
-    //~ hot.updateSettings({
-        //~ colHeaders: fields,
-        //~ columns: col
-    //~ });
-//~ }
+    hot.updateSettings({
+        colHeaders: fields,
+        columns: col
+    });
+}
 
 function get_template(template_name) {
     $.get("/app/get_template", {
@@ -67,72 +67,72 @@ function parse_data() {
     document.getElementById("id_data-json").value = JSON.stringify({'metadata': metadata_values, 'data': parsed});
 };
 
-//~ function save_template() {
-    //~ name = $('#template-name').val();
-
-    //~ if (name) {
-        //~ $.post("/app/save_template",
-            //~ JSON.stringify({
-                //~ name: name,
-                //~ fields: hot.getColHeader()
-            //~ }));
-    //~ }
-
-    //~ $('#template-name').val('');
-    //~ $('#template-modal').modal('hide')
-//~ }
-
-//~ function add_var() {
-    //~ name = $('#var-name').val();
-
-    //~ headers = hot.getColHeader();
-    //~ headers = headers.filter(function(e) {
-        //~ return e;
-    //~ });
+$("#template-save").click(function() {
+    name = $('#template-name').val();
     
-    //~ if (headers.length === 0){
-        //~ col = []
-    //~ }
-    //~ headers.push(name);
+    alert(name);
 
-    //~ col.push({data: name
-    //~ })
-    //~ hot.updateSettings({
-        //~ colHeaders: headers,
-        //~ columns: col
-    //~ });
-    
-    //~ $('#var-name').val('');
-    //~ $('#var-modal').modal('hide')
-//~ }
+    if (name) {
+        $.post("/app/save_template",
+            JSON.stringify({
+                name: name,
+                fields: hot.getColHeader()
+            }));
+    }
 
+    $('#template-name').val('');
+    $('#template-modal').modal('hide')
+});
 
-document.addEventListener("DOMContentLoaded", function(event){
-    
-    hot = new Handsontable(container, {
-    data: [[]],
-    rowHeaders: true,
-    colHeaders: true,
-    contextMenu: true,
-    preventOverflow: 'horizontal',
-    manualColumnMove: true,
-    manualRowMove: true,
+$("#var-save").click(function() {
+    name = $('#var-name').val();
+
+    headers = hot.getColHeader();
+    headers = headers.filter(function(e) {
+        return e;
     });
     
-    //~ csrftoken = getCookie('csrftoken');
-    //~ $.ajaxSetup({
-    //~ beforeSend: function(xhr, settings) {
-        //~ xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        //~ }
-    //~ });
-    
-    document.getElementById('add-row').onclick = function() {
-    hot.alter('insert_row', 1);
-    };
+    if (headers.length === 0){
+        col = []
+    }
+    headers.push(name);
 
-    //~ document.getElementById('template-select').onchange = function() {
-        //~ get_template($(this).val());
-    //~ };
+    col.push({data: name
+    })
+    hot.updateSettings({
+        colHeaders: headers,
+        columns: col
+    });
     
-})
+    $('#var-name').val('');
+    $('#var-modal').modal('hide')
+});
+
+
+hot = new Handsontable(container, {
+data: [['']],
+rowHeaders: true,
+colHeaders: get_template(),
+contextMenu: true,
+preventOverflow: 'horizontal',
+manualColumnMove: true,
+manualRowMove: true,
+});
+
+csrftoken = getCookie('csrftoken');
+$.ajaxSetup({
+beforeSend: function(xhr, settings) {
+    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+    }
+});
+
+document.getElementById('add-row').onclick = function() {
+hot.alter('insert_row', 1);
+};
+
+document.getElementById('template-select').onchange = function() {
+    get_template($(this).val());
+};
+
+
 
