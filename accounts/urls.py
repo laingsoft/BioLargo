@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^register/',views.register),
     url(r'^user/(?P<usr_id>[0-9]+)', views.userpage),
     url(r'^profile/', views.profile),
-    url(r'^userlist/', views.userlist)
+    url(r'^userlist/', views.userlist),
+    url(r'^messages/', views.messaging),
     ]
 

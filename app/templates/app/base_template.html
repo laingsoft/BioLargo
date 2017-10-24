@@ -60,7 +60,8 @@
 
     <div class="container-fluid">
       <div class = "row">
-        <nav class="col-sm-3 col-md-2 d-none d-sm-block bg-light sidebar">
+        <div class = "col-md-2 col-sm-2">
+        <nav class="col-xs-1 d-none d-sm-block bg-dark sidebar">
           <ul class="nav nav-pills flex-column">
             <li class="nav-item">
               <a class="nav-link" href="/app/">Overview</a>
@@ -71,10 +72,32 @@
             <li class="nav-item">
               <a class="nav-link" href="/app/analysis/">Analysis</a>
             </li>
-            </ul>
+          </ul>
+          
+          <ul class="nav nav-pills flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="/app/experiments/">Experiments</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/manage/planner/">Planner</a>
+            </li>
+          </ul>
+          
+          <ul class="nav nav-pills flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="/accounts/userlist/">Users</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/app/watched/">Watched</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/accounts/messages/">Messaging</a>
+            </li>
+          </ul>
 
         </nav>
-        <main class = "col-sm-9 ml-sm-auto col-md-10 pt-3" role="main">
+        </div>
+        <main class = "col-sm-11 ml-sm-auto col-md-11 pt-3" role="main">
           {% block content%}
           {% endblock %}
         </main>
