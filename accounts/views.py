@@ -73,3 +73,7 @@ def userlist(request):
         usrlist = User.objects.all()
 
         return render(request, 'accounts/users.html', {'user_list':usrlist , 'usr':usr})
+
+def messaging(request):
+        usr = get_user(request)
+        return render(request, 'accounts/messages.html', {'usr':usr})
