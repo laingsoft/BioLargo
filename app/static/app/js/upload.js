@@ -13,8 +13,6 @@ $("input[type=radio]").change(function(){
         form.removeAttr("hidden");
         form.html(result);
         })
-        
-    
 });
 
 //~ Autocomplete initalization

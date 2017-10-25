@@ -129,58 +129,28 @@ class CsvParser(BaseParser):
 '''
 JSON Parser
 ========================================================================
-#JSON structure expected:
-        { 
-        "metadata": {
-                "field1" : value,
-                "field2": value,
-                ...
-            },
-        "data":[
-            {
-                "field1": value,
-                "field2": value,
-                ...
-                },
-            {
-                "field1": value,
-                "field2": value,
-                },
-            ...
-            ]
-        "comments":[
-            {
-                "person": person,
-                "content": content
-                },
-            {
-                "person": person,
-                "content": content
-                }
-            ...
-            ]
-        }
+#JSON expected keys:
+ - metadata
+ - data
+ - comments
 ========================================================================
 This parser is used by the upload form (sends JSON to server)
 Does allow user to upload JSON as well, but who would do that...
 '''
 class JsonParser(BaseParser):
-    def __init__(self, *args, **kwargs):
-        fp = kwargs.pop('fp')
-        metadata_fields = kwargs.pop('metadata_fields')
-        user = kwargs.pop('user')
+    def __init__(self, fp, user, metadata_fields, *args, **kwargs):
         super().__init__(fp, metadata_fields, user)
         self.parse()
         
     def parse(self):
         data = self.fp.read()
         data = json.loads(data) # Will throw ValueError if not valid JSON
-        
+            
         
         # will throw KeyError if not expected format
         self.metadata = data['metadata']
         self.data = data['data']
-        self.comments = data['comments']
+        self.comments = data.get('comments', [])
         
 # dictionary of available parsers. 
 parsers = {

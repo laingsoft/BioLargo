@@ -1,11 +1,13 @@
 {{experiment_data}}
 {% load static %}
+
 <div class="form-group" id= "metadata-fields">
     <legend>Metadata</legend>
+    
     {% for field in  metadata %}
         <div class="col-sm-10">
-        <label for= id_{{field|slugify}}>{{ field }}</label>
-        <input class="form-control" type="text" name="{{ field|slugify}}_field" id = "id_{{field|slugify}}" placeholder = "Enter {{ field }}" required>
+        <label for= "id_{{field|slugify}}">{{ field }}</label>
+        <input class="form-control" type="text" id = "id_{{field|slugify}}" placeholder = "Enter {{ field }}" required>
         </div>
     {% endfor %}
 </div>

@@ -40,33 +40,6 @@ function get_template(template_name) {
     }, load_template);
 }
 
-function parse_data() {
-    headers = hot.getColHeader();
-    data = hot.getData();
-    
-    metadata = document.getElementById("metadata-fields");
-    metadata = metadata.getElementsByTagName("input");
-
-    metadata_values = {}
-    
-    for (var i = 0 ; i < metadata.length; i++){
-        metadata_values[metadata[i].name] = metadata[i].value
-    }
-    
-    console.log(metadata_values);
-    
-    var parsed = [];
-    for (row = 0; row < data.length; row++) {
-        d = {};
-        for (h = 0; h < headers.length; h++) {
-            d[headers[h]] = data[row][h];
-        }
-        parsed.push(d);
-    }
-
-    document.getElementById("id_data-json").value = JSON.stringify({'metadata': metadata_values, 'data': parsed});
-};
-
 $("#template-save").click(function() {
     name = $('#template-name').val();
 
@@ -106,11 +79,13 @@ $("#var-save").click(function() {
     $('#var-modal').modal('hide')
 });
 
+get_template($("#template-select").val());
+
 
 hot = new Handsontable(container, {
 data: [['']],
 rowHeaders: true,
-colHeaders: get_template(),
+colHeaders: col,
 contextMenu: true,
 preventOverflow: 'horizontal',
 manualColumnMove: true,
@@ -124,13 +99,42 @@ beforeSend: function(xhr, settings) {
     }
 });
 
-document.getElementById('add-row').onclick = function() {
+$('#add-row').click(function() {
 hot.alter('insert_row', 1);
-};
+});
 
-document.getElementById('template-select').onchange = function() {
+$('#template-select').change(function() {
     get_template($(this).val());
-};
+});
 
+$("#exp-form").submit(function(e) {
+    
+    $("#template-select").attr("disabled")
+    headers = hot.getColHeader();
+    data = hot.getData();
+    
+    metadata = document.getElementById("metadata-fields");
+    metadata = metadata.getElementsByTagName("input");
 
+    metadata_values = {}
+    
+    for (var i = 0 ; i < metadata.length; i++){
+        key = metadata[i].labels[0].textContent
+        metadata_values[key] = metadata[i].value
+    }
+    
+    console.log(metadata_values)
+    
+    var parsed = [];
+    for (row = 0; row < data.length; row++) {
+        d = {};
+        for (h = 0; h < headers.length; h++) {
+            d[headers[h]] = data[row][h];
+        }
+        parsed.push(d);
+    }
+    console.log(parsed)
+
+    $("#id_data-json").val(JSON.stringify({'metadata': metadata_values, 'data': parsed}));
+}); 
 

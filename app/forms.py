@@ -6,7 +6,7 @@ import json
 from django.core.exceptions import ValidationError
 from django.utils.encoding import force_text
 from .parsers import JsonParser
-from io import StringIO
+
 
 # custom choice fields for suggesting models
 class ModelSuggestField(forms.ModelChoiceField):
@@ -59,23 +59,13 @@ class ModelMultipleSuggestField(forms.ModelMultipleChoiceField):
         return qs
         
         
-class ExperimentField(forms.CharField):
-    def to_python(self, value):
-        value = super().to_python(value) # unicode string with excess spaces removed.
-        try:
-            parser = JsonParser(StringIO(value))
-            
-        except (TypeError, ValueError, KeyError):
-            raise ValidationError(self.error_messages['Invalid JSON'], code='Invalid JSON')
-            
-        return parser
             
 # forms for uploading experiments.
 # ----------------------------------------------------------------------
 
 # for metadata, experiment data. Might just write a custom field for this
 class ExperimentForm(forms.Form):
-    json = ExperimentField(widget=forms.HiddenInput())
+    json = forms.CharField(widget=forms.HiddenInput())
 
 # For uploading files (of any type)
 class FileUpload(forms.Form):

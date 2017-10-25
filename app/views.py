@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotFound
 from django.http import JsonResponse
 from django.template.loader import render_to_string
-from .parsers import Parser
+from .parsers import Parser, JsonParser
 from .models import *
 from io import TextIOWrapper
 from django.contrib.auth.decorators import login_required
@@ -10,6 +10,7 @@ from django.contrib.auth import get_user
 import json
 import csv
 from .forms import FileUpload, GroupsTags, ExperimentForm
+from io import StringIO
 
 HEADER_LIST = ["ID", "Chambers","Diameter","Length","Target","Age (mL)"]
 metadata_fields = ["Reactor Diameter [inch]", "Reactor Length [inch]", "#Chambers",	"Date (d/m/y)",	"Removal Target", "Age of reactor [L]"]
@@ -66,7 +67,8 @@ def upload_file(request):
     
     if request.method == "GET":
         # TODO: fill in the template here.
-        return HttpResponse(render_to_string('app/file_upload.html', {'form': FileUpload(prefix="file")}))
+        form = FileUpload(prefix="file")
+        return HttpResponse(render_to_string('app/file_upload.html', {'form': form}))
         
     return HttpResponseNotFound('<h1>Page not found</h1>') # change to more appropriate error later
 
@@ -76,26 +78,32 @@ def upload_form(request):
     if request.method == "POST":
         group_tags = GroupsTags(request.POST, prefix="tags")
         experiment_data = ExperimentForm(request.POST, prefix = 'data')
-        
+        print(request.POST)
         if group_tags.is_valid() and experiment_data.is_valid():
-            pass
             
             # get group and tags (created on validation)
-            # get metadata template
-            # try:
-            #    parse experiment data with JSON parser
-            # except TypeError:
-            #   return error
-            # parser.create_objects(group, tags)
+            g = group_tags.cleaned_data.get('group')
+            t = group_tags.cleaned_data.get('tags')
             
-            # return success 
+            # get string from experiment_data
+            data = experiment_data.cleaned_data.get("json")
             
+            # TODO:
+            # get metadata fields for user's company
+            
+            # create parser
+            parser = JsonParser(StringIO(data), request.user, metadata_fields)
+            
+            # create objects
+            parser.create_objects(g, t)
+            
+            # redirect to success
+            return HttpResponseRedirect('/app/upload/success/' + str(parser.get_experiment()))
+
         
     if request.method == "GET":
         # get metdata template
         # create ExperimentForm
-        
-      
         experiment_data = ExperimentForm(prefix = 'data')
         metadata = metadata_fields #TODO: get the template from database
         
