@@ -229,19 +229,12 @@ def analysis_page(request):
 #~ From get request:
     #~ pageIndex     // current page index
     #~ pageSize      // the size of page
+    #~ group
+    #~ tags
     #~ sortField     // the name of sorting field
     #~ sortOrder     // the order of sorting as string "asc"|"desc"
     
-    #~ "id" : search
-    #~ "num_chambers" : search
-    #~ "reactor_diameter" : search
-    #~ "reactor_length" : search
-    #~ "removal_target" : search
-    #~ "reactor_age" : search
-    #~ "group__name" : search
-    #~ "tags[]" : search (list)
-    #~ "fields" : search (list)
-
+    #~ metadata_filters[] 
 #~ returns
 
 #~ {
@@ -262,19 +255,33 @@ def experiments_list(request):
         if sort_order == 'desc':
             sort_field = '-' + sort_field
             
-            
-        query_dict = dict(request.GET)
-                    
+        #~ the base queryset
         data = Experiment.objects.all().values('id','metadata')
         
+        # filters for metadata and experiment data
+        metadata_filters = request.GET.getlist("metadata_filters[]", [])
+        metadata_filters = {val.split('=')[0] : val.split('=')[1] for val in metadata_filters}
+        
+        data = data.filter(metadata__contains = metadata_filters)
+
+        experiment_filters = request.GET.getlist("experiment_filters[]", [])
+        experiment_filters = {val.split('=')[0] : val.split('=')[1] for val in experiment_filters}
+        
+        data = data.filter(experimentdata_experimentData__contains = experiment_filters).distinct()
+        
+        # filtering by group and tags
+        
         # convert data to a list and format
+        
+        itemsCount = data.count()
+        # limit number of results.
+        
+        # change data format to match what is used by table
         data = list(data)
         
         for item in data:
             item.update(item['metadata'])
             del item['metadata']
-
-        itemsCount = len(data)
 
         return JsonResponse({'data':data, 'itemsCount': [itemsCount]}) 
         

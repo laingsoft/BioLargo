@@ -30,8 +30,8 @@ class BaseParser(ABC):
     def parse(self):
         pass
         
+    # move fields around if needed.
     def reformat_data(self):
-        # move fields around if needed.  
         move = {} 
         for field in self.metadata.keys():
             if field not in self.metadata:
@@ -49,8 +49,7 @@ class BaseParser(ABC):
                 pass
                 # do nothing if no comment field or comment field name not correct.
             row.update(move)
-        
-    
+               
     def create_objects(self, group, tags):
         # Create the fields if they don't already exist
         for item in self.data[0].keys():
