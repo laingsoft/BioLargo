@@ -64,3 +64,7 @@ class Comment(models.Model):
 
     
     
+class Activity(models.Model):
+    action = models.CharField(max_length = 100)
+    user = models.ForeignKey(User)
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
