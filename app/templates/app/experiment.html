@@ -4,40 +4,29 @@
 
 
 {% block content %}
+<script "javascript">metadata = {{metadata | safe}};</script>
 <h2>Overview</h2>
 <div class="row">
   <canvas id="removalChart" class= "col-md-3" width="100" height = "100"></canvas>
-  <div class = "card col-md-8 mb-5 ml-5">
-    <h2 class = "card-title">Experiment {{this_experiment.0.0}} </h2>
-    <div class = "table-responsive card-block">
-      <table class="table table-responsive">
-        <thead>
-          <tr>
-            {% for header in header_list %}
-            <th>{{header}}</th>
-            {% endfor %}
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="metadatarow">
-            {% for i in this_experiment %}
-            {% for y in i %}
-            <td>{{y}}</td>
-            {% endfor %}
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class = "col-md-8 mb-5 ml-5">
+    <div class = "card">
+      <h2 class = "card-header">{{this_experiment.friendly_name}} </h2>
+      <div class = "card-body">
+        <div class="table-responsive">
+          <table class = "table table-responsive" id="metadata-table">
+          </table>
+        </div>
+        <form action="/app/experiment/csv/{{this_experiment.id}}">
+          <div class="form-group pl-2">
+            <input type="checkbox" class="form-check-input">Include Header</input>
+            <button type="submit" class="btn btn-primary">Export CSV</button>
+          </div>
+        </form>
+      </div>
     </div>
-    <form action="/app/experiment/csv/{{this_experiment.0.0}}">
-    <div class="form-group col-sm-4">
-      <input type="checkbox" class="form-check-input">Include Header</input>
-      <button type="submit" class="btn btn-primary">Export CSV</button>
     </div>
-    </form>
-  </div>
-
 </div>
+
 <div class="card">
      <h2 class = "card-header">Data</h2>
      <div class="table-responsive">
@@ -45,6 +34,7 @@
        </table>
      </div>
 </div>
+
 
 <div class="card mt-2">
   <h2 class = "card-header">Dangerous Stuff </h2>
@@ -73,7 +63,7 @@
     </div>
   </div>
 </div>
-  <script>var id={{this_experiment.0.0}};</script>
+  <script>var id={{this_experiment.id}};</script>
   {% load static %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>

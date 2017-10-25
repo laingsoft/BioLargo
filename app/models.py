@@ -30,6 +30,7 @@ class Experiment(models.Model):
     group = models.ForeignKey(Group)
     tags = models.ManyToManyField(Tag)
     metadata = JSONField(default = '') # remove the default later.
+    friendly_name = models.CharField(max_length=255, default = 0)
 
     def __str__(self):
         return ("Experiment| Group: {0}, Chambers: {1}, Target: {2}".format(str(self.group), str(self.num_chambers),str(self.removal_target)))

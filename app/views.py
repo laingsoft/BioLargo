@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.http import JsonResponse
+from django.core.serializers.json import DjangoJSONEncoder
 from django.template.loader import render_to_string
 from .parsers import Parser
 from .models import *
@@ -174,8 +175,9 @@ def upload_success(request, exp_id):
 @login_required
 def experiment(request, exp_id):
     user = get_user(request)
-    this_experiment = Experiment.objects.values_list().filter(id=exp_id)
-    return render(request,"app/experiment.html", {"this_experiment":this_experiment, "usr":user, "header_list": HEADER_LIST})
+    this_experiment = Experiment.objects.get(id=exp_id)
+    metadata = json.dumps(this_experiment.metadata)
+    return render(request,"app/experiment.html", {"this_experiment":this_experiment, "usr":user, "metadata":metadata})
     
 @login_required
 def experiment_json(request, exp_id):
