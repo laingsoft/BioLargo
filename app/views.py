@@ -244,6 +244,7 @@ def analysis_page(request):
 @login_required
 def experiments_list(request):
     if request.method == 'GET':
+        
         filters = {}
         
         page = int(request.GET.get("pageIndex", 1))
@@ -270,12 +271,9 @@ def experiments_list(request):
         tags = request.GET.get('tags', '')
         if tags:
             filters['tags'] = tags.split(',')
-        
+
         data, itemsCount = filter_experiments(**filters)
-        # convert data to a list and format
-        
-        print(data.query)
-        
+       
         # change data format to match what is used by table
         data = list(data.values('id', 'metadata'))
         
