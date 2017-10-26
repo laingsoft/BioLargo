@@ -11,6 +11,7 @@ import json
 import csv
 from .forms import FileUpload, GroupsTags, ExperimentForm
 from io import StringIO
+from .filters import filter_experiments
 
 HEADER_LIST = ["ID", "Chambers","Diameter","Length","Target","Age (mL)"]
 metadata_fields = ["Reactor Diameter [inch]", "Reactor Length [inch]", "#Chambers",	"Date (d/m/y)",	"Removal Target", "Age of reactor [L]"]
@@ -78,7 +79,6 @@ def upload_form(request):
     if request.method == "POST":
         group_tags = GroupsTags(request.POST, prefix="tags")
         experiment_data = ExperimentForm(request.POST, prefix = 'data')
-        print(request.POST)
         if group_tags.is_valid() and experiment_data.is_valid():
             
             # get group and tags (created on validation)
@@ -233,10 +233,10 @@ def analysis_page(request):
     #~ tags
     #~ sortField     // the name of sorting field
     #~ sortOrder     // the order of sorting as string "asc"|"desc"
-    
-    #~ metadata_filters[] 
+    #~ experiment_data_filters[] 
+    #~ metadata_filters[]
+     
 #~ returns
-
 #~ {
     #~ data          // array of items
     #~ itemsCount    // total items amount
@@ -244,40 +244,40 @@ def analysis_page(request):
 @login_required
 def experiments_list(request):
     if request.method == 'GET':
+        filters = {}
         
         page = int(request.GET.get("pageIndex", 1))
-        size = int(request.GET.get("pageSize", 0))
-        offset = (page - 1) * size
+        filters['limit'] = int(request.GET.get("pageSize", 0))
+        filters['offset'] = (page - 1) * filters['limit']
         
-        sort_field = request.GET.get("sortField", 'id')
-        sort_order = request.GET.get("sortOrder", 'asc')
+        filters['order_by'] = (request.GET.get("sortField", 'id'), 
+        request.GET.get("sortOrder", 'asc'))
         
-        if sort_order == 'desc':
-            sort_field = '-' + sort_field
-            
-        #~ the base queryset
-        data = Experiment.objects.all().values('id','metadata')
-        
+        exp_id = request.GET.get('id')
+        if exp_id:
+            filters['id'] = exp_id
+
+ 
         # filters for metadata and experiment data
         metadata_filters = request.GET.getlist("metadata_filters[]", [])
-        metadata_filters = {val.split('=')[0] : val.split('=')[1] for val in metadata_filters}
+        filters['metadata_filters'] = {val.split('=')[0] : val.split('=')[1] for val in metadata_filters}
         
-        data = data.filter(metadata__contains = metadata_filters)
-
         experiment_filters = request.GET.getlist("experiment_filters[]", [])
-        experiment_filters = {val.split('=')[0] : val.split('=')[1] for val in experiment_filters}
+        filters['experiment_filters'] = {val.split('=')[0] : val.split('=')[1] for val in experiment_filters}
         
-        data = data.filter(experimentdata_experimentData__contains = experiment_filters).distinct()
         
-        # filtering by group and tags
+        filters['group'] = request.GET.get('group', '')
+        tags = request.GET.get('tags', '')
+        if tags:
+            filters['tags'] = tags.split(',')
         
+        data, itemsCount = filter_experiments(**filters)
         # convert data to a list and format
         
-        itemsCount = data.count()
-        # limit number of results.
+        print(data.query)
         
         # change data format to match what is used by table
-        data = list(data)
+        data = list(data.values('id', 'metadata'))
         
         for item in data:
             item.update(item['metadata'])
