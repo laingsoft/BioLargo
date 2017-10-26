@@ -1,96 +1,96 @@
-# this file contains the Experiment filter.
+from .models import Experiment
+from django.db.models.expressions import RawSQL
 
-# dictionary of all filters, with corresponding function/method.
+# orders by a field in ascending or descing order.
+# Arguments:
+#   q: tuple (field, 'asc' | 'desc')   
+#   qs: queryset
+# returns: a queryset.
+# Taken from:
+# https://stackoverflow.com/questions/36641759/django-1-9-jsonfield-order-by
+# Oct 25 2017
+def order_by(qs, q):
+    field = q[0]
+    order = q[1]
+        
+    if field in ('id', 'tag', 'group'):
+        if order == "desc":
+            field = '-' + field
+        
+        return qs.order_by(field)
+            
+        
+    if order.lower() == "asc":
+        return qs.order_by(RawSQL("LOWER(metadata->>%s)", (field,)).asc())
+    elif order.lower() == "desc":
+        return qs.order_by(RawSQL("LOWER(metadata->>%s)", (field,)).desc())
+            
+            
+# filters by experiment id
+# q: id number
+#   qs: queryset
+# returns: a queryset.
+def filter_id(qs, q):
+     return qs.filter(id = q)
+    
+# filters by a dictionary of metadata fields and values.
+# q: metadata fields. If the field doesn't exist, this does nothing.
+#   qs: queryset
+# returns: a queryset.
+def filter_metadata(qs, q):
+    return qs.filter(metadata__contains = q)
+    
+# filters by experiment data fields 
+# q: dictionary of fields and value. 
+#   qs: queryset
+# returns: a queryset.
+def filter_experiment_data(qs, q):
+    return qs.filter(experimentdata__experimentData__contains = q).distinct()
+    
+    
+# filters by tags.
+# q: list of tag names.
+#   qs: queryset
+# returns: a queryset.
+def filter_tags(qs, q):
+    return qs.filter(tags__name__in = q).distinct()
+    
+# filters by group
+# q: group name
+#   qs: queryset
+# returns: a queryset.
+def filter_group(qs, q):
+    return qs.filter(group__name__icontains = q)
+     
+
+# dictionary of all available filters 
 FILTERS = {
-    "metadata_filters": ExperimentFilter.filter_metadata,
-    "experiment_filters": ExperimentFilter.filter_experiment_data,
-    "order_by": ExperimentFilter.order_by,
-    "tags": ExperimentFilter.filter_tags,
-    "id": ExperimentFilter.filter_id,
-    "group": ExperimentFilter.filter_group,
+    "metadata_filters": filter_metadata,
+    "experiment_filters": filter_experiment_data,
+    "order_by": order_by,
+    "tags": filter_tags,
+    "id": filter_id,
+    "group": filter_group,
 }
 
 
-class ExperimentFilter():
-    def __init__(self, **kwargs):
-        self.qs = Experiment.objects.all()
-        self.limit = kwargs.pop('limit', None) 
-        self.offset = kwargs.pop('offset', 0)
-        
-        for key, value in kwargs.items():
-            try:
-                FILTERS[key](value)
-            except: 
-                pass
+def filter_experiments(**kwargs):
+    qs = Experiment.objects.all()
+    limit = kwargs.pop('limit', 20) # limit will default to 20 if not provided.
+    offset = kwargs.pop('offset', 0)
+    
+    # filter
+    for key, value in kwargs.items():
+        try:
+            qs = FILTERS[key](qs, value)
+        except KeyError: 
+            pass # do nothing if key is not in dictionary
             
-        
-    # the static methods are all filters. all take qs (queryset) as a 
-    # parameter, and return a queryset.
     
-    # filters by experiment id
-    # q: id number
-    @staticmethod
-    def filter_id(qs, q):
-        filtered = qs.filter(id = id_num)
-        return filtered
-        
-    # orders by a field in ascending or descing order.
-    # q: tuple (field, 'asc' | 'desc')   
-    # Taken from:
-    # https://stackoverflow.com/questions/36641759/django-1-9-jsonfield-order-by
-    # Oct 25 2017
-    @staticmethod
-    def order_by(qs, q):
-        field = q[0]
-        order = q[1]
-        
-        if order.lower() == "asc":
-            return qs.order_by(RawSQL("LOWER(metadata-->%s)", (field,)).asc())
-        else if order.lower() == "desc":
-            return qs.order_by(RawSQL("LOWER(metadata-->%s)", (field,)).desc())
+    # get total count
+    total_count = qs.count()
     
-    # filters by a dictionary of metadata fields and values.
-    # q: metadata fields. If the field doesn't exist, this does nothing.
-    @staticmethod
-    def filter_metadata(qs, q):
-        return qs.filter(metadata__contains = q)
-        
-    # filters by experiment data fields 
-    # q: dictionary of fields and value. 
-    @staticmethod
-    def filter_experiment_data(qs, q):
-        return qs.filter(experimentdata__experimentData__contains = q)
-        
-        
-    # filters by tags.
-    # q: list of tag names.
-    @staticmethod
-    def filter_tags(qs, q):
-        return qs.filter(tags__name in q).distinct()
-        
-    # filters by group
-    # q: group name
-    @staticmethod
-    def filter_group(qs, q):
-        return qs.filter(group__name = q)
-         
-        
-    # gets the total number of filtered results.
-    # arguments: none
-    # returns: an int
-    def get_total_results(self):
-        return self.qs.count()
-        
-    # gets truncated (according to limit and offset) queryset.
-    # arguments: none
-    # returns: query set
-    def get_qs(self):
-        if limit:
-            return self.qs[self.offset: self.offset + self.limit]
-        return self.qs[self.offset: None]
-        
-    # gets all filtered experiments. 
-    # arugments: none
-    # returns: queryset
-    def get_all_results(self):
-        return qs
+    # apply limit and offset
+    #~ qs = qs[offset: offset + limit]
+            
+    return qs, total_count
