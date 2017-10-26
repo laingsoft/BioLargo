@@ -112,7 +112,7 @@ $.ajax({
        // console.log(data);
         makeTable(data);
         makeChart(data);
-        makeMetadata(metadata.data)
+        makeMetadata(metadata)
     }
 });
 
