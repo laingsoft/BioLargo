@@ -9,6 +9,29 @@
 {% endblock%}
 
 {% block content %}
+<div class = "row-fluid pb-2 col">
+  <div class="float-left col-md-8">
+    <div class = "card">
+      <p class="card-header"> At a Glance</p>
+      <ul class="list-group">
+      </ul>
+    </div>
+  </div>
+  <div class="float-right pb-2 col-md-4">
+    <div class = "card">
+      <p class="card-header">Watched Experiments</p>
+      <div id="watched">
+	<ul class="list-group">
+	  <li class="list-group-item">
+	    <span>userLogo:</span>
+	    <span>Updated Experiment 1</span>
+	  </li>
+	</ul>
+      </div>
+    </div>
+  </div>
+  
+</div>
 <div id="experiments"></div>
 {% endblock %}
 

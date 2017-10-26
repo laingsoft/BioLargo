@@ -1,5 +1,21 @@
 // Experiment Javascript
+function makeMetadata(data){
+    table = $("#metadata-table");
+    row = $('<tr></tr>')
+    $.each(data, function(key, obj){
+        
+        $('<td></td>',{text:key}).appendTo(row);
+    })
+    row.appendTo(table);
+    row = $('<tr></tr>')
+    $.each(data, function(key, obj){
+        
+        $('<td></td>',{text:obj}).appendTo(row);
+    })
+    row.appendTo(table);
+    
 
+}
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -96,6 +112,7 @@ $.ajax({
        // console.log(data);
         makeTable(data);
         makeChart(data);
+        makeMetadata(metadata.data)
     }
 });
 
