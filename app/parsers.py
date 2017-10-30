@@ -84,8 +84,9 @@ class BaseParser(ABC):
             
         # Create ExperimentData objects
         for line in self.data:
-            data = ExperimentData(experiment = self.experiment, experimentData = line)
-            data.save()
+            if any(line.values()):
+                data = ExperimentData(experiment = self.experiment, experimentData = line)
+                data.save()
             
     # returns copies of all data in the objects. So objects don't get
     #~ accidentally modified, a copy of everything is returned
