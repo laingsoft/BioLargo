@@ -17,6 +17,7 @@
     <script src="{% static 'app/jquery-3.2.1.min.js' %}"></script>
     <img src="{% static 'common/svg/open-iconic.min.svg' %}" class="iconic-sprite" style="display:none;"/>
     <script src="{% static 'common/js/svg-injector.min.js' %}"></script>
+    <script src="{% static 'common/js/tether.min.js' %}"></script>
     <script src="{% static 'app/js/base.js' %}"></script>
 
     {% block header%}
@@ -74,7 +75,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/app/">
+                <a class="nav-link" href="/app/" title="Overview">
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#monitor" class="icon-monitor"></use>
                   </svg>
@@ -82,14 +83,14 @@
               </li>
 
               <li class="nav-item">
-                <a class="nav-link" href="/app/upload/">
+                <a class="nav-link" href="/app/upload/" title="Upload">
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#plus" class="icon-plus"></use>
                   </svg>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/app/analysis/">
+                <a class="nav-link" href="/app/analysis/" title="Analysis">
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#calculator" class="icon-calc"></use>
                   </svg>
@@ -99,14 +100,14 @@
             
             <ul class="nav nav-pills flex-column">
               <li class="nav-item">
-                <a class="nav-link" href="/app/experiments/">
+                <a class="nav-link" href="/app/experiments/" title="Experiments">
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#spreadsheet" class="icon-spreadsheet"></use>
                   </svg>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/manage/planner/">
+                <a class="nav-link" href="/manage/planner/" title="Planner">
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#calendar" class="icon-plus"></use>
                   </svg>
@@ -116,21 +117,21 @@
             
             <ul class="nav nav-pills flex-column">
               <li class="nav-item">
-                <a class="nav-link" href="/accounts/userlist/">
+                <a class="nav-link" href="/accounts/userlist/" title="Users">
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#people" class="icon-people"></use>
                   </svg>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/app/watched/">
+                <a class="nav-link" href="/app/watched/" title="Watched">
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#star" class="icon-star"></use>
                   </svg>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/accounts/messages/">
+                <a class="nav-link" href="/accounts/messages/" title="Messages">
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#double-quote-sans-left" class="icon-messaging"></use>
                   </svg>
