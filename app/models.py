@@ -40,18 +40,25 @@ class Experiment(models.Model):
 
      	
 class ExperimentData(models.Model):
+    class Meta:
+        verbose_name_plural = "experiment data"
+        
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     experimentData = JSONField()
     #More Experiment Data Here
 
 # to make sure we have consistent field naming for searching
 class Fields(models.Model):
+    class Meta:
+        verbose_name_plural: "fields"
+            
     name = models.CharField(max_length = 255)
     
     def __str__(self):
         return self.name
 
 class Template(models.Model):
+    #~ owner = models.ForeignKey()
     name = models.CharField(max_length = 255)
     fields = models.ManyToManyField(Fields)
    

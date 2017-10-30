@@ -30,11 +30,16 @@ class BaseParser(ABC):
     def parse(self):
         pass
         
-    # move fields around if needed.
+    # move fields around if needed + change data formats (str -> float)
     def reformat_data(self):
         move = {} 
         for field in self.metadata.keys():
-            if field not in self.metadata:
+            try:
+                metadata[field] = ast.literal_eval(self.metadata[field])
+            except:
+                pass # do nothing if not a number.
+                    
+            if field not in self.metadata: 
                 move[field] = self.metadata[field]
                 del(self.metadata[field])
 
@@ -48,6 +53,13 @@ class BaseParser(ABC):
             except:
                 pass
                 # do nothing if no comment field or comment field name not correct.
+                
+            for field in row:
+                try:
+                    row[field] = literal_eval(row[field])
+                except:
+                    pass # do nothing if not a number. 
+                    
             row.update(move)
                
     def create_objects(self, group, tags):
