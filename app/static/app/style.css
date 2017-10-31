@@ -1,5 +1,5 @@
 body {
-    padding-top: 5rem;
+    /* padding-top: 5rem; */
 }
 .starter-template {
     padding: 3rem 1.5rem;
@@ -8,7 +8,8 @@ body {
 
 .sidebar{
     position: fixed;
-    top: 51px;
+    /* top: 51px; */
+    top: 0px;
     bottom: 0;
     left: 0;
     z-index: 1000;
@@ -24,3 +25,35 @@ body {
     width: 100%;
 
 }
+
+.icon {
+    height: 16px;
+    width: 16px;
+    fill: white;
+}
+
+.usericon{
+    margin-bottom: 10px;
+    margin-top: -10px;
+    border:solid 2px grey;
+}
+#loader{
+    margin-top: 100px;
+}
+.loader{
+    margin-top: 20px;
+    border: 16px solid #3498db;
+    width: 50px;
+    height: 50px;
+    margin-left: 10px;
+    animation: spin 3s linear infinite;
+}
+
+@keyframes spin{
+    0% {transform: rotate(0deg); border-width: 30px;}
+    25%{transform: rotate(90deg); border-width: 16px;}
+    50%{transform: rotate(180deg); border-width:30px;}
+    75%{transofmr: rotate(270deg); border-width:16px;}
+    100%{transform: rotate(360deg); border-width: 30px;border-color: #349db;}
+}
+               
