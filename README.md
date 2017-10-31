@@ -27,3 +27,7 @@ To build and run, use:
 ### jsGrid
 * Homepage: http://js-grid.com/
 * Licence: [MIT](https://github.com/tabalinas/jsgrid/blob/master/LICENSE)
+
+### OpenIconic
+* Homepage: https://useiconic.com/open
+* Licence [MIT](https://github.com/iconic/open-iconic/blob/master/ICON-LICENSE)
