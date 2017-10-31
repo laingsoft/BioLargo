@@ -71,7 +71,6 @@ class Comment(models.Model):
     content = models.CharField(max_length = 255)
 
     
-    
 class Activity(models.Model):
     action = models.CharField(max_length = 100)
     user = models.ForeignKey(User)
