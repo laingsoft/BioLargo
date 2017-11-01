@@ -128,6 +128,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "common-static"),
+    os.path.join(BASE_DIR, "admin-theme/static"),
     '/var/www/static/',
     ]
 
