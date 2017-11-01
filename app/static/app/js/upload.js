@@ -37,37 +37,4 @@ $('#id_tags-tags').selectize({
     persist: false,
     hideSelected: true
     });
-    
-    
-$('#var-name').selectize({
-        valueField: 'value',
-        labelField: 'key',
-        searchField: 'value',
-        plugins: ["restore_on_backspace"],
-        placeholder: 'Enter variable name',
-        create: true,
-        createOnBlur: true,
-        maxItems: 1,
-        persist: false,
-        options: [],
-        load: function(query, callback) {
-            if (!query.length) return callback();
-            $.ajax({
-            url: '/app/fields-autocomplete',
-            type: 'GET',
-            dataType: 'json',
-            data: {
-                q: query
-            },
-            error: function() {
-                callback();
-            },
-            success: function(res) {
-                callback(res.data);
-            }
-        });
-            
-    }
-});
-
-
+  
