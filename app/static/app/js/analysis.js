@@ -26,7 +26,7 @@ function fireWebsocket(){
         var item = {'id':divs[i].id,'table':divs[i].className.split(' ')[1]};
         tagsgroups.push(item);
     }
-    socket.send(JSON.stringify(Object.assign({},tagsgroups)));
+    socket.send(JSON.stringify({'action':'getcols', 'data':Object.assign({},tagsgroups)}));
 
 
 }
