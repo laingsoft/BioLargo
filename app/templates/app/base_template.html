@@ -68,17 +68,20 @@
             <ul class="nav nav-pills flex-column">
               
               
-              <li class="nav-tem">
+              <li class="nav-item">
                 <a class = "userbox pl-1" href="/accounts/profile">
                   {{request.user.email | gravatar:40 }}
                   
                 </a>
               </li>
-              <li class="nav-item">
+              <li class="nav-item side-item">
                 <a class="nav-link" href="/app/" title="Overview">
+                  
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#monitor" class="icon-monitor"></use>
                   </svg>
+                  <div class="description"><small>Overview</small></div>
+                 
                 </a>
               </li>
 
@@ -87,6 +90,7 @@
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#plus" class="icon-plus"></use>
                   </svg>
+                  <div class="description"><small>Upload</small></div>
                 </a>
               </li>
               <li class="nav-item">
@@ -94,6 +98,7 @@
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#calculator" class="icon-calc"></use>
                   </svg>
+                  <div class="description"><small>Analysis</small></div>
                 </a>
               </li>
             </ul>
@@ -104,6 +109,7 @@
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#spreadsheet" class="icon-spreadsheet"></use>
                   </svg>
+                  <div class="description"><small>Experiments</small></div>
                 </a>
               </li>
               <li class="nav-item">
@@ -111,6 +117,7 @@
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#calendar" class="icon-plus"></use>
                   </svg>
+                  <div class="description"><small>Planner</small></div>
                 </a>
               </li>
             </ul>
@@ -121,6 +128,7 @@
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#people" class="icon-people"></use>
                   </svg>
+                  <div class="description"><small>Users</small></div>
                 </a>
               </li>
               <li class="nav-item">
@@ -128,6 +136,7 @@
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#star" class="icon-star"></use>
                   </svg>
+                  <div class="description"><small>Watched</small></div>
                 </a>
               </li>
               <li class="nav-item">
@@ -135,6 +144,7 @@
                   <svg viewBox="0 0 8 8" class="icon">
                     <use xlink:href="#double-quote-sans-left" class="icon-messaging"></use>
                   </svg>
+                  <div class="description"><small>Messaging</small></div>
                 </a>
               </li>
             </ul>

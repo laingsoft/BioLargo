@@ -9,6 +9,15 @@ $(function() {
             $(this).addClass("active");
         }
     });
+
+    $(".sidebar").mouseenter(function(){
+        $('.icon').hide();
+        $('.description').show();
+    });
+    $(".sidebar").mouseleave(function(){
+        $('.description').hide();
+        $('.icon').slideDown();
+    });
 });
 
 function doneLoad(){
