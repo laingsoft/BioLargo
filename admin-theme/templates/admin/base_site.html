@@ -1,0 +1,38 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<a class="navbar-brand" href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration')| title }}</a>
+{% endblock %}
+
+{% block nav-global %}
+<a class="nav-link" href="{% url 'admin:index' %}" data-toggle="tooltip" data-placement="right" title="Dashboard">
+    <svg class="icon sidebar-icon">
+        <use xlink:href="{% static 'admin/sprite.min.svg' %}#grid-two-up"></use>
+    </svg>
+    <span class="sidebar-text">Dashboard</span>
+</a>
+
+<a class="nav-link" href="{% url 'admin:app_experiment_changelist' %}" data-toggle="tooltip" data-placement="right" title="Experiments">
+    <svg class="icon sidebar-icon">
+        <use xlink:href="{% static 'admin/sprite.min.svg' %}#beaker"></use>
+    </svg>
+    <span class="sidebar-text">Experiments</span>
+</a>
+
+<a class="nav-link" href="{% url 'admin:auth_user_changelist' %}" data-toggle="tooltip" data-placement="right" title="Users">
+    <svg class="icon sidebar-icon">
+        <use xlink:href="{% static 'admin/sprite.min.svg' %}#people"></use>
+    </svg>
+    <span class="sidebar-text">Users</span>
+</a>
+
+<a class="nav-link" href="#" data-toggle="tooltip" data-placement="right" title="Settings">
+    <svg class="icon sidebar-icon">
+        <use xlink:href="{% static 'admin/sprite.min.svg' %}#cog"></use>
+    </svg>
+    <span class="sidebar-text">Settings</span>
+</a>
+{% endblock %}
