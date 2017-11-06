@@ -17,9 +17,16 @@
 
 <a class="nav-link" href="{% url 'admin:app_experiment_changelist' %}" data-toggle="tooltip" data-placement="right" title="Experiments">
     <svg class="icon sidebar-icon">
-        <use xlink:href="{% static 'admin/sprite.min.svg' %}#beaker"></use>
+        <use xlink:href="{% static 'admin/sprite.min.svg' %}#spreadsheet"></use>
     </svg>
     <span class="sidebar-text">Experiments</span>
+</a>
+
+<a class="nav-link" href="{% url 'admin:app_template_changelist' %}" data-toggle="tooltip" data-placement="right" title="Templates">
+    <svg class="icon sidebar-icon">
+        <use xlink:href="{% static 'admin/sprite.min.svg' %}#document"></use>
+    </svg>
+    <span class="sidebar-text">Templates</span>
 </a>
 
 <a class="nav-link" href="{% url 'admin:auth_user_changelist' %}" data-toggle="tooltip" data-placement="right" title="Users">

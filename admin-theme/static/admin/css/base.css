@@ -69,30 +69,19 @@ a:focus{
 .sidebar-icon{
     margin: 10px 2px 0 0;
     float: right;
-    -webkit-transition: all 0.2s linear;
-    -moz-transition: all 0.2s linear;
 }
 
 .sidebar.active > .nav-link > .sidebar-icon{
     margin: 10px 10px 0 10px;
     float: left;
-    -webkit-transition: all 0.2s linear;
-    -moz-transition: all 0.2s linear;
 }
-
 
 .user-actions {
     display: inline-block;
 }
 
 .user-actions > img {
-    border-radius: 50%;
-    width: 45px;
-    height: 45px;
-    background-position: center;
-    overflow: hidden;
     border: solid 2px #9882ac;
-    box-shadow: 0 0 1px 0px white inset, 0 0 1px 0px white;
 }
 
 .user-actions > a {
@@ -117,8 +106,6 @@ a:focus{
     right: 0;
     left: auto;
 }
-
-
 
 .filler {
     height: 2000px;

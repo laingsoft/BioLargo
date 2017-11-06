@@ -104,37 +104,22 @@ data-admin-utc-offset="{% now 'Z' %}">
 
                 {% block messages %}
                     {% if messages %}
-                        <ul class="messagelist">
-                            {% for message in messages %}
-                                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
-                            {% endfor %}
-                        </ul>
+                        {% for message in messages %}
+                            <div {% if message.tags %} class="alert alert-primary {{ message.tags }}"{% endif %} role="alert">{{ message|capfirst }}</div>
+                        {% endfor %}
                     {% endif %}
                 {% endblock messages %}
 
 
-                <!-- Content -->
-                <div id="content" class="{% block coltype %}colM{% endblock %}">
-                    {% block pretitle %}{% endblock %}
-
-                    {% block content_title %}
-                        {% if title %}
-                            <h1>{{ title }}</h1>
-                        {% endif %}
-                    {% endblock %}
-
+                <div class="row">
                     {% block content %}
-                        {% block object-tools %}{% endblock %}
-                        {{ content }}
                     {% endblock %}
-
-                    {% block sidebar %}{% endblock %}
-                    <br class="clear" />
+                    {% block sidebar %}
+                    {% endblock %}
                 </div>
 
+
             </div>
-        
-        <!-- end row -->
         </div>
 
         <!-- END Content -->
