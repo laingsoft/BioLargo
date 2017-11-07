@@ -18,21 +18,53 @@ def getcols(data, channel):
     
     headset = set()
     [{headset.add(header) for header in v} for k,v in enumerate(headers)] #lol nice runtime performance here 
-    print(headset)
+    #print(headset)
     
     channel.reply_channel.send({
         "text":json.dumps(list(headset)),
     })
         
 
-def getdata(data):
-    pass
+def getdata(data, channel):
+    print(data)
+    tags = []
+    groups = []
+    for tag in data['tags']:
+        tags.append(tag['id']) if tag['table'] == 'tag' else groups.append(tag)
+
+    xcols = []
+    for xcol in data['xcols']:
+        xcols.append(xcol['col'])
+        
+    ycols = []
+    for ycol in data['ycols']:
+        ycols.append(ycol['col'])
+
+    #print(tags)
+    query = ExperimentData.objects.filter(experiment__tags__name__in = tags).only("experimentData")
+    #[print(i.id) for i in query]
+    nquery = []
+    retval = {}
+    for i in query:
+        nquery.append(i)
+        retval[i.id] = {'x_ax': [], 'y_ax': []}
+    query = nquery
+
+    for i in xcols:
+        for y in query:
+            retval[y.id]['x_ax'].append({i: y.experimentData[i]})
+    for i in ycols:
+        for y in query:
+            retval[y.id]['y_ax'].append({i: y.experimentData[i]})
+            
+    print(retval)
+        
 
 ANALYTICS_OBJECTS = {"getcols": getcols, "getdata":getdata}
 
 def ws_analytics_columns(tagsgroups):
     data = json.loads(tagsgroups.content['text'])
-    print(ANALYTICS_OBJECTS[data['action']](data['data'], tagsgroups))
+    ANALYTICS_OBJECTS[data['action']](data['data'], tagsgroups)
     '''
     for keya in search:
         print(search[keya]['table'])

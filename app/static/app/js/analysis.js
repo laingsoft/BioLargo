@@ -19,7 +19,7 @@ function clear_axis(){
 
 }
 
-function fireWebsocket(){
+function socket_dataselector(){
     var divs = document.querySelectorAll("#experiment_selector > div");
     var tagsgroups = []
     for (var i =0; i< divs.length; i++){
@@ -29,6 +29,34 @@ function fireWebsocket(){
     socket.send(JSON.stringify({'action':'getcols', 'data':Object.assign({},tagsgroups)}));
 
 
+}
+
+function socket_colselector(){
+    var divy = document.querySelectorAll("#yaxbox > li")
+    var divx = document.querySelectorAll("#xaxbox > li")
+    var experiments = document.querySelectorAll("#experiment_selector > div");
+    
+    var ycols = []
+    for (var i = 0; i< divy.length; i++){
+        var item = {'col': divy[i].id.slice(3)};
+        ycols.push(item);
+    }
+    var xcols = []
+    for (var i =0; i<divx.length; i++){
+        var item = {'col':divx[i].id.slice(3)};
+        xcols.push(item);
+    }
+    
+    var tagvals = []
+    for (var i=0; i<experiments.length; i++){
+        var item = {'id':experiments[i].id, 'table':experiments[i].className.split(' ')[1]};
+        tagvals.push(item);
+        
+    }
+    sendd = {'action':'getdata', 'data':{'ycols':ycols, 'xcols':xcols, 'tags':tagvals}}
+    console.log(sendd);
+    socket.send(JSON.stringify(sendd));
+   
 }
 
 function allowDrop(ev) {
@@ -51,7 +79,7 @@ function drop_tag(ev, el) {
     if ((originalDiv.className.split(' ')[1] == 'tag') || (originalDiv.className.split(' ')[1] == 'group')) {
         el.appendChild(originalDiv);
         //el.appendChild(nodecopy);
-        fireWebsocket()
+        socket_dataselector()
     }else{
         return;
     }
@@ -61,9 +89,9 @@ function drop_axis(ev, el){
     var data = ev.dataTransfer.getData("text");
     console.log(data);
     var nodecopy = document.getElementById(data).cloneNode(true);
-    nodecopy.id = 'ax_x' + data;
+    nodecopy.id = 'ax_' + data;
     el.appendChild(nodecopy);
-    //firewebsocket;
+    socket_colselector()
 
 }
 
