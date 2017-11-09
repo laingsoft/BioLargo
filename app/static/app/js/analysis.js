@@ -1,15 +1,71 @@
-function get_columns(){
+function putdata(data){
+    xdata = {}
+    ydata = {}
+    datasets = {}
+    for (key in data){
+        //console.log(data[key]['exp_id']);
+        length = data[key]['y_ax'].length
+        for(i=0; i<length; i++){
+            ydata[Object.keys(Object.values(data[key]['y_ax'])[i])[0]] = [];
+            xdata[Object.keys(Object.values(data[key]['x_ax'])[i])[0]] = [];
+              
+        }
+    }
+    for(key in data){
+        for(i=0;i<length;i++){
+            ydata[Object.keys(Object.values(data[key]['y_ax'])[i])[0]].push(Object.values(Object.values(data[key]['y_ax'])[i])[0]);
+            xdata[Object.keys(Object.values(data[key]['x_ax'])[i])[0]].push(Object.values(Object.values(data[key]['x_ax'])[i])[0]); 
+        }
+        
+    }
 
+    testpoints = []
+    for (i=0; i< Object.values(xdata)[0].length; i++)
+        testpoints.push({x:1+i, y:10*i})
+
+    console.log(testpoints)
+
+    console.log(Object.values(xdata)[0]);
+    console.log(Object.values(ydata)[0]);
+
+    var trace1 = {
+        x: Object.values(xdata)[0],
+        y: Object.values(ydata)[0],
+        type:'scatter',
+    };
+
+    Plotly.newPlot('chart', [trace1])
 }
-function recv_socket(e){
-    console.log("Recieved: "+ e.data);
-    columns = JSON.parse(e.data);
-    console.log(columns);
+
+function putcols(columns){
     clear_axis();
     for (var i = 0; i< columns.length; i++){
        // $("#yaxis").append("<li id='"+columns[i]+"'><span class = 'badge badge-secondary ycol'>"+columns[i]+"<span class='ml-2'><input type='checkbox'></span></span></li>");
         $("#listcol").append("<li id='"+columns[i]+"' class = 'list-inline-item colitem' draggable='true' ondragstart='drag(event)'><span class = 'badge badge-secondary'>"+columns[i]+"</span></li>");
-    }
+    }}
+
+
+
+
+function get_columns(){
+
+}
+
+var ACTIONS = {'putdata':putdata, 'putcols':putcols}
+
+function recv_socket(e){
+    console.log("Recieved: "+ e.data);
+    recv = JSON.parse(e.data);
+    console.log(recv['action']);
+    ACTIONS[recv['action']](recv['data'])
+    
+
+    
+    //clear_axis();
+    //for (var i = 0; i< columns.length; i++){
+       // $("#yaxis").append("<li id='"+columns[i]+"'><span class = 'badge badge-secondary ycol'>"+columns[i]+"<span class='ml-2'><input type='checkbox'></span></span></li>");
+    //    $("#listcol").append("<li id='"+columns[i]+"' class = 'list-inline-item colitem' draggable='true' ondragstart='drag(event)'><span class = 'badge badge-secondary'>"+columns[i]+"</span></li>");
+    //}
     
 
 }
@@ -119,6 +175,8 @@ $(document).ready(function(){
     socket.onmessage = function(e){
         recv_socket(e);
     }
+    Plotly.newPlot('chart', [{x:0,y:0}])
+    /*
     var ctx = document.getElementById("chart").getContext("2d");
     var test = {'type':'line','data':{'datasets':[{
                 label: "Test Set 1",
@@ -134,8 +192,9 @@ $(document).ready(function(){
                 }]
     }]}};
     window.scatter = new Chart(ctx, test);
-    
+*/
 
 
 })
+
 

@@ -89,6 +89,7 @@ function makeChart(jsondata){
         time.push(obj["Time [min]"]);
         removal.push(Math.log(obj["StockCFU [CFU/mL]"]) - Math.log(obj["RemainingCFU [CFU/mL]"]));
     });
+    console.log(removal)
     var ctx = document.getElementById("removalChart");
     var removalChart = new Chart(ctx, {
         type: 'line',

@@ -2,7 +2,6 @@ from channels.handler import AsgiHandler
 from app.models import Tag, Group, Experiment, ExperimentData
 import json
 
-
 def getcols(data, channel):
     tags = []
     groups = []
@@ -21,7 +20,7 @@ def getcols(data, channel):
     #print(headset)
     
     channel.reply_channel.send({
-        "text":json.dumps(list(headset)),
+        "text":json.dumps({'action':'putcols', 'data':list(headset)}),
     })
         
 
@@ -41,13 +40,13 @@ def getdata(data, channel):
         ycols.append(ycol['col'])
 
     #print(tags)
-    query = ExperimentData.objects.filter(experiment__tags__name__in = tags).only("experimentData")
+    query = ExperimentData.objects.filter(experiment__tags__name__in = tags).only("experimentData", 'experiment')
     #[print(i.id) for i in query]
     nquery = []
     retval = {}
     for i in query:
         nquery.append(i)
-        retval[i.id] = {'x_ax': [], 'y_ax': []}
+        retval[i.id] = {'x_ax': [], 'y_ax': [], 'exp_id':i.experiment.id}
     query = nquery
 
     for i in xcols:
@@ -57,7 +56,11 @@ def getdata(data, channel):
         for y in query:
             retval[y.id]['y_ax'].append({i: y.experimentData[i]})
             
-    print(retval)
+    retval = {'action':'putdata', 'data':retval}
+    channel.reply_channel.send({
+        "text":json.dumps(retval),
+    })
+    
         
 
 ANALYTICS_OBJECTS = {"getcols": getcols, "getdata":getdata}
