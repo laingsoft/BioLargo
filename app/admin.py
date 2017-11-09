@@ -6,32 +6,55 @@ from django.conf.urls import url
 from django import forms
 from .forms import ModelSuggestField, ModelMultipleSuggestField
 
-
-# Register your models here.
+# a placeholder while organization settings have not been implemented.
+METADATA_FIELDS = ["Reactor Diameter [inch]","Reactor Length [inch]", 
+"#Chambers", "Date (d/m/y)", "Removal Target", "Age of reactor [L]"] 
 
 #~ admin.site.register(Experiment)
 #~ admin.site.register(ExperimentData)
+admin.site.register(Group)
 
-# Widget used to enter and edit metadata. Creates individual form fields for 
+
+
+class MetadataWidget(forms.MultiWidget):
+    def __init__(self, *args, **kwargs):
+        template = kwargs.pop('template')
+
+        widgets = []
+
+        for item in template:
+            widgets.append(forms.TextInput(attrs={'title': item, 'placeholder':item}))
+
+        super().__init__(widgets = widgets, *args, **kwargs)
+
+    def decompress(self, value):
+        if value:
+            return value
+
+        return [None, None]
+
+
+# form field used to enter and edit metadata. Creates individual form fields for 
 # each metadata field given a list of metadata fields. Compress returns a dict
 # with the metadata field names as the keys.
-class MetadataWidget(forms.MultiValueField):
-    def _init_(self, *args, **kwargs):
-        try:
-            metadata_field = kwargs.pop('metadata_fields')
-        except KeyError:
-            raise ValueError("No metadata fields given")
+class MetadataFields(forms.MultiValueField):
 
-        empty_value = kwargs.get("empty_value", 'e')
+    def __init__(self, *args, **kwargs):
+        try:
+            template = kwargs.pop("template")
+        except KeyError:
+            raise ValueError("Missing metadata template")
+
+        empty_value = kwargs.pop("empty_value", 'e')
 
         fields = []
 
-        for field in metadata_fields:
-            fields.append(forms.CharField(label = field, empty_value = 
-                empty_value, strip =True))
+        for field in template:
+            fields.append(forms.CharField(label=field))
 
-        super()._init_(fields = fields , require_all_fields = False, *args,  
-            **kwargs)
+        super().__init__(fields = fields , require_all_fields = False, *args, **kwargs)
+
+        self.widget = MetadataWidget(template = template)
 
     def compress(data_list):
         return dict(zip(self.metadata_fields, data_list))
@@ -39,20 +62,16 @@ class MetadataWidget(forms.MultiValueField):
 # custom form for editng and adding experiments (excluding experiment data and
 # comments). Experiment data and comments are added/edited via inlines. 
 class ExperimentForm(forms.ModelForm):
-    group = ModelSuggestField(Group.objects.all(), Group, to_field_name="name")
-    tags = ModelMultipleSuggestField(Tag.objects.all(), Tag, to_field_name="name", required=False)
-    class Meta:
-        model = Experiment
-        fields = ["friendly_name", "metadata"]
-
+    group = ModelSuggestField(Group.objects.all(), Group, 
+        to_field_name = "name")
+    tags = ModelMultipleSuggestField(Tag.objects.all(), Tag, 
+        to_field_name = "name", required = False)
 
     def __init__(self, *args, **kwargs):
-        try:
-            metadata_fields = kwargs.pop('metadata_fields')
-        except KeyError:
-            raise ValueError("No metadata fields given")
+        super().__init__(*args, **kwargs)
+        template = METADATA_FIELDS # for now. get the template from current user later.
+        self.fields['metadata'] = MetadataFields(template = template)
 
-        self.fields['metadata'].widget = MetadataWidget(metadata_fields = metadata_fields)
   
 # experiment data inline. Renders each field as a MultivalueField then entire 
 # inline as a table
@@ -65,19 +84,21 @@ class ExperimentDataInline(admin.TabularInline):
 @admin.register(Experiment)
 class ExperimentAdmin(admin.ModelAdmin):
     inlines = [ExperimentDataInline]
+    form = ExperimentForm
 
-
-
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.current_user = request.user
+        return form
+        
+    
 # Form used for editing and creating templates.
 # Uses the ModelMultipleSuggestionField to csuggest and create fields. 
 # Replaces the original ajax calls for creating fields.
 class TemplateForm(forms.ModelForm):
-    fields =  ModelMultipleSuggestField(Fields.objects.all(), Fields, to_field_name="name")
+    fields =  ModelMultipleSuggestField(Fields.objects.all(), Fields, 
+        to_field_name="name")
     
-    class Meta:
-        model = Template
-        exclude = []
-
                
 @admin.register(Template)
 class TemplateAdmin(admin.ModelAdmin):
