@@ -15,23 +15,26 @@ METADATA_FIELDS = ["Reactor Diameter [inch]","Reactor Length [inch]",
 admin.site.register(Group)
 
 
-
 class MetadataWidget(forms.MultiWidget):
     def __init__(self, *args, **kwargs):
-        template = kwargs.pop('template')
+        self.template = kwargs.pop('template')
 
         widgets = []
 
-        for item in template:
+        for item in self.template:
             widgets.append(forms.TextInput(attrs={'title': item, 'placeholder':item}))
 
         super().__init__(widgets = widgets, *args, **kwargs)
 
     def decompress(self, value):
         if value:
-            return value
+            values_list = []
 
-        return [None, None]
+            for item in self.template:
+                values_list.append(value[item])
+            return values_list
+            
+        return ''
 
 
 # form field used to enter and edit metadata. Creates individual form fields for 
@@ -41,7 +44,7 @@ class MetadataFields(forms.MultiValueField):
 
     def __init__(self, *args, **kwargs):
         try:
-            template = kwargs.pop("template")
+            self.template = kwargs.pop("template")
         except KeyError:
             raise ValueError("Missing metadata template")
 
@@ -49,15 +52,15 @@ class MetadataFields(forms.MultiValueField):
 
         fields = []
 
-        for field in template:
+        for field in self.template:
             fields.append(forms.CharField(label=field))
 
         super().__init__(fields = fields , require_all_fields = False, *args, **kwargs)
 
-        self.widget = MetadataWidget(template = template)
+        self.widget = MetadataWidget(template = self.template)
 
-    def compress(data_list):
-        return dict(zip(self.metadata_fields, data_list))
+    def compress(self, data_list):
+        return dict(zip(self.template, data_list))
 
 # custom form for editng and adding experiments (excluding experiment data and
 # comments). Experiment data and comments are added/edited via inlines. 
@@ -69,6 +72,7 @@ class ExperimentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
         template = METADATA_FIELDS # for now. get the template from current user later.
         self.fields['metadata'] = MetadataFields(template = template)
 
