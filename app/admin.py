@@ -5,6 +5,8 @@ from django.http import JsonResponse
 from django.conf.urls import url
 from django import forms
 from .forms import ModelSuggestField, ModelMultipleSuggestField
+from django.forms import ModelForm
+
 
 # a placeholder while organization settings have not been implemented.
 METADATA_FIELDS = ["Reactor Diameter [inch]","Reactor Length [inch]", 
@@ -15,7 +17,7 @@ METADATA_FIELDS = ["Reactor Diameter [inch]","Reactor Length [inch]",
 admin.site.register(Group)
 
 
-class MetadataWidget(forms.MultiWidget):
+class JSONWidget(forms.MultiWidget):
     def __init__(self, *args, **kwargs):
         self.template = kwargs.pop('template')
 
@@ -40,7 +42,7 @@ class MetadataWidget(forms.MultiWidget):
 # form field used to enter and edit metadata. Creates individual form fields for 
 # each metadata field given a list of metadata fields. Compress returns a dict
 # with the metadata field names as the keys.
-class MetadataFields(forms.MultiValueField):
+class JSONField(forms.MultiValueField):
 
     def __init__(self, *args, **kwargs):
         try:
@@ -57,7 +59,7 @@ class MetadataFields(forms.MultiValueField):
 
         super().__init__(fields = fields , require_all_fields = False, *args, **kwargs)
 
-        self.widget = MetadataWidget(template = self.template)
+        self.widget = JSONWidget(template = self.template)
 
     def compress(self, data_list):
         return dict(zip(self.template, data_list))
@@ -74,12 +76,27 @@ class ExperimentForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         template = METADATA_FIELDS # for now. get the template from current user later.
-        self.fields['metadata'] = MetadataFields(template = template)
+        self.fields['metadata'] = JSONField(template = template)
+
+
+class ExperimentDataForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.experimentData:
+            # print(self.instance)
+            template = self.instance.experimentData.keys()
+
+        else:
+            template = Template.objects.all().values_list( "fields__name" , flat = True) # TODO: UPDATE TO USE THE PROPER TEMPLATE
+
+        self.fields['experimentData'] = JSONField(template = template)
 
   
 # experiment data inline. Renders each field as a MultivalueField then entire 
 # inline as a table
 class ExperimentDataInline(admin.TabularInline):
+    template = "admin/experiment_inline.html"
+    form = ExperimentDataForm
     model = ExperimentData
     extra = 0
 
@@ -108,24 +125,4 @@ class TemplateForm(forms.ModelForm):
 class TemplateAdmin(admin.ModelAdmin):
     change_form_template = 'admin/template_admin.html'
     form = TemplateForm
-    
-    # def get_urls(self):
-    #     urls= super().get_urls()
-    #     my_urls = [
-    #         url(r'^add_field/$', self.add_field),
-    #     ]
-        
-    #     return my_urls + urls
-        
-    # def add_field(self, request):
-    #     if request.method == "POST":
-    #         name = request.POST.get('field', '')
-    #         if name:
-    #             field = Fields.objects.create(name=name)
-    #             return JsonResponse({'value': field.id, 'text': field.name})
-    #         else:
-    #             return JsonResponse({'success': False, "Error": "No field name given"})
-    #     return JsonResponse({'success': False, "Error": "invalid request"})
-        
-        
     
