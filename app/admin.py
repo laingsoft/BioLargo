@@ -18,6 +18,8 @@ admin.site.register(Group)
 
 
 class JSONWidget(forms.MultiWidget):
+    template_name = "widgets/JSONWidget.html"
+
     def __init__(self, *args, **kwargs):
         self.template = kwargs.pop('template')
 
