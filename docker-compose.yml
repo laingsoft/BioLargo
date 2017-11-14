@@ -9,16 +9,6 @@ services:
     volumes:
       - .:/code
     ports:
-      - "8000:8000"
-    depends_on:
-      - db
-      - redis
-  deploy:
-    build: .
-    command: bash -c "python3 manage.py runworker & daphne -b 0.0.0.0 -p 80 PredoxWeb.asgi:channel_layer "
-    volumes:
-      - .:/code
-    ports:
       - "80:80"
     depends_on:
       - db
