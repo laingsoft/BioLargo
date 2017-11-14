@@ -135,7 +135,10 @@ STATICFILES_DIRS = [
 
 CHANNEL_LAYERS = {
     "default":{
-        "BACKEND": "asgiref.inmemory.ChannelLayer",
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "CONFIG": {
+            "hosts":[("redis",6379)]
+        },
         "ROUTING": "PredoxWeb.routing.channel_routing",
         },
     }
