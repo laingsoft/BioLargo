@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'frontpage.apps.FrontpageConfig',
     'accounts.apps.AccountsConfig',
     'app.apps.AppConfig',
+    'api.apps.ApiConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

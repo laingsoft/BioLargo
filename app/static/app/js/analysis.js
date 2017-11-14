@@ -2,15 +2,19 @@ function putdata(data){
     xdata = {}
     ydata = {}
     datasets = {}
+    var ids = new Set()
     for (key in data){
         //console.log(data[key]['exp_id']);
         length = data[key]['y_ax'].length
         for(i=0; i<length; i++){
             ydata[Object.keys(Object.values(data[key]['y_ax'])[i])[0]] = [];
             xdata[Object.keys(Object.values(data[key]['x_ax'])[i])[0]] = [];
+            ids.add(data[key]['exp_id']);
+            
               
         }
     }
+    console.log(ids);
     for(key in data){
         for(i=0;i<length;i++){
             ydata[Object.keys(Object.values(data[key]['y_ax'])[i])[0]].push(Object.values(Object.values(data[key]['y_ax'])[i])[0]);
@@ -32,6 +36,7 @@ function putdata(data){
         x: Object.values(xdata)[0],
         y: Object.values(ydata)[0],
         type:'scatter',
+        mode:'markers',
     };
 
     Plotly.newPlot('chart', [trace1])
@@ -58,16 +63,6 @@ function recv_socket(e){
     recv = JSON.parse(e.data);
     console.log(recv['action']);
     ACTIONS[recv['action']](recv['data'])
-    
-
-    
-    //clear_axis();
-    //for (var i = 0; i< columns.length; i++){
-       // $("#yaxis").append("<li id='"+columns[i]+"'><span class = 'badge badge-secondary ycol'>"+columns[i]+"<span class='ml-2'><input type='checkbox'></span></span></li>");
-    //    $("#listcol").append("<li id='"+columns[i]+"' class = 'list-inline-item colitem' draggable='true' ondragstart='drag(event)'><span class = 'badge badge-secondary'>"+columns[i]+"</span></li>");
-    //}
-    
-
 }
 
 function clear_axis(){
@@ -176,23 +171,6 @@ $(document).ready(function(){
         recv_socket(e);
     }
     Plotly.newPlot('chart', [{x:0,y:0}])
-    /*
-    var ctx = document.getElementById("chart").getContext("2d");
-    var test = {'type':'line','data':{'datasets':[{
-                label: "Test Set 1",
-                data: [{
-                    x: 1,
-                    y: 2,
-                }, {
-                    x: 2,
-                    y: 4,
-                }, {
-                    x: 3,
-                    y: 6,
-                }]
-    }]}};
-    window.scatter = new Chart(ctx, test);
-*/
 
 
 })
