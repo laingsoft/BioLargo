@@ -91,6 +91,6 @@ def filter_experiments(**kwargs):
     total_count = qs.count()
     
     # apply limit and offset
-    #~ qs = qs[offset: offset + limit]
+    qs = qs[offset: offset + limit]
             
     return qs, total_count

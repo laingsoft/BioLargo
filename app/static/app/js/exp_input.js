@@ -40,45 +40,6 @@ function get_template(template_name) {
     }, load_template);
 }
 
-$("#template-save").click(function() {
-    name = $('#template-name').val();
-
-    if (name) {
-        $.post("/app/save_template",
-            JSON.stringify({
-                name: name,
-                fields: hot.getColHeader()
-            }));
-    }
-
-    $('#template-name').val('');
-    $('#template-modal').modal('hide')
-});
-
-$("#var-save").click(function() {
-    name = $('#var-name').val();
-
-    headers = hot.getColHeader();
-    headers = headers.filter(function(e) {
-        return e;
-    });
-    
-    if (headers.length === 0){
-        col = []
-    }
-    headers.push(name);
-
-    col.push({data: name
-    })
-    hot.updateSettings({
-        colHeaders: headers,
-        columns: col
-    });
-    
-    $('#var-name').val('');
-    $('#var-modal').modal('hide')
-});
-
 get_template($("#template-select").val());
 
 

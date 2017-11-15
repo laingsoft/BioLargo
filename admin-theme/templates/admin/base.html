@@ -1,0 +1,150 @@
+{% load i18n static %}
+<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <!-- Template stylesheet -->
+    <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static 'admin/css/base.css' %}{% endblock %}" />
+
+    {% block extrastyle %}{% endblock %}
+
+    {% if LANGUAGE_BIDI %}
+        <link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />
+    {% endif %}
+
+    {% block extrahead %}{% endblock %}
+
+    {% block blockbots %}
+        <meta name="robots" content="NONE,NOARCHIVE" />
+    {% endblock %}
+
+</head>
+
+{% load i18n %}
+{% load accounts_tags %}
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
+data-admin-utc-offset="{% now 'Z' %}">
+    <!-- top navbar -->
+    {% if not is_popup%}
+        <nav class='navbar navbar-dark'>
+            <span>
+                <!-- menu button -->
+                <svg class="icon" id="sidebar-collapse">
+                    <use xlink:href="{% static 'admin/sprite.min.svg' %}#menu"></use>
+                </svg>
+                <!-- logo -->
+                {% block branding %}{% endblock %}
+            </span>
+
+            <div class="dropdown user-actions">
+                <!-- welcome block -->
+                {% block welcome-msg %}
+                    {{ user.email | gravatar:40 }} 
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">{% firstof user.get_short_name user.get_username %}</a>
+                {% endblock %}
+
+                <!-- user tools -->
+                {% block usertools %}
+                    {% if has_permission %}
+                        <div class="dropdown-menu dropdown-menu-right">
+                            {% block userlinks %}
+                                {% if site_url %}
+                                    <a class="dropdown-item" href="{{ site_url }}">{% trans 'View site' %}</a>
+                                {% endif %}
+                                {% if user.is_active and user.is_staff %}
+                                    {% url 'django-admindocs-docroot' as docsroot %}
+                                    {% if docsroot %}
+                                        <a class="dropdown-item" href="{{ docsroot }}">{% trans 'Documentation' %}</a>
+                                    {% endif %}
+                                {% endif %}
+                                {% if user.has_usable_password %}
+                                    <a class="dropdown-item" href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a>
+                                {% endif %}
+                                <a class="dropdown-item" href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+                            {% endblock %}
+                        </div>
+                    {% endif %}
+                {% endblock %}
+            </div>
+            
+        </nav>
+    {% endif %}
+
+    <!-- Container -->
+    <div class="container-fluid" id="container">
+        <div class="row">
+            {% if not is_popup %}
+                <nav class="sidebar" id="sidebar">
+                    {% block nav-global %}
+                    {% endblock %}
+                </nav>
+            {% endif %}
+
+            <div class="col content">
+                {% if not is_popup %}
+                    {% block breadcrumbs %}
+                        <nav aria-label="breadcrumb" role="navigation">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item active" aria-current="page">
+                                    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+                                </li>
+                                {% if title %}<li>{{ title }}</li>{% endif %}
+                            </ol>
+                        </nav>
+                    {% endblock %}
+                {% endif %}
+
+                {% block messages %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div {% if message.tags %} class="alert alert-primary {{ message.tags }}"{% endif %} role="alert">{{ message|capfirst }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endblock messages %}
+
+
+                <div class="row">
+                    {% block content %}
+                    {% endblock %}
+                    {% block sidebar %}
+                    {% endblock %}
+                </div>
+
+
+            </div>
+        </div>
+
+        <!-- END Content -->
+        {% block footer %}
+            <div id="footer"></div>
+        {% endblock %}
+    </div>
+    <!-- END Container -->
+
+    <!-- javascript -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+
+        $("#sidebar-collapse").click(function(){
+            $('#sidebar').toggleClass("active");
+            $('[data-toggle="tooltip"]').tooltip('toggleEnabled');
+        });
+
+    </script>
+</body>
+</html>
+
