@@ -2,6 +2,8 @@
 {% load static %}
 {% block header %}
 <link rel="stylesheet" type="text/css" href="{% static 'app/analysis.css' %}"/>
+<script src = "{% static '/app/js/analysis.js' %}"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -15,7 +17,7 @@
       <ul class="list-unstyled" id="xaxis" >
     </div>
     <div class = "d-flex flex-column col-md-5 col-sm-5" id = "main_graph">
-      <div class=""> <canvas id="chart" class="ml-2" width=400 height=300></canvas></div>
+      <div id="chart"> </div>
       <div class="">
         <div class="d-flex align-self-end col-md-12 sol-sm-12" id="experiment_selector" ondrop="drop_tag(event, this)" ondragover="allowDrop(event)">
           <p>Selecting Data From: </p>
@@ -38,11 +40,17 @@
         <div id = "{{i}}" draggable="true" ondragstart="drag(event)" class = "px-1 tag"><span class = "badge badge-primary" >{{i}}</span></div>
         {% endfor %}
       </div>
-      <div class = "sol-sm-6" id="groups" ondrop="drop_tag(event, this)" ondragover="allowDrop(event)">
+      <div class = "col-sm-6" id="groups" ondrop="drop_tag(event, this)" ondragover="allowDrop(event)">
         <p>Groups</p>
         {% for i in groups %}
         <div id =" {{i}}" draggable="true" ondragstart="drag(event)" ondragover="none" class = "px-1 group"><span class = "badge badge-success" >{{i}}</span></div>
         {% endfor %}
+      </div>
+    </div>
+    <div class = "row">
+      
+      <div id="testid" class = "col-sm-6">
+        <p>aux</p>
       </div>
     </div>
   </div>
@@ -68,7 +76,6 @@
 </div>
 </div>
 
+<script src = "https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-<script src = "{% static '/app/js/analysis.js' %}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
 {% endblock %}
