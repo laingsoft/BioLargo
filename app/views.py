@@ -131,41 +131,7 @@ def get_template(request):
             fields = ['']
             
     return JsonResponse({'fields' : fields})
-    
-# used to save templates on upload form. TODO: RESTRICT TO ADMIN USERS 
-@login_required
-def save_template(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        name = data['name']
-        fields = data['fields']
        
-        if name and fields:
-            # check if name already exists
-            if Template.objects.filter(name=name).exists():
-                return JsonResponse({'success': False, 'error': "Name already exists"})
-                
-            template = Template(name = name)
-            template.save()
-                
-            f = []
-            for field in fields:
-                f.append(Fields.objects.get_or_create(name=field)[0])
-            
-            template.fields.add(*f)
-            
-            return JsonResponse({'success' : True})
-            
-        return JsonResponse({'success' : False, 'error': "Error saving template"})
-        
-# autocomplete results for fields        
-@login_required
-def fields_autocomplete(request):
-    if request.method == "GET":
-        q = request.GET.get("q")
-        result = Fields.objects.all().filter(name__icontains = q)
-        return JsonResponse({'data' : [{'key':str(item), 'value':str(item)} for item in result]})
-        
 # autocomplete results for groups
 @login_required
 def groups_list(request):

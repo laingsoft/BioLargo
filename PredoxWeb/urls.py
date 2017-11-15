@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^app/', include('app.urls')),
     url(r'^accounts/',include('accounts.urls')),
     url(r'^', include('frontpage.urls')),
+    url(r'^api/',include('api.urls')),
 ]

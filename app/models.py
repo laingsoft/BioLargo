@@ -17,27 +17,19 @@ class Tag(models.Model):
         return self.name
 
 class Experiment(models.Model):
-    #~ scientist = models.ForeignKey(Scientist)
-    #person = models.CharField(max_length = 255, default = '')
-    reactor_diameter = models.FloatField("Reactor Diameter [inch]", default = 0)
-    reactor_length = models.FloatField("Reactor Length [inch]", default = 0)
-    num_chambers = models.IntegerField("# Chambers", default = 0)
-    #date = models.DateField("Date (d/m/y)", default = None)
-    removal_target = models.CharField("Removal Target", max_length = 255, default = 0)
-    reactor_age = models.FloatField("Age of Reactor", default = 0)
-    
-    
+    # scientist = models.ForeignKey(Scientist)
+    # Company 
+
     group = models.ForeignKey(Group)
     tags = models.ManyToManyField(Tag)
     metadata = JSONField(default = '') # remove the default later.
     friendly_name = models.CharField(max_length=255, default = 0)
 
     def __str__(self):
-        return ("Experiment| Group: {0}, Chambers: {1}, Target: {2}".format(str(self.group), str(self.num_chambers),str(self.removal_target)))
+        return ("Experiment| Group: {0} | metadata: {1}").format(str(self.group), str(self.metadata))
 
     def __repr__(self):
-        return ("Experiment| Group: {0}, Chambers: {1}, Target: {2}".format(str(self.group), str(self.num_chambers),str(self.removal_target)))
-
+        return ("Experiment| Group: {0} | metadata: {1}").format(str(self.group), str(self.metadata))
      	
 class ExperimentData(models.Model):
     class Meta:
@@ -70,7 +62,6 @@ class Comment(models.Model):
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     content = models.CharField(max_length = 255)
 
-    
     
 class Activity(models.Model):
     action = models.CharField(max_length = 100)

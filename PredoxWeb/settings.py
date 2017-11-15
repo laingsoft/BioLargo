@@ -25,7 +25,7 @@ SECRET_KEY = 'zl88d=ab=wk!q@h08xi$wer-p2#3%$=mw&%q6$oj$($^!ice1d'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost']
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', 'pasteur.io','208.75.74.213']
 
 
 # Application definition
@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'frontpage.apps.FrontpageConfig',
     'accounts.apps.AccountsConfig',
     'app.apps.AppConfig',
+    'api.apps.ApiConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,7 +59,7 @@ ROOT_URLCONF = 'PredoxWeb.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'admin-theme/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,13 +129,17 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "common-static"),
+    os.path.join(BASE_DIR, "admin-theme/static"),
     '/var/www/static/',
     ]
 
 
 CHANNEL_LAYERS = {
     "default":{
-        "BACKEND": "asgiref.inmemory.ChannelLayer",
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "CONFIG": {
+            "hosts":[("redis",6379)]
+        },
         "ROUTING": "PredoxWeb.routing.channel_routing",
         },
     }
