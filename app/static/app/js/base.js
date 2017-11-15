@@ -16,7 +16,7 @@ $(function() {
     });
     $(".sidebar").mouseleave(function(){
         $('.description').hide();
-        $('.icon').slideDown();
+        $('.icon').show();
     });
 });
 
