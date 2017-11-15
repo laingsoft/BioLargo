@@ -96,8 +96,8 @@ class ExperimentDataForm(forms.ModelForm):
   
 # experiment data inline. Renders each field as a MultivalueField then entire 
 # inline as a table
-class ExperimentDataInline(admin.TabularInline):
-    template = "admin/experiment_inline.html"
+class ExperimentDataInline(admin.StackedInline):
+    # template = "admin/experiment_inline.html"
     form = ExperimentDataForm
     model = ExperimentData
     extra = 0
@@ -108,6 +108,16 @@ class ExperimentDataInline(admin.TabularInline):
 class ExperimentAdmin(admin.ModelAdmin):
     inlines = [ExperimentDataInline]
     form = ExperimentForm
+    fieldsets = (
+        ("Experiment", {
+            'fields':('friendly_name','group', 'tags',)
+            }),
+        ('Metadata', {
+            'fields': ('metadata',)
+            }),
+        )
+    
+
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
