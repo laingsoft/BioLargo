@@ -111,3 +111,8 @@ a:focus{
     height: 2000px;
     background: #ddd;
 }
+
+.object-tools {
+    list-style: none;
+    display: inline-block;
+}

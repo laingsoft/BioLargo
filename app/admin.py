@@ -106,8 +106,10 @@ class ExperimentDataInline(admin.StackedInline):
 # ModelAdmin for Experiments     
 @admin.register(Experiment)
 class ExperimentAdmin(admin.ModelAdmin):
+    list_display = ('friendly_name', 'get_group', 'get_tags',)
     inlines = [ExperimentDataInline]
     form = ExperimentForm
+
     fieldsets = (
         ("Experiment", {
             'fields':('friendly_name','group', 'tags',)
@@ -116,13 +118,32 @@ class ExperimentAdmin(admin.ModelAdmin):
             'fields': ('metadata',)
             }),
         )
+
+    class Media:
+        css = {
+            'all': ('app/selectize.bootstrap3.css',)
+            }
+        js = ('https://code.jquery.com/jquery-3.2.1.min.js', 'app/js/selectize.min.js','admin/js/autocomplete_group_tags.js', )
+
+    def get_group(self, obj):
+       return obj.group.name
+
+    get_group.short_description =  "Group"
+    # get_group.admin_order_field = "group"
     
+    def get_tags(self, obj):
+        tags = obj.tags
+        return ', '.join(tags.all().values_list('name', flat=True))
+
+    get_tags.short_description = "Tags"
 
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.current_user = request.user
         return form
+
+
         
     
 # Form used for editing and creating templates.

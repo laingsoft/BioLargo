@@ -33,20 +33,17 @@
 <div class="col" id="content-main">
     {% block object-tools %}
     {% if change %}{% if not is_popup %}
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="tools-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Options</button>
-            <ul class="dropdown-menu" aria-labelledby="tools-dropdown">
-                {% block object-tools-items %}
-                    <li>
-                        {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
-                        <a class="dropdown-item" href="{% add_preserved_filters history_url %}" class="historylink">{% trans "History" %}</a>
-                    </li>
-                    {% if has_absolute_url %}
-                        <li><a href="{{ absolute_url }}" class="viewsitelink">{% trans "View on site" %}</a></li>
-                    {% endif %}
-                {% endblock %}
-            </ul>
-        </div>
+        <ul class = "object-tools">
+            {% block object-tools-items %}
+                <li>
+                    {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
+                    <a class="btn btn-secondary" href="{% add_preserved_filters history_url %}" class="historylink">{% trans "History" %}</a>
+                </li>
+                {% if has_absolute_url %}
+                    <li><a class="btn btn-secondary" href="{{ absolute_url }}" class="viewsitelink">{% trans "View on site" %}</a></li>
+                {% endif %}
+            {% endblock %}
+        </ul>
 
         
     {% endif %}{% endif %}
