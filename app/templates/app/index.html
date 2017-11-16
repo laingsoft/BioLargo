@@ -1,11 +1,6 @@
-<!DOCTYPE html>
 {% extends 'app/base_template.html' %}
 {% load static %}
 
-{% block css_extra %}
-<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
-<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
-{% endblock%}
 
 {% block breadcrumb %}
 <li class="breadcrumb-item active">
@@ -15,7 +10,7 @@
 
 
 {% block content %}
-<div class = "row-fluid pb-2 col">
+<div class = "row">
   <div class="float-left col-md-8">
     <div class = "card">
       <p class="card-header"> At a Glance</p>
@@ -38,11 +33,6 @@
   </div>
   
 </div>
-<div id="experiments"></div>
 {% endblock %}
 
 
-{% block script_extra %}
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
-<script src="{% static '/app/js/index.js' %}"></script>
-{% endblock %}

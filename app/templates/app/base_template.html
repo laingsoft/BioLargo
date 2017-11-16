@@ -14,6 +14,8 @@
 
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+        <!-- template css -->
         <link rel="stylesheet" type="text/css" href="{% static 'app/base.css'%}">
 
         {% block css_extra %}
@@ -46,7 +48,13 @@
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ request.user.username }}</a>
 
                     <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item">Logout</a>
+                        <a class="dropdown-item" href="/accounts/profile">Profile</a>
+                        {% if request.user.is_staff %}
+                        <a class="dropdown-item" href="/admin">Admin Panel</a>
+                        {% endif %}
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/accounts/logout">Logout</a>
+
                     </div>
                 </div>
             {% endif %}

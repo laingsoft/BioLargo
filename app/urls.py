@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^upload', views.upload, name = 'upload'),
     url(r'^get_metadata_template', views.get_metadata_template, name="get_metdata_template"),
     url(r'^get_template', views.get_template, name = 'get_template'),
+    url(r'^experiments/$', views.experiment_list_view, name = 'experiment_list_view'),
     url(r'^experiment/(?P<exp_id>[0-9]+)', views.experiment, name='experiment'),
     url(r'^experimentjs/(?P<exp_id>[0-9]+)', views.experiment_json, name='experiment_json'),
     url(r'^experimentrm/(?P<exp_id>[0-9]+)', views.experimentrm, name="experimentrm"),

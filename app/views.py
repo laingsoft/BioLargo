@@ -145,6 +145,13 @@ def upload_success(request, exp_id):
     get_object_or_404(Experiment, id=exp_id)
     return render(request, 'app/upload_success.html', {'exp_id': exp_id})
 
+
+#------------------------Experiment list view -------------------------
+
+@login_required
+def experiment_list_view(request):
+    return render(request, 'app/experiments_page.html', {})
+
 #------------------------Experiment Page Views--------------------------
 @login_required
 def experiment(request, exp_id):

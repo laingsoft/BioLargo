@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from . import views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     url(r'^login/',views.login),
@@ -8,5 +9,6 @@ urlpatterns = [
     url(r'^profile/', views.profile),
     url(r'^userlist/', views.userlist),
     url(r'^messages/', views.messaging),
+    url(r'^logout/$', auth_views.logout_then_login )
     ]
 
