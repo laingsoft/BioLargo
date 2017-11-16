@@ -1,69 +1,87 @@
-{% extends "admin/base_site.html" %}
 {% load i18n static %}
+<!DOCTYPE html>
+<html>
 
-{% block extrastyle %}
-  {{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static "admin/css/login.css" %}" />
-  {{ form.media }}
-{% endblock %}
+<head>
+    <title>Log in | Pasteur.io Admin </title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+</head>
 
-{% block bodyclass %}{{ block.super }} login{% endblock %}
+<body>
+    <div class="container-fluid">
+        <div class="row justify-content-md-center">
+            <div class="col-md-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title">
+                            <h1><b>Pasteur.io</b> Admin</h1>
+                        </div>
 
-{% block usertools %}{% endblock %}
+                        {% if form.errors and not form.non_field_errors %}
+                            <div class="alert alert-danger">
+                            {% if form.errors.items|length == 1 %}
+                                {% trans "Please correct the error below." %}
+                                {% else %}
+                                    {% trans "Please correct the errors below." %}
+                            {% endif %}
+                            </div>
+                        {% endif %}
 
-{% block nav-global %}{% endblock %}
+                        {% if form.non_field_errors %}
+                            {% for error in form.non_field_errors %}
+                            <div class="alert alert-warning">
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        {% endif %}
 
-{% block content_title %}{% endblock %}
+                        {% if user.is_authenticated %}
+                            <div class="alert alert-warning">
+                            {% blocktrans trimmed %}
+                                You are authenticated as {{ username }}, but are not authorized to access this page. Would you like to login to a different account?
+                            {% endblocktrans %}
+                            </div>
+                        {% endif %}
 
-{% block breadcrumbs %}{% endblock %}
+                        <form action="{{ app_path }}" method="post" id="login-form">
+                            {% csrf_token %}
+                            <div class="form-group row">
+                                <div class= "col-sm-3">
+                                    {{ form.username.errors }}
+                                    {{ form.username.label_tag }} 
+                                </div>
+                                <div class="col-sm-9">{{ form.username }}</div>
+        
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    {{ form.password.errors }}
+                                    {{ form.password.label_tag }} 
+                                </div>
+                                <div class="col-sm-9">{{ form.password }}</div>
+                                
+                                <input type="hidden" name="next" value="{{ next }}" />
+                            </div>
 
-{% block content %}
-{% if form.errors and not form.non_field_errors %}
-<p class="errornote">
-{% if form.errors.items|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
-</p>
-{% endif %}
+                            <div class="form-group row justify-content-md-center">
+                                <div class="col-md-auto">
+                                    <input class="btn btn-secondary" type="submit" value="{% trans 'Log in' %}" />
+                                    {% url 'admin_password_reset' as password_reset_url %}
+                                    {% if password_reset_url %}
+                                        <div class="password-reset-link">
+                                        <a href="{{ password_reset_url }}">{% trans 'Forgotten your password or username?' %}</a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </form>
 
-{% if form.non_field_errors %}
-{% for error in form.non_field_errors %}
-<p class="errornote">
-    {{ error }}
-</p>
-{% endfor %}
-{% endif %}
+                    </div>
 
-<div id="content-main">
-<div><h1><b>Pasteur.io</b> Admin</h1></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
 
-{% if user.is_authenticated %}
-<p class="errornote">
-{% blocktrans trimmed %}
-    You are authenticated as {{ username }}, but are not authorized to
-    access this page. Would you like to login to a different account?
-{% endblocktrans %}
-</p>
-{% endif %}
-
-<form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
-  <div class="form-row">
-    {{ form.username.errors }}
-    {{ form.username.label_tag }} {{ form.username }}
-  </div>
-  <div class="form-row">
-    {{ form.password.errors }}
-    {{ form.password.label_tag }} {{ form.password }}
-    <input type="hidden" name="next" value="{{ next }}" />
-  </div>
-  {% url 'admin_password_reset' as password_reset_url %}
-  {% if password_reset_url %}
-  <div class="password-reset-link">
-    <a href="{{ password_reset_url }}">{% trans 'Forgotten your password or username?' %}</a>
-  </div>
-  {% endif %}
-  <div class="submit-row">
-    <label>&nbsp;</label><input class="btn btn-secondary" type="submit" value="{% trans 'Log in' %}" />
-  </div>
-</form>
-
-</div>
-{% endblock %}
+</html>
