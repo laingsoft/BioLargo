@@ -10,17 +10,8 @@ $(function() {
         }
     });
 
-    $(".sidebar").mouseenter(function(){
-        $('.icon').hide();
-        $('.description').show();
+    $("#sidebar-collapse").click(function(){
+        $('#sidebar').toggleClass("active");
     });
-    $(".sidebar").mouseleave(function(){
-        $('.description').hide();
-        $('.icon').show();
-    });
-});
 
-function doneLoad(){
-    $("#loader").hide();
-    $("#content").slideDown();
-}
+});

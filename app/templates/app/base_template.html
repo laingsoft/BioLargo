@@ -1,180 +1,138 @@
-<!DOCTYPE html>
+{% load accounts_tags %}
+{% load static %}
+
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="../../../../favicon.ico">
-    
-    <title>Predox Web -- BioLargo</title>
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-    {% load accounts_tags %}
-    {% load static %}
-    <!-- Custom styles for this template -->
-    <link rel="stylesheet" type="text/css" href="{% static 'app/style.css' %}"/>
-    <script src="{% static 'app/jquery-3.2.1.min.js' %}"></script>
-    <img src="{% static 'common/svg/open-iconic.min.svg' %}" class="iconic-sprite" style="display:none;"/>
-    <script src="{% static 'common/js/svg-injector.min.js' %}"></script>
-    <script src="{% static 'common/js/tether.min.js' %}"></script>
-    <script src="{% static 'app/js/base.js' %}"></script>
+    <head>
+        {% block title %}<title>Pasteur.io</title>{% endblock %}
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="../../../../favicon.ico">
 
-    {% block header%}
-    {% endblock %}
-    
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="{% static 'app/base.css'%}">
 
-  </head>
-  <body onload="doneLoad()">
-    <!--
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-          <a class="navbar-brand" href="#">Predox -- Web</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
+        {% block css_extra %}
+        {% endblock %}
 
-          <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="/app">Home <span class="sr-only">(current)</span></a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/admin">Administration</a>
-              </li>
-            </ul>
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                {% if request.user.is_authenticated %}
-                <a href="/accounts/profile/"><span>{{request.user.username}} {{request.user.email | gravatar:40 }}</span></a>
-                
-                {% else %}
-                <a class="nav-link" href="/accounts/login/">Login</a>
-                {% endif %}
-                
-              </li>
-            </ul>
-          </div>
+    </head>
+
+    <body>
+        <img src="{% static 'common/svg/open-iconic.min.svg' %}" class="iconic-sprite" style="display:none;"/>
+
+        <!-- Top navbar -->
+        <nav class='navbar navbar-dark'>
+            <span>
+                <!-- menu button -->
+                <svg class="icon" id="sidebar-collapse">
+                    <use xlink:href="#menu" class="icon-menu"></use>
+                </svg>
+                <!-- logo -->
+                <a class="navbar-brand" href="#"><b>Pasteur</b>.io</a>
+            </span>
+
+            {% block navextra %}
+            {% endblock %}
+
+            <!-- user options and log out -->
+            {% if request.user.is_authenticated %}
+                <div class="dropdown user-actions">
+                    {{request.user.email | gravatar:40 }}
+
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ request.user.username }}</a>
+
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item">Logout</a>
+                    </div>
+                </div>
+            {% endif %}
+
         </nav>
-        -->
-    <div class="container-fluid" id="content">
-      <div class = "row">
-        <div class = "col-md-2 col-sm-2">
-          <nav class="col-xs-1 d-none d-sm-block bg-dark sidebar">
-            <ul class="nav nav-pills flex-column">
-              
-              
-              <li class="nav-item">
-                <a class = "userbox pl-1" href="/accounts/profile">
-                  {{request.user.email | gravatar:40 }}
-                  
-                </a>
-              </li>
-              <li class="nav-item side-item">
-                <a class="nav-link" href="/app/" title="Overview">
-                  
-                  <svg viewBox="0 0 8 8" class="icon">
-                    <use xlink:href="#monitor" class="icon-monitor"></use>
-                  </svg>
-                  <div class="description"><small>Overview</small></div>
-                 
-                </a>
-              </li>
 
-              <li class="nav-item">
-                <a class="nav-link" href="/app/upload/" title="Upload">
-                  <svg viewBox="0 0 8 8" class="icon">
-                    <use xlink:href="#plus" class="icon-plus"></use>
-                  </svg>
-                  <div class="description"><small>Upload</small></div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/app/analysis/" title="Analysis">
-                  <svg viewBox="0 0 8 8" class="icon">
-                    <use xlink:href="#calculator" class="icon-calc"></use>
-                  </svg>
-                  <div class="description"><small>Analysis</small></div>
-                </a>
-              </li>
-            </ul>
-            
-            <ul class="nav nav-pills flex-column">
-              <li class="nav-item">
-                <a class="nav-link" href="/app/experiments/" title="Experiments">
-                  <svg viewBox="0 0 8 8" class="icon">
-                    <use xlink:href="#spreadsheet" class="icon-spreadsheet"></use>
-                  </svg>
-                  <div class="description"><small>Experiments</small></div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/manage/planner/" title="Planner">
-                  <svg viewBox="0 0 8 8" class="icon">
-                    <use xlink:href="#calendar" class="icon-plus"></use>
-                  </svg>
-                  <div class="description"><small>Planner</small></div>
-                </a>
-              </li>
-            </ul>
-            
-            <ul class="nav nav-pills flex-column">
-              <li class="nav-item">
-                <a class="nav-link" href="/accounts/userlist/" title="Users">
-                  <svg viewBox="0 0 8 8" class="icon">
-                    <use xlink:href="#people" class="icon-people"></use>
-                  </svg>
-                  <div class="description"><small>Users</small></div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/app/watched/" title="Watched">
-                  <svg viewBox="0 0 8 8" class="icon">
-                    <use xlink:href="#star" class="icon-star"></use>
-                  </svg>
-                  <div class="description"><small>Watched</small></div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/accounts/messages/" title="Messages">
-                  <svg viewBox="0 0 8 8" class="icon">
-                    <use xlink:href="#double-quote-sans-left" class="icon-messaging"></use>
-                  </svg>
-                  <div class="description"><small>Messaging</small></div>
-                </a>
-              </li>
-            </ul>
+        <div class="container-fluid">
+            <div class="row">
+                <nav class="sidebar" id="sidebar">
+                    <a class="nav-link" href="/app">
+                        <svg class="icon sidebar-icon">
+                            <use xlink:href="#monitor" class="icon-monitor"></use>
+                        </svg>
+                        <span class="sidebar-text">Overview</span>
+                    </a>
+                    <a class="nav-link" href="/app/experiments">
+                        <svg class="icon sidebar-icon">
+                            <use xlink:href="#spreadsheet"></use>
+                        </svg>
+                        <span class="sidebar-text">Experiments</span>
+                    </a>
+                    <a class="nav-link" href="/app/upload">
+                        <svg class="icon sidebar-icon">
+                            <use xlink:href="#plus"></use>
+                        </svg>
+                        <span class="sidebar-text">Upload</span>
+                    </a>
+                    <a class="nav-link" href="/app/analysis">
+                        <svg class="icon sidebar-icon">
+                            <use xlink:href="#calculator"></use>
+                        </svg>
+                        <span class="sidebar-text">Analysis</span>
+                    </a>
 
-          </nav>
-          <div class="col-xs-3 bg-dark">
-          </div>
+                    <div class="dropdown-divider"></div>
+
+                    <a class="nav-link" href="/accounts/userlist">
+                        <svg class="icon sidebar-icon">
+                            <use xlink:href="#people"></use>
+                        </svg>
+                        <span class="sidebar-text">Users</span>
+                    </a>
+                </nav>
+
+                <div class="col content">
+
+                    <!--  breadcrumb -->
+                    <nav aria-label="breadcrumb" role="navigation">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item" aria-current="page">
+                                <a href="/app">Pasteur.io</a>
+                            </li>
+                            {% block breadcrumb %}
+                            {% endblock %}
+                        </ol>
+                    </nav>
+                    
+
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
         </div>
-        <main class = "col-sm-11 ml-sm-auto col-md-11 pt-3 mt-56" role="main">
-          {% block content%}
-          {% endblock %}
-        </main>
-      </div>
-    </div>
 
+        <!-- javascript -->
 
+        <!-- jQuery -->
+        <script
+              src="https://code.jquery.com/jquery-3.2.1.min.js"
+              integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+              crossorigin="anonymous"></script>
+        <!-- Popper.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+        <!-- bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+        <!-- icon injector -->
+        <script src="{% static 'common/js/svg-injector.min.js' %}"></script>
+        <!-- tether.js -->
+        <script src="{% static 'common/js/tether.min.js' %}"></script>
 
-    <!-- /.container -->
+        <!-- template js -->
+        <script src="{% static 'app/js/base.js' %}"></script>
 
+        {% block script_extra %}
+        {% endblock %}
 
-
-    <!-- Bootstrap core JavaScript
-         ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script
-      src="https://code.jquery.com/jquery-3.2.1.min.js"
-      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-      crossorigin="anonymous"></script>
-    <script>window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-
-      {% block footer %}
-      {% endblock %}
-
-
-  </body>
-
-
+    </body>
 </html>
+

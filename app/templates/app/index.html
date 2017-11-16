@@ -2,11 +2,17 @@
 {% extends 'app/base_template.html' %}
 {% load static %}
 
-
-{% block header%}
+{% block css_extra %}
 <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
 <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
 {% endblock%}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">
+  Overview
+</li>
+{% endblock %}
+
 
 {% block content %}
 <div class = "row-fluid pb-2 col">
@@ -36,7 +42,7 @@
 {% endblock %}
 
 
-{% block footer %}
+{% block script_extra %}
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
 <script src="{% static '/app/js/index.js' %}"></script>
 {% endblock %}
