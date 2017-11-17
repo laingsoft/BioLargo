@@ -17,7 +17,7 @@ def register(request):
                 form.save()
                 username = form.cleaned_data.get('username')
                 raw_password = form.cleaned_data.get('password1')
-                user = authenticate(username=username, password=raw_password)
+                user = authenticate(username=username, password=raw_password) 
                 scientist = Scientist(user=user)
                 scientist.save()
                 auth_login(request, user)
@@ -31,25 +31,26 @@ def register(request):
             login_form = AuthenticationForm()
             return render(request, 'accounts/login.html', {'form':form, 'login_form':login_form})
 
+#  using default one for now.
+# def login(request):
+#     if request.method == "POST":
+#         form = AuthenticationForm(data = request.POST)
 
-def login(request):
-    if request.method == "POST":
-        form = AuthenticationForm(data = request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=raw_password)
-            auth_login(request,user)
-            return HttpResponseRedirect('/app')
-        else:
-            return HttpResponseRedirect('/accounts/login')
+#         if form.is_valid():
+#             username = form.cleaned_data.get('username')
+#             raw_password = form.cleaned_data.get('password') 
+#             user = authenticate(username=username, password=raw_password) 
+#             auth_login(request,user)
+#             return HttpResponseRedirect('/app')
+#         else:
+#             return HttpResponseRedirect('/accounts/login')
 
 
 
-    else:
-        form = UserCreationForm()
-        login_form = AuthenticationForm()
-        return render(request, 'accounts/login.html', {'form':form, 'login_form':login_form})
+#     else:
+#         form = UserCreationForm()
+#         login_form = AuthenticationForm()
+#         return render(request, 'accounts/login.html', {'form':form, 'login_form':login_form})
 
 def userpage(request, usr_id):
         view_user = User.objects.get(id=usr_id)

@@ -143,3 +143,5 @@ CHANNEL_LAYERS = {
         "ROUTING": "PredoxWeb.routing.channel_routing",
         },
     }
+
+LOGIN_REDIRECT_URL = '/app'

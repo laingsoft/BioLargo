@@ -1,0 +1,100 @@
+    body {
+        background: #25262d;
+    }
+    /*from http://jsfiddle.net/hashem/ut5sbqvz/*/
+
+    .vertical-center {
+        min-height: 100%;
+        /* Fallback for vh unit */
+        min-height: 100vh;
+        /* You might also want to use
+                        'height' property instead.
+                        
+                        Note that for percentage values of
+                        'height' or 'min-height' properties,
+                        the 'height' of the parent element
+                        should be specified explicitly.
+  
+                        In this case the parent of '.vertical-center'
+                        is the <body> element */
+        /* Make it a flex container */
+        display: -webkit-box;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+
+        /* Align the bootstrap's container vertically */
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        -moz-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+
+        /* In legacy web browsers such as Firefox 9
+     we need to specify the width of the flex container */
+        width: 100%;
+
+        /* Also 'margin: 0 auto' doesn't have any effect on flex items in such web browsers
+     hence the bootstrap's container won't be aligned to the center anymore.
+  
+     Therefore, we should use the following declarations to get it centered again */
+        -webkit-box-pack: center;
+        -moz-box-pack: center;
+        -ms-flex-pack: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+    }
+    /* boostrap form-contol styling because django */
+
+    .form-input>input {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-image: none;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    }
+.info-block {
+    background: #000;
+    background-image: url('/static/images/bg-resize.jpg');
+    border-radius: 3px 0 0 3px;
+    color: #fff;
+}
+
+
+.form-block {
+    background: #fff;
+    border-radius: 0 3px 3px 0;
+
+}
+
+.logo{
+    color: #fff;
+}
+
+
+.bottom-links{
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+}
+
+.bottom-links a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.bottom-links a:hover {
+    color: #ccc;
+}
+
+.back-link a {
+    color: #fff;
+}

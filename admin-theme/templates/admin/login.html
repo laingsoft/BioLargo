@@ -5,17 +5,20 @@
 <head>
     <title>Log in | Pasteur.io Admin </title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/login.css' %}">
 </head>
 
 <body>
     <div class="container-fluid">
-        <div class="row justify-content-md-center">
-            <div class="col-md-auto">
-                <div class="card">
+        <div class="row justify-content-md-center vertical-center">
+            <div class="col-md-3">
+                <div class="card p-3">
                     <div class="card-body">
-                        <div class="card-title">
+                        <div class="card-title pb-3">
                             <h1><b>Pasteur.io</b> Admin</h1>
                         </div>
+                        
+                        <div></div>
 
                         {% if form.errors and not form.non_field_errors %}
                             <div class="alert alert-danger">
@@ -45,27 +48,27 @@
 
                         <form action="{{ app_path }}" method="post" id="login-form">
                             {% csrf_token %}
-                            <div class="form-group row">
-                                <div class= "col-sm-3">
+                            <div class="form-group">
+                                <div >
                                     {{ form.username.errors }}
                                     {{ form.username.label_tag }} 
                                 </div>
-                                <div class="col-sm-9">{{ form.username }}</div>
+                                <div class="form-input">{{ form.username }}</div>
         
                             </div>
-                            <div class="form-group row">
-                                <div class="col-sm-3">
+                            <div class="form-group pb-3">
+                                <div>
                                     {{ form.password.errors }}
                                     {{ form.password.label_tag }} 
                                 </div>
-                                <div class="col-sm-9">{{ form.password }}</div>
+                                <div class="form-input">{{ form.password }}</div>
                                 
                                 <input type="hidden" name="next" value="{{ next }}" />
                             </div>
 
                             <div class="form-group row justify-content-md-center">
-                                <div class="col-md-auto">
-                                    <input class="btn btn-secondary" type="submit" value="{% trans 'Log in' %}" />
+                                <div class="col">
+                                    <input class="btn btn-secondary btn-block" type="submit" value="{% trans 'Log in' %}" />
                                     {% url 'admin_password_reset' as password_reset_url %}
                                     {% if password_reset_url %}
                                         <div class="password-reset-link">
