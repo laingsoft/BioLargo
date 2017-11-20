@@ -1,0 +1,46 @@
+{% extends "registration/base.html" %} {% load static %} {% block css_extra %}
+<link rel="stylesheet" type="text/css" href="{% static 'accounts/css/register.css' %}">
+{% endblock %} {% block content %}
+<div class="col-sm-3">
+    <div class="logo">
+        <h1>
+        <b>Pasteur</b>.io
+        <h1>
+    </div>
+    <div class="subtitle text-center">
+        <h3>Sign Up</h3>
+    </div>
+    <div class="card p-3">
+        <div class="card-body">
+            {% if form.errors and not form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% if form.errors.items|length == 1 %} 
+                "Please correct the error below." 
+                {% else %} 
+                "Please correct the errors below." 
+                {% endif %}
+            </div>
+            {% endif %} 
+            {% if form.non_field_errors %} 
+            {% for error in form.non_field_errors %}
+            <div class="alert alert-warning">
+                {{ error }}
+            </div>
+            {% endfor %} 
+            {% endif %}
+            <form method="POST">
+                {% csrf_token %} 
+                {% for field in form %}
+                <div class="form-group">
+                    {{ field.errors }} {{ field.label_tag }}
+                    <div class="form-input">{{ field }}</div>
+                    <small class="form-text text-muted">{{ field.help_text | safe}}</small>
+                </div>
+                {% endfor %}
+                <div class="row pt-3"><button class="btn btn-secondary btn-block">Sign up</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

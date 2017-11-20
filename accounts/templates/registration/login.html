@@ -1,89 +1,62 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Login | Pasteur.io</title>
-    <!-- bootstrap css -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/login.css' %}">
-</head>
-
-<body>
-    <div class="container-fluid">
-        <div class="row justify-content-md-center vertical-center">
-            <div class="col-md-5">
-
-                <div class="row">
-                    <!--  some info -->
-                    <div class="col-md-7 info-block pl-5">
-
-                        <!-- Logo here -->
-                        <div class="row logo">
-                            <div class="col">
-                                <h1 class="pt-3"><b>Pasteur</b>.io</h1>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col">
-                                Some text goes here
-
-                            </div>
-                        </div>
-
-                        <div class="row bottom-links">
-                            <div class="col">
-                                <p><a href="#">Not a client? Click here to see our plans!</a></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- login form -->
-                    <div class="col-md-5 p-4 pt-5 pb-5 form-block">
-                        {% if form.errors and not form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            {% if form.errors.items|length == 1 %} "Please correct the error below." {% else %} "Please correct the errors below." {% endif %}
-                        </div>
-                        {% endif %} {% if form.non_field_errors %} {% for error in form.non_field_errors %}
-                        <div class="alert alert-warning">
-                            {{ error }}
-                        </div>
-                        {% endfor %} {% endif %}
-                        <form action="{{ app_path }}" method="post" id="login-form">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <div>
-                                    {{ form.username.errors }} {{ form.username.label_tag }}
-                                </div>
-                                <div class="form-input">{{ form.username }}</div>
-                            </div>
-                            <div class="form-group pb-3">
-                                <div>
-                                    {{ form.password.errors }} {{ form.password.label_tag }}
-                                </div>
-                                <div class="form-input">{{ form.password }}</div>
-                                <input type="hidden" name="next" value="{{ next }}" />
-                            </div>
-                            <div class="form-group row justify-content-md-center">
-                                <div class="col">
-                                    <input class="btn btn-secondary btn-block" type="submit" value="Log in" />
-                                </div>
-                            </div>
-                            <div class="text-right"><a href="#">Forgot your password?</a></div>
-                        </form>
-                    </div>
+{% extends "registration/base.html" %} {% block content %}
+<div class="col-md-5">
+    <div class="row">
+        <!--  some info -->
+        <div class="col-md-7 info-block pl-5">
+            <!-- Logo here -->
+            <div class="row logo">
+                <div class="col">
+                    <h1 class="pt-3"><b>Pasteur</b>.io</h1>
                 </div>
-
-                <div class="row">
-                    <div class="col back-link"><a href="#"><< Back to Homepage</a></div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Some text goes here
+                </div>
+            </div>
+            <div class="row bottom-links">
+                <div class="col">
+                    <p><a href="/accounts/register">Not a client? Click here to register!</a></p>
                 </div>
             </div>
         </div>
+        <!-- login form -->
+        <div class="col-md-5 p-4 pt-5 pb-5 form-block">
+            {% if form.errors and not form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% if form.errors.items|length == 1 %} "Please correct the error below." {% else %} "Please correct the errors below." {% endif %}
+            </div>
+            {% endif %} {% if form.non_field_errors %} {% for error in form.non_field_errors %}
+            <div class="alert alert-warning">
+                {{ error }}
+            </div>
+            {% endfor %} {% endif %}
+            <form action="{{ app_path }}" method="post" id="login-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <div>
+                        {{ form.username.errors }} {{ form.username.label_tag }}
+                    </div>
+                    <div class="form-input">{{ form.username }}</div>
+                </div>
+                <div class="form-group pb-3">
+                    <div>
+                        {{ form.password.errors }} {{ form.password.label_tag }}
+                    </div>
+                    <div class="form-input">{{ form.password }}</div>
+                    <input type="hidden" name="next" value="{{ next }}" />
+                </div>
+                <div class="form-group row justify-content-md-center">
+                    <div class="col">
+                        <input class="btn btn-secondary btn-block" type="submit" value="Log in" />
+                    </div>
+                </div>
+                <div class="text-right"><a href="#">Forgot your password?</a></div>
+            </form>
+        </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
-</body>
-
-</html>
+    <div class="row">
+        <div class="col back-link"><a href="/"><small>&laquo; Back to Homepage</small></a></div>
+    </div>
+</div>
+{% endblock%}

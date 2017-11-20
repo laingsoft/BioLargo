@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user
 from django.contrib.auth.models import User
@@ -21,15 +21,17 @@ def register(request):
                 scientist = Scientist(user=user)
                 scientist.save()
                 auth_login(request, user)
-                print("got here")
                 return HttpResponseRedirect('/app')
+
+            if form.errors:
+                print ("ERROR!!!", form.errors)
             else:
-                HttpResponseRedirect('/accounts/login')
-                
+                print ("?????")
+    
         else:
             form = UserCreationForm()
-            login_form = AuthenticationForm()
-            return render(request, 'accounts/login.html', {'form':form, 'login_form':login_form})
+            
+        return render(request, 'registration/register.html', {'form':form})
 
 #  using default one for now.
 # def login(request):

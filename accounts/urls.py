@@ -4,7 +4,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     url(r'^login/$', auth_views.LoginView.as_view(redirect_authenticated_user =  True)),
-    url(r'^register/',views.register),
+    url(r'^register/', views.register, name="register"),
     url(r'^user/(?P<usr_id>[0-9]+)', views.userpage),
     url(r'^profile/', views.profile),
     url(r'^userlist/', views.userlist),
