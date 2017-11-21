@@ -2,6 +2,7 @@ function putdata(data){
     xdata = {}
     ydata = {}
     datasets = {}
+    console.log("putdata")
     var ids = new Set()
     for (key in data){
         //console.log(data[key]['exp_id']);
@@ -71,12 +72,16 @@ function clear_axis(){
 }
 
 function socket_dataselector(){
+    console.log("test");
     var divs = document.querySelectorAll("#experiment_selector > div");
+    console.log(divs);
     var tagsgroups = []
     for (var i =0; i< divs.length; i++){
         var item = {'id':divs[i].id,'table':divs[i].className.split(' ')[1]};
         tagsgroups.push(item);
     }
+    console.log('tagsgroups: ', tagsgroups);
+    console.log(socket);
     socket.send(JSON.stringify({'action':'getcols', 'data':Object.assign({},tagsgroups)}));
 
 
@@ -129,6 +134,7 @@ function drop_tag(ev, el) {
     console.log(originalDiv.className.split(' ')[1]);
     if ((originalDiv.className.split(' ')[1] == 'tag') || (originalDiv.className.split(' ')[1] == 'group')) {
         el.appendChild(originalDiv);
+
         //el.appendChild(nodecopy);
         socket_dataselector()
     }else{
@@ -166,11 +172,13 @@ $(document).ready(function(){
     //TODO: Initialize the X and Y axis with potential columns
     //TODO: Download Session
     //TODO: Restore Session from file
+
+    Plotly.newPlot('chart', [{x:0,y:0}])
     socket = new WebSocket("ws://"+ window.location.host + window.location.pathname);
     socket.onmessage = function(e){
         recv_socket(e);
     }
-    Plotly.newPlot('chart', [{x:0,y:0}])
+    
 
 
 })

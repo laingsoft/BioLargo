@@ -17,7 +17,7 @@ def getcols(data, channel):
     
     headset = set()
     [{headset.add(header) for header in v} for k,v in enumerate(headers)] #lol nice runtime performance here 
-    #print(headset)
+    print(headset)
     
     channel.reply_channel.send({
         "text":json.dumps({'action':'putcols', 'data':list(headset)}),
