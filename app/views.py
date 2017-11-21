@@ -13,9 +13,13 @@ import csv
 from .forms import FileUpload, GroupsTags, ExperimentForm
 from io import StringIO
 from .filters import filter_experiments
+from .utils import to_table
 
 HEADER_LIST = ["ID", "Chambers","Diameter","Length","Target","Age (mL)"]
-metadata_fields = ["Reactor Diameter [inch]", "Reactor Length [inch]", "#Chambers",	"Date (d/m/y)",	"Removal Target", "Age of reactor [L]"]
+
+# a placeholder while this setting is not implemented
+METADATA_FIELDS = ["Reactor Diameter [inch]", "Reactor Length [inch]", "#Chambers",	
+"Date (d/m/y)",	"Removal Target", "Age of reactor [L]"] 
 
 @login_required
 def index(request):
@@ -24,7 +28,12 @@ def index(request):
     all of the available data to the researcher, and allow them to link to 
     other resources, such as uploading and analysis. 
     '''
-    return render(request,'app/index.html', {})
+
+    latest = Experiment.objects.order_by('-id').values_list('metadata', flat=True)[:20]
+    metadata_fields = METADATA_FIELDS
+    latest_table = to_table(latest, metadata_fields)
+
+    return render(request,'app/index.html', {'latest_table' : latest_table })
     
 # --------------------Views used for uploading data---------------------
 # displays the upload page. Additional parts of the form and processing
@@ -52,7 +61,7 @@ def upload_file(request):
             # parse the file.
             try:
                 parser = Parser(fp = TextIOWrapper(request.FILES['file-upload_file'], encoding=request.encoding), 
-                metadata_fields = metadata_fields, 
+                metadata_fields = METADATA_FIELDS, 
                 user = request.user,
                 file_type = "CSV"
                 )
@@ -93,7 +102,7 @@ def upload_form(request):
             # get metadata fields for user's company
             
             # create parser
-            parser = JsonParser(StringIO(data), request.user, metadata_fields)
+            parser = JsonParser(StringIO(data), request.user, METADATA_FIELDS)
             
             # create objects
             parser.create_objects(g, t)
@@ -106,7 +115,7 @@ def upload_form(request):
         # get metdata template
         # create ExperimentForm
         experiment_data = ExperimentForm(prefix = 'data')
-        metadata = metadata_fields #TODO: get the template from database
+        metadata = METADATA_FIELDS #TODO: get the template from database
         
         # put in dictionary
         context = {
@@ -261,7 +270,7 @@ def experiments_list(request):
 # TODO: implement this function.
 def get_metadata_template(request):
     # get template from somewhere....
-    metadata = list(metadata_fields)
+    metadata = list(METADATA_FIELDS)
     metadata.insert(0, 'id')
     
     return JsonResponse({'data': metadata})

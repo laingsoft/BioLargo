@@ -1,0 +1,30 @@
+.user-header {
+    background: #9882ac;
+    margin-left: -15px;
+    margin-right: -15px;
+    width: 100%;
+}
+
+.profile-card {
+    margin: 15px;
+    border-radius: 0;
+}
+
+.profile-img > img {
+    border: 5px solid #fff; 
+}
+
+.profile_username {
+    padding: 10px;
+    font-size: 1.5em;
+
+}
+
+.profile_username > a {
+    color: #000;
+}
+
+.user-info {
+    text-align: left;
+}
+

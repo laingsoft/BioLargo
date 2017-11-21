@@ -1,13 +1,20 @@
 {% extends "app/base_template.html" %}
-{% block content %}
 {% load accounts_tags %}
 {% load static %}
 
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="/accounts/userlist">Users</a></li>
+<li class="breadcrumb-item active"> {{userdata.username}} </li>
+{% endblock %}
+
+
+{% block content %}
 <div class = "card col-md-3 mx-auto">
   <div class="mx-auto mb-2">{{userdata.email | gravatar:200 }}</div>
   <p class = "card-text mx-auto" id="profileUsername">{{userdata.username}}</p>
   <div class = "card-text">
     <div class = "mx-auto">
+      
       <div class="row mb-2">
         <div class="col text-center">
           <img src="{% static 'accounts/svg/person.svg' %}">
@@ -15,11 +22,13 @@
           {{userdata.last_name}}
         </div>
       </div>
+
+
       <div class="col text-center">
         <img src="{% static 'accounts/svg/inbox.svg' %}">
         {{userdata.email}}
       </div>
-      
+
     </div>
   </div>
   {% endblock %}

@@ -10,7 +10,12 @@
   <a href="/app/experiments">Experiments</a>
 </li>
 <li class="breadcrumb-item active">
-  Experiment {{ this_experiment.friendly_name }}
+  {% if this_experiment.friendly_name != '0'%}
+    Experiment {{ this_experiment.friendly_name }}
+  {% else %}
+    Experiment {{ this_experiment.id}}
+  {% endif %}
+  
 </li>
 {% endblock %}
 
