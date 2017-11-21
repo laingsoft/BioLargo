@@ -29,7 +29,7 @@ def index(request):
     other resources, such as uploading and analysis. 
     '''
 
-    latest = Experiment.objects.order_by('-id').values_list('metadata', flat=True)[:20]
+    latest = Experiment.objects.order_by('-id').values_list('metadata', flat=True)[:10]
     metadata_fields = METADATA_FIELDS
     latest_table = to_table(latest, metadata_fields)
 

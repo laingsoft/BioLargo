@@ -1,146 +1,131 @@
-{% load accounts_tags %}
-{% load static %}
-
+{% load accounts_tags %} {% load static %}
 <!doctype html>
 <html lang="en">
-    <head>
-        {% block title %}<title>Pasteur.io</title>{% endblock %}
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description" content="">
-        <meta name="author" content="">
-        <link rel="icon" href="../../../../favicon.ico">
 
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+<head>
+    {% block title %}
+    <title>Pasteur.io</title>{% endblock %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../../../favicon.ico">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <!-- template css -->
+    <link rel="stylesheet" type="text/css" href="{% static 'app/base.css'%}"> {% block css_extra %} {% endblock %}
+</head>
 
-        <!-- template css -->
-        <link rel="stylesheet" type="text/css" href="{% static 'app/base.css'%}">
-
-        {% block css_extra %}
-        {% endblock %}
-
-    </head>
-
-    <body>
-        <img src="{% static 'common/svg/open-iconic.min.svg' %}" class="iconic-sprite" style="display:none;"/>
-
-        <!-- Top navbar -->
-        <nav class='navbar navbar-dark'>
-            <span>
+<body>
+    <img src="{% static 'common/svg/open-iconic.min.svg' %}" class="iconic-sprite" style="display:none;" />
+    <!-- Top navbar -->
+    <nav class='navbar navbar-dark'>
+        <span>
                 <!-- menu button -->
-                <svg class="icon" id="sidebar-collapse">
-                    <use xlink:href="#menu" class="icon-menu"></use>
+            <svg class="icon" id="sidebar-collapse">
+                <use xlink:href="#menu" class="icon-menu"></use>
+            </svg>
+            <!-- logo -->
+            <a class="navbar-brand" href="#"><b>Pasteur</b>.io</a>
+        </span> 
+        {% block navextra %}{% endblock %} 
+
+        {% if request.user.is_authenticated %}
+        <!-- notifications -->
+        <div class="dropdown" id="notifications" data-toggle="dropdown">
+            <a href="#">
+                <svg class="icon">
+                    <use xlink:href="#bell" class="icon-bell"></use>
                 </svg>
-                <!-- logo -->
-                <a class="navbar-brand" href="#"><b>Pasteur</b>.io</a>
-            </span>
+            </a>
 
-            {% block navextra %}
-            {% endblock %}
-
-            <!-- user options and log out -->
-            {% if request.user.is_authenticated %}
-                <div class="dropdown user-actions">
-                    {{request.user.email | gravatar:40 }}
-
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ request.user.username }}</a>
-
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" href="/accounts/profile">Profile</a>
-                        {% if request.user.is_staff %}
-                        <a class="dropdown-item" href="/admin">Admin Panel</a>
-                        {% endif %}
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/accounts/logout">Logout</a>
-
-                    </div>
-                </div>
-            {% endif %}
-
-        </nav>
-
-        <div class="container-fluid">
-            <div class="row">
-                <nav class="sidebar" id="sidebar">
-                    <a class="nav-link" href="/app">
-                        <svg class="icon sidebar-icon">
-                            <use xlink:href="#monitor" class="icon-monitor"></use>
-                        </svg>
-                        <span class="sidebar-text">Overview</span>
-                    </a>
-                    <a class="nav-link" href="/app/experiments">
-                        <svg class="icon sidebar-icon">
-                            <use xlink:href="#spreadsheet"></use>
-                        </svg>
-                        <span class="sidebar-text">Experiments</span>
-                    </a>
-                    <a class="nav-link" href="/app/upload">
-                        <svg class="icon sidebar-icon">
-                            <use xlink:href="#plus"></use>
-                        </svg>
-                        <span class="sidebar-text">Upload</span>
-                    </a>
-                    <a class="nav-link" href="/app/analysis">
-                        <svg class="icon sidebar-icon">
-                            <use xlink:href="#calculator"></use>
-                        </svg>
-                        <span class="sidebar-text">Analysis</span>
-                    </a>
-
-                    <div class="dropdown-divider"></div>
-
-                    <a class="nav-link" href="/accounts/userlist">
-                        <svg class="icon sidebar-icon">
-                            <use xlink:href="#people"></use>
-                        </svg>
-                        <span class="sidebar-text">Users</span>
-                    </a>
-                </nav>
-
-                <div class="col content">
-
-                    <!--  breadcrumb -->
-                    <nav aria-label="breadcrumb" role="navigation">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item" aria-current="page">
-                                <a href="/app">Pasteur.io</a>
-                            </li>
-                            {% block breadcrumb %}
-                            {% endblock %}
-                        </ol>
-                    </nav>
-                    
-
-                    {% block content %}
-                    {% endblock %}
-                </div>
+            <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" href="/accounts/profile">Profile</a> {% if request.user.is_staff %}
+                <a class="dropdown-item" href="/admin">Admin Panel</a> {% endif %}
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/accounts/logout">Logout</a>
             </div>
+            
         </div>
 
-        <!-- javascript -->
+        <!-- user options and log out -->
+        <div class="dropdown user-actions">
+            {{request.user.email | gravatar:40 }}
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ request.user.username }}</a>
+            <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" href="/accounts/profile">Profile</a> {% if request.user.is_staff %}
+                <a class="dropdown-item" href="/admin">Admin Panel</a> {% endif %}
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/accounts/logout">Logout</a>
+            </div>
+        </div>
+        {% endif %}
 
-        <!-- jQuery -->
-        <script
-              src="https://code.jquery.com/jquery-3.2.1.min.js"
-              integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-              crossorigin="anonymous"></script>
-        <!-- Popper.js -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-        <!-- bootstrap -->
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
-        <!-- icon injector -->
-        <script src="{% static 'common/js/svg-injector.min.js' %}"></script>
-        <!-- tether.js -->
-        <script src="{% static 'common/js/tether.min.js' %}"></script>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="sidebar" id="sidebar">
+                <a class="nav-link" href="/app">
+                    <svg class="icon sidebar-icon">
+                        <use xlink:href="#monitor" class="icon-monitor"></use>
+                    </svg>
+                    <span class="sidebar-text">Overview</span>
+                </a>
+                <a class="nav-link" href="/app/experiments">
+                    <svg class="icon sidebar-icon">
+                        <use xlink:href="#spreadsheet"></use>
+                    </svg>
+                    <span class="sidebar-text">Experiments</span>
+                </a>
+                <a class="nav-link" href="/app/upload">
+                    <svg class="icon sidebar-icon">
+                        <use xlink:href="#plus"></use>
+                    </svg>
+                    <span class="sidebar-text">Upload</span>
+                </a>
+                <a class="nav-link" href="/app/analysis">
+                    <svg class="icon sidebar-icon">
+                        <use xlink:href="#calculator"></use>
+                    </svg>
+                    <span class="sidebar-text">Analysis</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="nav-link" href="/accounts/userlist">
+                    <svg class="icon sidebar-icon">
+                        <use xlink:href="#people"></use>
+                    </svg>
+                    <span class="sidebar-text">Users</span>
+                </a>
+            </nav>
+            <div class="col content">
+                <!--  breadcrumb -->
+                <nav aria-label="breadcrumb" role="navigation">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item" aria-current="page">
+                            <a href="/app">Pasteur.io</a>
+                        </li>
+                        {% block breadcrumb %} {% endblock %}
+                    </ol>
+                </nav>
+                {% block content %} {% endblock %}
+            </div>
+        </div>
+    </div>
+    <!-- javascript -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <!-- Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <!-- bootstrap -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <!-- icon injector -->
+    <script src="{% static 'common/js/svg-injector.min.js' %}"></script>
+    <!-- tether.js -->
+    <script src="{% static 'common/js/tether.min.js' %}"></script>
+    <!-- template js -->
+    <script src="{% static 'app/js/base.js' %}"></script>
+    {% block script_extra %} {% endblock %}
+</body>
 
-        <!-- template js -->
-        <script src="{% static 'app/js/base.js' %}"></script>
-
-        {% block script_extra %}
-        {% endblock %}
-
-    </body>
 </html>
-

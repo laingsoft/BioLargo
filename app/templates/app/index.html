@@ -1,51 +1,47 @@
-{% extends 'app/base_template.html' %}
-{% load static %}
-
-{% block breadcrumb %}
+{% extends 'app/base_template.html' %} {% load static %} {% block breadcrumb %}
 <li class="breadcrumb-item active">
-  Overview
+    Overview
 </li>
-{% endblock %}
-
-
-{% block content %}
-<div class = "row">
-  <div class="float-left col-md-8">
-    <div class = "card">
-      <p class="card-header"> At a Glance</p>
-      <ul class="list-group">
-      </ul>
-    </div>
-  </div>
-  <div class="float-right pb-2 col-md-4">
-    <div class = "card">
-      <p class="card-header">Watched Experiments</p>
-      <div id="watched">
-	<ul class="list-group">
-	  <li class="list-group-item">
-	    <span>userLogo:</span>
-	    <span>Updated Experiment 1</span>
-	  </li>
-	</ul>
-      </div>
-    </div>
-  </div>
-  
-</div>
-
+{% endblock %} {% block content %}
 <div class="row">
-  <div class="col">
-    <div class="card">
-      <div class="card-header"><a href="/app/experiments">Latest Experiments</a></div>
-      <div class="card-body">
-        {{ latest_table | safe }}
-      </div>
+    <div class="col-lg-8 pb-3 ">
+        <div class="card">
+            <p class="card-header"> At a Glance</p>
+            <div class="card-body" id="stats">
+                <p class="card-title">Nov 7-14</p>
+                <hr>
+                <div class="row m-1">
+                    <div class="col-lg-6" id="num_exp"></div>
+                    <div class="col-lg-6" id="active_users"></div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+    <div class="pb-2 col-lg-4 pb-3">
+        <div class="card">
+            <p class="card-header">Watched Experiments</p>
+            <div id="watched">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <span>userLogo:</span>
+                        <span>Updated Experiment 1</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
-{% endblock %}
-
-{% block script_extra %}
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header"><a href="/app/experiments">Latest Experiments</a></div>
+            <div class="card-body">
+                {{ latest_table | safe }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block script_extra %}
+<script src="https://cdn.plot.ly/plotly-basic-latest.min.js"></script>
 <script src="{% static 'app/js/index.js' %}"></script>
 {% endblock %}
