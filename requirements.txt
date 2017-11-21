@@ -3,3 +3,7 @@ psycopg2
 channels
 python-magic
 asgi_redis
+djangorestframework
+markdown
+django-filter
+djangorestframework-jwt
