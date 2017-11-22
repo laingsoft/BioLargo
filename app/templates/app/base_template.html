@@ -1,130 +1,206 @@
 {% load accounts_tags %} {% load static %}
-<!doctype html>
+<!--
+ * CoreUI - Open Source Bootstrap Admin Template
+ * @version v1.0.6
+ * @link http://coreui.io
+ * Copyright (c) 2017 creativeLabs Łukasz Holeczek
+ * @license MIT
+ -->
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    {% block title %}
-    <title>Pasteur.io</title>{% endblock %}
-    <!-- Required meta tags -->
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../../../../favicon.ico">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-    <!-- template css -->
-    <link rel="stylesheet" type="text/css" href="{% static 'app/base.css'%}"> {% block css_extra %} {% endblock %}
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="">
+    <title>{% block title %}Pasteur.io{% endblock %}</title>
+    <!-- Main styles for this application -->
+    <link href="{% static 'app/style.css' %}" rel="stylesheet">
+    <!-- Styles required by this views -->
+    {% block css_extra %}{% endblock %}
+    <style type="text/css">
+    .icon {
+        height: 20px;
+        width: 20px;
+    }
+    </style>
 </head>
+<!-- BODY options, add following classes to body to change options
 
-<body>
+// Header options
+1. '.header-fixed'                  - Fixed Header
+
+// Brand options
+1. '.brand-minimized'       - Minimized brand (Only symbol)
+
+// Sidebar options
+1. '.sidebar-fixed'                 - Fixed Sidebar
+2. '.sidebar-hidden'                - Hidden Sidebar
+3. '.sidebar-off-canvas'        - Off Canvas Sidebar
+4. '.sidebar-minimized'         - Minimized Sidebar (Only icons)
+5. '.sidebar-compact'             - Compact Sidebar
+
+// Aside options
+1. '.aside-menu-fixed'          - Fixed Aside Menu
+2. '.aside-menu-hidden'         - Hidden Aside Menu
+3. '.aside-menu-off-canvas' - Off Canvas Aside Menu
+
+// Breadcrumb options
+1. '.breadcrumb-fixed'          - Fixed Breadcrumb
+
+// Footer options
+1. '.footer-fixed'                  - Fixed footer
+
+-->
+
+<body class="app header-fixed sidebar-fixed sidebar-minimized aside-menu-hidden aside-menu-fixed">
     <img src="{% static 'common/svg/open-iconic.min.svg' %}" class="iconic-sprite" style="display:none;" />
-    <!-- Top navbar -->
-    <nav class='navbar navbar-dark'>
-        <span>
-                <!-- menu button -->
-            <svg class="icon" id="sidebar-collapse">
-                <use xlink:href="#menu" class="icon-menu"></use>
-            </svg>
-            <!-- logo -->
-            <a class="navbar-brand" href="#"><b>Pasteur</b>.io</a>
-        </span> 
-        {% block navextra %}{% endblock %} 
-
-        {% if request.user.is_authenticated %}
-        <!-- notifications -->
-        <div class="dropdown" id="notifications" data-toggle="dropdown">
-            <a href="#">
-                <svg class="icon">
-                    <use xlink:href="#bell" class="icon-bell"></use>
-                </svg>
-            </a>
-
-            <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" href="/accounts/profile">Profile</a> {% if request.user.is_staff %}
-                <a class="dropdown-item" href="/admin">Admin Panel</a> {% endif %}
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="/accounts/logout">Logout</a>
-            </div>
+    <header class="app-header navbar">
+        <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#"></a>
+        <button class="navbar-toggler sidebar-minimizer d-md-down-none" type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <ul class="nav navbar-nav d-md-down-none">
+            <li class="nav-item px-3">
+                <a class="nav-link" href="#">Overview</a>
+            </li>
+            <li class="nav-item px-3">
+                <a class="nav-link" href="#">Experiments</a>
+            </li>
+            <li class="nav-item px-3">
+                <a class="nav-link" href="#">Analysis</a>
+            </li>
+            <li class="nav-item px-3">
+                <a class="nav-link" href="#">Users</a>
+            </li>
+        </ul>
+        <ul class="nav navbar-nav ml-auto">
+<!--             <li class="nav-item d-md-down-none">
+                <a class="nav-link" href="#">
+                    <svg class="icon">
+                        <use xlink:href="#bell"></use>
+                    </svg>
+                    <span class="badge badge-pill badge-danger">5</span>
+                </a>
+            </li> -->
+            <li class="nav-item dropdown pr-4">
+                <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    {{request.user.email | gravatar:40 }}
+                 </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <div class="dropdown-header text-center">
+                        <strong>Account</strong>
+                    </div>
+                    <!--  <a class="dropdown-item" href="#"><i class="fa fa-bell-o"></i> Updates<span class="badge badge-info">42</span></a>
+                    <a class="dropdown-item" href="#"><i class="fa fa-envelope-o"></i> Messages<span class="badge badge-success">42</span></a>
+                    <a class="dropdown-item" href="#"><i class="fa fa-tasks"></i> Tasks<span class="badge badge-danger">42</span></a>
+                    <a class="dropdown-item" href="#"><i class="fa fa-comments"></i> Comments<span class="badge badge-warning">42</span></a>
+                    <div class="dropdown-header text-center">
+                        <strong>Settings</strong>
+                    </div> -->
+                    <a class="dropdown-item" href="#"><i class="fa fa-user"></i> Profile</a>
+                    <a class="dropdown-item" href="#"><i class="fa fa-wrench"></i> Settings</a>
+                    <!-- <a class="dropdown-item" href="#"><i class="fa fa-file"></i> Projects<span class="badge badge-primary">42</span></a>
+                    <div class="divider"></div> -->
+                    <!-- <a class="dropdown-item" href="#"><i class="fa fa-shield"></i> Lock Account</a> -->
+                    <a class="dropdown-item" href="#"><i class="fa fa-lock"></i> Logout</a> {% if request.user.is_staff %}
+                    <div class="dropdown-header text-center">
+                        <strong>Administration</strong>
+                    </div>
+                    <a class="dropdown-item" href="/admin">Admin panel</a> {% endif %}
+                </div>
+            </li>
+        </ul>
+    </header>
+    <div class="app-body">
+        <div class="sidebar">
+            <nav class="sidebar-nav">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/app">
+                            <svg class="icon sidebar-icon">
+                                <use xlink:href="#monitor" class="icon-monitor"></use>
+                            </svg>
+                            <span class="sidebar-text">Overview</span>
+                        </a>
+                    </li>
+                    <li class="nav-title">
+                        Experiments
+                    </li>
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link" href="/app/experiments">
+                            <svg class="icon sidebar-icon">
+                                <use xlink:href="#spreadsheet"></use>
+                            </svg>
+                            <span class="sidebar-text">Experiments</span>
+                        </a>
+                    </li>
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link" href="/app/upload">
+                            <svg class="icon sidebar-icon">
+                                <use xlink:href="#plus"></use>
+                            </svg>
+                            <span class="sidebar-text">Upload</span>
+                        </a>
+                    </li>
+                    <li class="nav-item nav-dropdown">
+                        <a class="nav-link" href="/app/analysis">
+                            <svg class="icon sidebar-icon">
+                                <use xlink:href="#calculator"></use>
+                            </svg>
+                            <span class="sidebar-text">Analysis</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
             
         </div>
-
-        <!-- user options and log out -->
-        <div class="dropdown user-actions">
-            {{request.user.email | gravatar:40 }}
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ request.user.username }}</a>
-            <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" href="/accounts/profile">Profile</a> {% if request.user.is_staff %}
-                <a class="dropdown-item" href="/admin">Admin Panel</a> {% endif %}
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="/accounts/logout">Logout</a>
+        <!-- Main content -->
+        <main class="main">
+            <!-- Breadcrumb -->
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Home</li>
+                {% block breadcrumb %}
+                <li class="breadcrumb-item active">Overview</li>
+                {% endblock %}
+                <!-- Breadcrumb Menu-->
+                <li class="breadcrumb-menu d-md-down-none">
+                    <div class="btn-group" role="group" aria-label="Button group">
+                        <a class="btn" href="#"><i class="icon-speech"></i></a>
+                        <a class="btn" href="./"><i class="icon-graph"></i> &nbsp;Dashboard</a>
+                        <a class="btn" href="#"><i class="icon-settings"></i> &nbsp;Settings</a>
+                    </div>
+                </li>
+            </ol>
+            <div class="container-fluid">
+                <div class="animated fadeIn">
+                    {% block content %} {% endblock %}
+                </div>
             </div>
-        </div>
-        {% endif %}
-
-    </nav>
-    <div class="container-fluid">
-        <div class="row">
-            <nav class="sidebar" id="sidebar">
-                <a class="nav-link" href="/app">
-                    <svg class="icon sidebar-icon">
-                        <use xlink:href="#monitor" class="icon-monitor"></use>
-                    </svg>
-                    <span class="sidebar-text">Overview</span>
-                </a>
-                <a class="nav-link" href="/app/experiments">
-                    <svg class="icon sidebar-icon">
-                        <use xlink:href="#spreadsheet"></use>
-                    </svg>
-                    <span class="sidebar-text">Experiments</span>
-                </a>
-                <a class="nav-link" href="/app/upload">
-                    <svg class="icon sidebar-icon">
-                        <use xlink:href="#plus"></use>
-                    </svg>
-                    <span class="sidebar-text">Upload</span>
-                </a>
-                <a class="nav-link" href="/app/analysis">
-                    <svg class="icon sidebar-icon">
-                        <use xlink:href="#calculator"></use>
-                    </svg>
-                    <span class="sidebar-text">Analysis</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="nav-link" href="/accounts/userlist">
-                    <svg class="icon sidebar-icon">
-                        <use xlink:href="#people"></use>
-                    </svg>
-                    <span class="sidebar-text">Users</span>
-                </a>
-            </nav>
-            <div class="col content">
-                <!--  breadcrumb -->
-                <nav aria-label="breadcrumb" role="navigation">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item" aria-current="page">
-                            <a href="/app">Pasteur.io</a>
-                        </li>
-                        {% block breadcrumb %} {% endblock %}
-                    </ol>
-                </nav>
-                {% block content %} {% endblock %}
-            </div>
-        </div>
+            <!-- /.conainer-fluid -->
+        </main>
     </div>
-    <!-- javascript -->
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-    <!-- Popper.js -->
+    <footer class="app-footer">
+    </footer>
+    <!-- Bootstrap and necessary plugins -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-    <!-- bootstrap -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
-    <!-- icon injector -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script> -->
     <script src="{% static 'common/js/svg-injector.min.js' %}"></script>
-    <!-- tether.js -->
-    <script src="{% static 'common/js/tether.min.js' %}"></script>
-    <!-- template js -->
-    <script src="{% static 'app/js/base.js' %}"></script>
+
+    <!-- CoreUI main scripts -->
+    <script src="{% static 'app/js/app.js' %}"></script>
+    <!-- Plugins and scripts required by this views -->
+
+    <!-- Custom scripts required by this view -->
     {% block script_extra %} {% endblock %}
 </body>
 
