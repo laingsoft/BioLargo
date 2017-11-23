@@ -20,14 +20,10 @@
     <title>{% block title %}Pasteur.io{% endblock %}</title>
     <!-- Main styles for this application -->
     <link href="{% static 'app/style.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'app/icons.css' %}">
+
     <!-- Styles required by this views -->
     {% block css_extra %}{% endblock %}
-    <style type="text/css">
-    .icon {
-        height: 20px;
-        width: 20px;
-    }
-    </style>
 </head>
 <!-- BODY options, add following classes to body to change options
 
@@ -69,16 +65,16 @@
         </button>
         <ul class="nav navbar-nav d-md-down-none">
             <li class="nav-item px-3">
-                <a class="nav-link" href="#">Overview</a>
+                <a class="nav-link" href="/app">Overview</a>
             </li>
             <li class="nav-item px-3">
-                <a class="nav-link" href="#">Experiments</a>
+                <a class="nav-link" href="/app/experiments">Experiments</a>
             </li>
             <li class="nav-item px-3">
-                <a class="nav-link" href="#">Analysis</a>
+                <a class="nav-link" href="/app/analysis">Analysis</a>
             </li>
             <li class="nav-item px-3">
-                <a class="nav-link" href="#">Users</a>
+                <a class="nav-link" href="/accounts/userlist">Users</a>
             </li>
         </ul>
         <ul class="nav navbar-nav ml-auto">
@@ -93,6 +89,7 @@
             <li class="nav-item dropdown pr-4">
                 <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     {{request.user.email | gravatar:40 }}
+                    {{request.user.email}}
                  </a>
                 <div class="dropdown-menu dropdown-menu-right">
                     <div class="dropdown-header text-center">
@@ -105,16 +102,16 @@
                     <div class="dropdown-header text-center">
                         <strong>Settings</strong>
                     </div> -->
-                    <a class="dropdown-item" href="#"><i class="fa fa-user"></i> Profile</a>
-                    <a class="dropdown-item" href="#"><i class="fa fa-wrench"></i> Settings</a>
+                    <a class="dropdown-item" href="#"><svg class="icon" viewBox="0 0 8 8"><use xlink:href="#person"></use></svg> Profile</a>
+                    <a class="dropdown-item" href="#"><svg class = "icon" viewBox="0 0 8 8"><use xlink:href="#cog"></use></svg>Settings</a>
                     <!-- <a class="dropdown-item" href="#"><i class="fa fa-file"></i> Projects<span class="badge badge-primary">42</span></a>
                     <div class="divider"></div> -->
                     <!-- <a class="dropdown-item" href="#"><i class="fa fa-shield"></i> Lock Account</a> -->
-                    <a class="dropdown-item" href="#"><i class="fa fa-lock"></i> Logout</a> {% if request.user.is_staff %}
+                    <a class="dropdown-item" href="#"><svg class="icon" viewBox="0 0 8 8"><use xlink:href="#account-logout"></use></svg> Logout</a> {% if request.user.is_staff %}
                     <div class="dropdown-header text-center">
                         <strong>Administration</strong>
                     </div>
-                    <a class="dropdown-item" href="/admin">Admin panel</a> {% endif %}
+                    <a class="dropdown-item" href="/admin"><svg class="icon" viewBox="0 0 8 8"><use xlink:href="#wrench"></use></svg>Admin panel</a> {% endif %}
                 </div>
             </li>
         </ul>
@@ -125,40 +122,48 @@
                 <ul class="nav">
                     <li class="nav-item">
                         <a class="nav-link" href="/app">
-                            <svg class="icon sidebar-icon">
+                            <svg class="icon">
                                 <use xlink:href="#monitor" class="icon-monitor"></use>
                             </svg>
-                            <span class="sidebar-text">Overview</span>
+                            <span class="">Overview</span>
                         </a>
                     </li>
                     <li class="nav-title">
                         Experiments
                     </li>
-                    <li class="nav-item nav-dropdown">
+                    <li class="nav-item">
                         <a class="nav-link" href="/app/experiments">
-                            <svg class="icon sidebar-icon">
+                            <svg class="icon ">
                                 <use xlink:href="#spreadsheet"></use>
                             </svg>
-                            <span class="sidebar-text">Experiments</span>
+                            <span class="">Experiments</span>
                         </a>
                     </li>
-                    <li class="nav-item nav-dropdown">
+                    <li class="nav-item">
                         <a class="nav-link" href="/app/upload">
-                            <svg class="icon sidebar-icon">
+                            <svg class="icon ">
                                 <use xlink:href="#plus"></use>
                             </svg>
-                            <span class="sidebar-text">Upload</span>
+                            <span class="">Upload</span>
                         </a>
                     </li>
-                    <li class="nav-item nav-dropdown">
+                    <li class="nav-item">
                         <a class="nav-link" href="/app/analysis">
-                            <svg class="icon sidebar-icon">
+                            <svg class="icon ">
                                 <use xlink:href="#calculator"></use>
                             </svg>
-                            <span class="sidebar-text">Analysis</span>
+                            <span class="">Analysis</span>
                         </a>
                     </li>
+                    <li class="nav-title">Users</li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/accounts/userlist">
+                        <svg class="icon" viewBox="0 0 8 8"><use xlink:href="#people"></use></svg>
+                        User list</a>
+                    </li>
+
                 </ul>
+
             </nav>
             
         </div>
@@ -173,9 +178,8 @@
                 <!-- Breadcrumb Menu-->
                 <li class="breadcrumb-menu d-md-down-none">
                     <div class="btn-group" role="group" aria-label="Button group">
-                        <a class="btn" href="#"><i class="icon-speech"></i></a>
-                        <a class="btn" href="./"><i class="icon-graph"></i> &nbsp;Dashboard</a>
-                        <a class="btn" href="#"><i class="icon-settings"></i> &nbsp;Settings</a>
+                        {% block nav_extra %}
+                        {% endblock %}
                     </div>
                 </li>
             </ol>
@@ -190,14 +194,15 @@
     <footer class="app-footer">
     </footer>
     <!-- Bootstrap and necessary plugins -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script> -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
     <script src="{% static 'common/js/svg-injector.min.js' %}"></script>
 
     <!-- CoreUI main scripts -->
     <script src="{% static 'app/js/app.js' %}"></script>
+    <script src="{% static 'app/js/base.js' %}"></script>
     <!-- Plugins and scripts required by this views -->
 
     <!-- Custom scripts required by this view -->
