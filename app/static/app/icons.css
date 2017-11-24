@@ -1,0 +1,13 @@
+.icon {
+    height: 15px;
+    width: 15px;
+    fill: #8c8c8c;
+    margin: 0 16px;
+    position: relative;
+    top: 3px;
+}
+
+
+.nav-link:hover > .icon {
+    fill: #fff;
+}
