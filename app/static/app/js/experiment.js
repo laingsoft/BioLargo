@@ -81,6 +81,9 @@ function makeHeaders(jsondata, table){
 
 }
 
+
+
+
 function makeChart(jsondata){
     var time = [];
     var removal = [];
@@ -117,4 +120,81 @@ $.ajax({
     }
 });
 
+function commentBuilder(commentObject){
+    console.log(commentObject);
+    var comment = `<li class = "list-group-item">
+        <div class = "media">
+          <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
+          <div class = "media-body">
+            <h5 class = "mt-0">`+commentObject["user"]+`</h5>
+            <div class="commentContent">
+              <p>`+commentObject["content"]+`</p>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end">
+            <small>`+'Month - Day - Year'+`</small>
+          </div>
+        </div>
+      </li>`;
+    $("#commentList").append(comment);
 
+
+}
+function reloadComments(){
+    //commentBuilder("Chuck", "1", "WHAT THE HELL DID YOU JUST SAY TO ME", "05-31-1995");
+    $("#commentList").empty();
+    $.ajax({
+        method: "GET",
+        url: "/api/comment/",
+        dataType: 'json',
+        data: {'exp_id':id},
+        success: function(data) {
+            // console.log(data);
+            
+            console.log(data);
+            for (var key in data){
+                commentBuilder(data[key]);
+            }
+        }
+    });
+}
+
+TABS = {"overviewLink":$("#overview"), "commentLink":$("#commentbox"), "dataLink":$("#data"), "settingsLink":$("#settings")}
+$(document).ready(function(){
+    $(".nav.tabbar > .nav-item > .nav-link").click(function(e){
+        e.preventDefault();
+
+        var oldtab =  $(".nav.tabbar > .nav-item > .nav-link.active")[0]
+        var newtab = $(this)[0];
+
+        TABS[oldtab.id].hide();
+        TABS[newtab.id].show();
+        $("#"+ oldtab.id).removeClass("active");
+        $("#"+this.id).addClass("active");
+        
+
+    });
+
+    $("#submitCommentButton").click(function(e){
+        var content = $("#newCommentInput")
+        content.prop("disabled",true)
+        var text = content.val()
+        var data = {'content':text, 'exp_id':id}
+        console.log(data);
+        $.ajax({
+            beforeSend: function(xhr, settings){
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            },
+            url: "/api/comment/",
+            dataType: 'json',
+            method: 'POST',
+            data: JSON.stringify(data),
+            success: function(data) {
+                content.prop("disabled", false);
+                content.val('');
+                reloadComments()
+               
+            }
+        });
+    });
+});

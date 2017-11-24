@@ -2,3 +2,31 @@
     max-height: 300px;
     overflow-y: auto;
 }
+
+.commentContent{
+    text-align: center;
+    border: aliceblue;
+    margin-bottom:10px;
+    border-style:solid;
+}
+
+.list-group-item{
+    margin: 10px;
+    
+
+}
+
+.row.commentSubmit{
+    margin-top: 10px;
+    
+}
+
+#newCommentInput{
+    margin-right: 2px;
+}
+
+#submitCommentButton{
+    float: right;
+    margin:10px;
+
+}

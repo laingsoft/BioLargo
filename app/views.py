@@ -167,7 +167,8 @@ def experiment(request, exp_id):
     user = get_user(request)
     this_experiment = Experiment.objects.get(id=exp_id)
     metadata = json.dumps(this_experiment.metadata)
-    return render(request,"app/experiment.html", {"this_experiment":this_experiment, "usr":user, "metadata":metadata})
+    comments = Comment.objects.filter(experiment = this_experiment).order_by('id')
+    return render(request,"app/experiment.html", {"this_experiment":this_experiment, "usr":user, "metadata":metadata, "comments":comments})
     
 @login_required
 def experiment_json(request, exp_id):
@@ -175,7 +176,6 @@ def experiment_json(request, exp_id):
     newval = {}
     newval = {k: v.experimentData for k,v in enumerate(data)}
     return JsonResponse(newval)
-
 
 @login_required
 def experimentrm(request, exp_id):

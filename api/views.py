@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+import json
 from app.models import *
 
 # Create your views here.
@@ -78,4 +79,26 @@ def get_csv():
 def experimentrm():
     pass
 
+@login_required
+def comment(request):
+    print(request.body)
+    print(60*"*")
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        content = data['content']
+        experiment_id = data['exp_id']
+        newComment = Comment.objects.create(user = request.user, content = content, experiment = Experiment.objects.get(id=experiment_id))
+        newComment.save()
+        return JsonResponse({'Success':1})
+    elif request.method == 'GET':
+        if (request.body):
+            data = json.loads(request.body)
+            get_id = data['exp_id']
+            comment = Comment.objects.filter(experiment = Experiment.objects.get(id = get_id))
+        else:
+            comment = Comment.objects.all()
 
+        ret = {k: {'user':v.user.username, 'content':v.content, 'experiment':v.experiment.id} for k,v in enumerate(comment)}
+        return JsonResponse(ret)
+
+    

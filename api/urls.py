@@ -10,5 +10,6 @@ urlpatterns = [
     url(r'^experimentlist', views.get_experiments_id, name="get_multiple_experiments"),
     url(r'^groups', views.groups_list, name="groups_list"),
     url(r'^fields',views.fields_autocomplete, name="fields_autocomplete"),
-    url(r'^template', views.templates, name="template")
+    url(r'^template', views.templates, name="template"),
+    url(r'^comment', views.comment, name="comment")
 ]

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block css_extra %}
-  <link rel="stylesheet" type="text/css" href="{% static 'app/experiment.css' %}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'app/experiment.css' %}"/>
 {% endblock %}
 
 {% block breadcrumb %}
@@ -21,9 +21,22 @@
 
 {% block content %}
 <script "javascript">metadata = {{metadata | safe}};</script>
-<h2>Overview</h2>
-<div class="row">
-    <canvas id="removalChart" class= "col-md-3" width="100" height = "100"></canvas>
+<ul class="nav tabbar">
+  <li class="nav-item">
+    <a class="nav-link active" href="#overviewlink" id="overviewLink" >{{this_experiment.friendly_name}}</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#commentlink" id="commentLink">Comments</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#datalink" id="dataLink">Data</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link disabled" href="#" id="settingsLink">Settings</a>
+  </li>
+</ul>
+<div class="row" id="overview">
+  <canvas id="removalChart" class= "col-md-3" width="100" height = "100"></canvas>
   <div class = "col-md-8 mb-5 ml-5">
     <div class = "card">
       <h2 class = "card-header">{{this_experiment.friendly_name}} </h2>
@@ -42,159 +55,57 @@
     </div>
   </div>
 </div>
-<div class = "row">
-  <div class = "col-md-6 col-sm-0">
-    <div class = "card">
-      <h2 class = "card-header">Comments</h2>
-      <ul class ="list-group" id="comments">
-        
-        <li class = "list-group-item">
-          <div class = "media">
-              <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
-              <div class = "media-body">
-                <h5 class = "mt-0">user </h5>
-                <p>Post Content</p>
-              </div>
-              <div class="d-flex justify-content-end">
-                <small>Month - Day - Year</small>
-              </div>
-          </div>
-        </li>        
-        <li class = "list-group-item">
-          <div class = "media">
-              <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
-              <div class = "media-body">
-                <h5 class = "mt-0">user </h5>
-                <p>Post Content</p>
-              </div>
-              <div class="d-flex justify-content-end">
-                <small>Month - Day - Year</small>
-              </div>
-          </div>
-        </li>        <li class = "list-group-item">
-          <div class = "media">
-              <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
-              <div class = "media-body">
-                <h5 class = "mt-0">user </h5>
-                <p>Post Content</p>
-              </div>
-              <div class="d-flex justify-content-end">
-                <small>Month - Day - Year</small>
-              </div>
-          </div>
-        </li>        <li class = "list-group-item">
-          <div class = "media">
-              <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
-              <div class = "media-body">
-                <h5 class = "mt-0">user </h5>
-                <p>Post Content</p>
-              </div>
-              <div class="d-flex justify-content-end">
-                <small>Month - Day - Year</small>
-              </div>
-          </div>
-        </li>        <li class = "list-group-item">
-          <div class = "media">
-              <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
-              <div class = "media-body">
-                <h5 class = "mt-0">user </h5>
-                <p>Post Content</p>
-              </div>
-              <div class="d-flex justify-content-end">
-                <small>Month - Day - Year</small>
-              </div>
-          </div>
-        </li>        <li class = "list-group-item">
-          <div class = "media">
-              <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
-              <div class = "media-body">
-                <h5 class = "mt-0">user </h5>
-                <p>Post Content</p>
-              </div>
-              <div class="d-flex justify-content-end">
-                <small>Month - Day - Year</small>
-              </div>
-          </div>
-        </li>        <li class = "list-group-item">
-          <div class = "media">
-              <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
-              <div class = "media-body">
-                <h5 class = "mt-0">user </h5>
-                <p>Post Content</p>
-              </div>
-              <div class="d-flex justify-content-end">
-                <small>Month - Day - Year</small>
-              </div>
-          </div>
-        </li>        <li class = "list-group-item">
-          <div class = "media">
-              <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
-              <div class = "media-body">
-                <h5 class = "mt-0">user </h5>
-                <p>Post Content</p>
-              </div>
-              <div class="d-flex justify-content-end">
-                <small>Month - Day - Year</small>
-              </div>
-          </div>
-        </li>        <li class = "list-group-item">
-          <div class = "media">
-              <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
-              <div class = "media-body">
-                <h5 class = "mt-0">user </h5>
-                <p>Post Content</p>
-              </div>
-              <div class="d-flex justify-content-end">
-                <small>Month - Day - Year</small>
-              </div>
-          </div>
-        </li>        <li class = "list-group-item">
-          <div class = "media">
-              <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
-              <div class = "media-body">
-                <h5 class = "mt-0">user </h5>
-                <p>Post Content</p>
-              </div>
-              <div class="d-flex justify-content-end">
-                <small>Month - Day - Year</small>
-              </div>
-          </div>
-        </li>        <li class = "list-group-item">
-          <div class = "media">
-              <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
-              <div class = "media-body">
-                <h5 class = "mt-0">user </h5>
-                <p>Post Content</p>
-              </div>
-              <div class="d-flex justify-content-end">
-                <small>Month - Day - Year</small>
-              </div>
-          </div>
-        </li>
-        
-      </ul>
 
-      <div class="card-footer">
-        testvals
+<div class = "row" style="display: none" id="commentbox">
+  <div class="col-md-6 mx-auto">
+
+    <ul class ="list-group" id="commentList">
+      {% for comment in comments %}
+      <li class = "list-group-item">
+        <div class = "media">
+          <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
+          <div class = "media-body">
+            <h5 class = "mt-0">{{comment.user.username}}</h5>
+            <div class="commentContent">
+              <p>{{comment.content}}</p>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end">
+            <small>Month - Day - Year</small>
+          </div>
+        </div>
+      </li>
+      {% endfor %}  
+    </ul>
+
+    <div class="col-md-12">
+      <div class="form-group">
+        <div class="row commentSubmit">
+          {% csrf_token %}
+          <textarea type="text" class="form-control col"  id="newCommentInput" rows="4" cols="50"></textarea>
+          
+        </div>
+        <button class="btn btn-primary col-md-1" id="submitCommentButton">Submit</button>
       </div>
     </div>
   </div>
-  <div class="col-md-6 col-sm-12">
-    <div class="card" id="data">
-      <h2 class = "card-header">Data</h2>
-      <div class="table-responsive">
-        <table id = "experimental-data" class = "table table-responsive">
+</div>
+<div class="col-md-12 col-sm-12" style="display: none;" id="data">
+
+    <div class="table">
+      <div class="form-group">
+        <table id = "experimental-data" class = "table">
         </table>
       </div>
     </div>
-  </div>
+</div>
 
 </div>
-<div class="card mt-2">
+<div class="card mt-2" style="display: none;" id="settings">
   <h2 class = "card-header">Dangerous Stuff </h2>
-    <div class = "card-block col-md-1 col-sm-1 my-2">
-      <button class = "btn btn-danger" data-toggle="modal" data-target="#expModal"> Delete This Experiment </button>
-    </div>
+  <div class = "card-block col-md-1 col-sm-1 my-2">
+    <button class = "btn btn-danger" data-toggle="modal" data-target="#expModal"> Delete This Experiment </button>
+  </div>
 </div>
 </div>
 
@@ -216,7 +127,6 @@
       </div>
     </div>
   </div>
-</div>
   <script>var id={{this_experiment.id}};</script>
 
 {% endblock %}
@@ -226,4 +136,7 @@
 {% block script_extra %}
   <script src = "{% static '/app/js/experiment.js' %}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
+  <script type="text/javascript">
+    var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+  </script>
 {% endblock %}
