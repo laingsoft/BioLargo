@@ -15,8 +15,6 @@ from io import StringIO
 from .filters import filter_experiments
 from .utils import to_table
 
-HEADER_LIST = ["ID", "Chambers","Diameter","Length","Target","Age (mL)"]
-
 # a placeholder while this setting is not implemented
 METADATA_FIELDS = ["Reactor Diameter [inch]", "Reactor Length [inch]", "#Chambers",	
 "Date (d/m/y)",	"Removal Target", "Age of reactor [L]"] 
