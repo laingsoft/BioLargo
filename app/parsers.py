@@ -46,7 +46,7 @@ class BaseParser(ABC):
         # pull out comments + add extra fields to each row
         for row in self.data:
             try:
-                comment = row[self.comment_field]
+                comment = row[self.comment_field].strip()
                 if comment:
                     self.comments.append(comment)
                 del row[self.comment_field]
