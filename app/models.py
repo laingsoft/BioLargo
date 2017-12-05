@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 
 # Create your models here.
@@ -52,18 +52,18 @@ class Fields(models.Model):
 class Template(models.Model):
     #~ owner = models.ForeignKey()
     name = models.CharField(max_length = 255)
-    fields = models.ManyToManyField(Fields)
+    fields = models.ManyToManyField(Fields) 
    
     def __str__(self):
         return self.name
         
 class Comment(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     content = models.CharField(max_length = 255)
 
     
 class Activity(models.Model):
     action = models.CharField(max_length = 100)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
