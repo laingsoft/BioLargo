@@ -5,102 +5,99 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user, get_user_model
-from .forms import profileForm
+from .forms import profileForm, CompanyForm, UserForm
 from django.views import View
 from django.http import Http404
-from .models import Invite
+from .models import Invite, Plan
 from django.db import transaction
+from django.db import IntegrityError
 # Create your views here.
 
 
-class Auth(View):
-    def register_user(self, url, request):
-        """
-        View used to register a new :model:`accounts.User` within a :model:`accounts.Company` 
-        with an :model:`accounts.Invite`
-        """
-        # if request.method == "GET":
-        #     email = request.GET.get('email')
 
-        #     if not (email):
-        #         throw Http404("Invite not found!")
+def register_user(request, url):
+    """
+    View used to register a new :model:`accounts.User` within a :model:`accounts.Company` 
+    with an :model:`accounts.Invite`
+    """
+    # if request.method == "GET":
+    #     email = request.GET.get('email')
 
-        #     try:
-        #         invite = Invite.objects.get(hash=url)
-        #     except DoesNotExist:
-        #         throw Http404("Invite not found!")
+    #     if not (email):
+    #         throw Http404("Invite not found!")
 
-            # verify hash and date.
-            # render registration form. with email given & company
+    #     try:
+    #         invite = Invite.objects.get(hash=url)
+    #     except DoesNotExist:
+    #         throw Http404("Invite not found!")
 
-        # if request.method == "POST":
-            # check the email and url info
-            # if no errors:
-            # register user to company.
+        # verify hash and date.
+        # render registration form. with email given & company
 
-        pass
+    # if request.method == "POST":
+        # check the email and url info
+        # if no errors:
+        # register user to company.
 
-    def company_register(self, request):
-        """
-        View used to register a new :model:`accounts.Company` with a chosen :model:`accounts.Plan`.
-        Registers a new :model:`accounts.User` with management permissions.
-        """
+    pass
 
-        if request.method == "GET":
-            plan = request.GET.get(p)
+def company_register(request):
+    """
+    View used to register a new :model:`accounts.Company` with a chosen :model:`accounts.Plan`.
+    Registers a new :model:`accounts.User` with management permissions.
+    """
 
-            if not Plan.objects.exists(id=p):
-                redirect('/pricing')
+    if request.method == "GET":
+        plan = request.GET.get('p')
 
-            company_form = CompanyForm(initial = {'plan': plan }, prefix = "company")
-            user_form = UserForm(prefix = "user")
+        company_form = CompanyForm(initial = {'plan': plan }, prefix = "company")
+        user_form = UserForm(prefix = "user")
 
-        if request.method == "POST":
-            company_form = CompanyForm(request.POST, prefix="company")
-            user_form = UserForm(request.POST, prefix="user")
+    if request.method == "POST":
+        company_form = CompanyForm(request.POST, prefix="company")
+        user_form = UserForm(request.POST, prefix="user")
 
-            if company_form.is_valid() and user_form.is_valid():
+        if company_form.is_valid() and user_form.is_valid():
 
-                company = company_form.save()
-                sid = transaction.savepoint() # create a savepoint in case saving one model fails for any reason.
+            company = company_form.save()
+            sid = transaction.savepoint() # create a savepoint in case saving one model fails for any reason.
 
-                try:
-                    user = user_form.save(commit = False)
-                    user.company = company
-                    user.save()
-                    transaction.savepoint_commit(sid)
-                except IntegrityError:
-                    transaction.savepoint_rollback(sid)
-                    return Http404("Error creating company. Please try again later.") #TODO: replace this with 500 error.
+            try:
+                user = user_form.save(company)
+                transaction.savepoint_commit(sid)
 
-                auth_login(request, user)
-                return redirect("/app") # for now. Redirect to a success page later.
+            except IntegrityError:
+                transaction.savepoint_rollback(sid)
+                return Http404("Error creating company. Please try again later.") #TODO: replace this with 500 error.
 
-        context = {
-            "company_form" : company_form ,
-            "user_form" : user_form
-        }
+            auth_login(request, user)
+            return redirect("/app") # for now. Redirect to a success page later.
 
-        return render(request, 'registration/company', context)
+    context = {
+        "company_form" : company_form ,
+        "user_form" : user_form
+    }
+
+    return render(request, 'registration/company_registration.html', context)
 
 
 
-class UserPages(View):
-    def my_profile(self, request):
-        """
-        View used to display profile of logged in user.
-        """
-        pass
-    def user_profile(self, request):
-        """
-        View used to display profile of specific user.
-        """
-        pass
-    def users_list(self, request):
-        """
-        view used to display all users within a company 
-        """
-        pass
+
+def my_profile(request):
+    """
+    View used to display profile of logged in user.
+    """
+    pass
+def user_profile(request):
+    """
+    View used to display profile of specific user.
+    """
+    pass
+def users_list(request):
+    """
+    view used to display all users within a company 
+    """
+    pass
 
 
 # def register(request):

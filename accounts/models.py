@@ -20,6 +20,11 @@ class Plan(models.Model):
     description = models.TextField()
     is_active = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.name
+    def __repr__(self):
+        return self.name
+
 class Company(models.Model):
     """
     Stores a single company. Is used to determine owner of all data
@@ -29,6 +34,11 @@ class Company(models.Model):
     phone = models.CharField(max_length=20)
     plan = models.ForeignKey(Plan)
     is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+    def __repr__(self):
+        return self.name
 
 
 # Taken from https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html#abstractbaseuser

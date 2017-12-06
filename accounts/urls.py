@@ -9,5 +9,6 @@ urlpatterns = [
     # url(r'^profile/', views.profile),
     # url(r'^userlist/', views.userlist),
     # url(r'^messages/', views.messaging),
-    # url(r'^logout/$', auth_views.logout_then_login )
+    url(r'^logout/$', auth_views.logout_then_login ),
+    url(r'^register/$', views.company_register)
     ]

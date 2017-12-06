@@ -10,7 +10,7 @@ class profileForm(forms.ModelForm):
         model = get_user_model()
         fields = ['first_name','last_name','email']
 
-class UserRegistrationForm(UserCreationForm):
+class UserForm(UserCreationForm):
     email = forms.EmailField()
 
     class Meta:
