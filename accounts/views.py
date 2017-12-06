@@ -81,92 +81,34 @@ def company_register(request):
     return render(request, 'registration/company_registration.html', context)
 
 
+def userpage(request, usr_id):
+    company = request.user.company
+    view_user = get_user_model().objects.get(id=usr_id)
+
+    if view_user.company != company:
+        return Http404("User not found")
+
+    return render(request, 'accounts/user.html',{'userdata':view_user, 'usr':get_user(request)})
 
 
-def my_profile(request):
-    """
-    View used to display profile of logged in user.
-    """
-    pass
-def user_profile(request):
-    """
-    View used to display profile of specific user.
-    """
-    pass
-def users_list(request):
-    """
-    view used to display all users within a company 
-    """
-    pass
-
-
-# def register(request):
-#         if request.method == 'POST':
-#             form = UserCreationForm(request.POST)
-#             if form.is_valid():
-#                 form.save()
-#                 username = form.cleaned_data.get('username')
-#                 raw_password = form.cleaned_data.get('password1')
-#                 user = authenticate(username=username, password=raw_password) 
-#                 scientist = Scientist(user=user)
-#                 scientist.save()
-#                 auth_login(request, user)
-#                 return HttpResponseRedirect('/app')
-
-#             if form.errors:
-#                 print ("ERROR!!!", form.errors)
-#             else:
-#                 print ("?????")
-    
-#         else:
-#             form = UserCreationForm()
-            
-#         return render(request, 'registration/register.html', {'form':form})
-
-# #  using default one for now.
-# # def login(request):
-# #     if request.method == "POST":
-# #         form = AuthenticationForm(data = request.POST)
-
-# #         if form.is_valid():
-# #             username = form.cleaned_data.get('username')
-# #             raw_password = form.cleaned_data.get('password') 
-# #             user = authenticate(username=username, password=raw_password) 
-# #             auth_login(request,user)
-# #             return HttpResponseRedirect('/app')
-# #         else:
-# #             return HttpResponseRedirect('/accounts/login')
+def profile(request):
+        if request.method == "POST":
+            form = profileForm(data=request.POST, instance = request.user)
+            if form.is_valid():
+                    form.save()
+                    return redirect("/accounts/profile/")
+        else:
+            form = profileForm(instance = request.user)
+            return render(request, 'accounts/profile.html',{'userdata':Scientist.objects.get(user=get_user(request)), 'usr':get_user(request), "form":form})
 
 
 
-# #     else:
-# #         form = UserCreationForm()
-# #         login_form = AuthenticationForm()
-# #         return render(request, 'accounts/login.html', {'form':form, 'login_form':login_form})
+def userlist(request):
+    company = request.user.company
+    usrlist = get_user_model().objects.filter(company=company)
 
-# def userpage(request, usr_id):
-#         view_user = User.objects.get(id=usr_id)
-#         return render(request, 'accounts/user.html',{'userdata':view_user, 'usr':get_user(request)})
+    return render(request, 'accounts/users.html', {'user_list':usrlist})
 
-
-# def profile(request):
-#         if request.method == "POST":
-#                 form = profileForm(data=request.POST, instance = request.user)
-#                 if form.is_valid():
-#                         form.save()
-#                         return redirect("/accounts/profile/")
-#         else:
-#                 form = profileForm(instance = request.user)
-#                 return render(request, 'accounts/profile.html',{'userdata':Scientist.objects.get(user=get_user(request)), 'usr':get_user(request), "form":form})
-
-
-
-# def userlist(request):
-#         usr = get_user(request)
-#         usrlist = User.objects.all()
-
-#         return render(request, 'accounts/users.html', {'user_list':usrlist , 'usr':usr})
-
-# def messaging(request):
-#         usr = get_user(request)
-#         return render(request, 'accounts/messages.html', {'usr':usr})
+def messaging(request):
+        usr = get_user(request)
+        return render(request, 'accounts/messages.html', {'usr':usr})
