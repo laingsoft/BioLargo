@@ -99,7 +99,13 @@ def profile(request):
                     return redirect("/accounts/profile/")
         else:
             form = profileForm(instance = request.user)
-            return render(request, 'accounts/profile.html',{'userdata':Scientist.objects.get(user=get_user(request)), 'usr':get_user(request), "form":form})
+
+        context = {
+            'userdata': request.user, 
+            "form":form
+        }
+
+        return render(request, 'accounts/profile.html', context)
 
 
 
