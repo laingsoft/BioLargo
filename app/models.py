@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
+from accounts.models import Company
 
 # Create your models here.
 
@@ -9,16 +10,23 @@ class Group(models.Model):
     
     def __str__(self):
         return self.name
-        
-        
+
+class Project(models.Model):
+    company = models.ForeignKey(Company)
+    name = models.CharField(max_length = 255)
+    start = models.DateField()
+    end = models.DateField(null = True, blank = True)
+    description = models.TextField(blank = True, null = True)
+
 class Tag(models.Model):
+    company = models.ForeignKey(Company)
     name = models.CharField(max_length = 255)
     def __str__(self):
         return self.name
 
 class Experiment(models.Model):
     # scientist = models.ForeignKey(Scientist)
-    # Company 
+    company = models.ForeignKey(Company)
 
     group = models.ForeignKey(Group)
     tags = models.ManyToManyField(Tag)
@@ -32,6 +40,7 @@ class Experiment(models.Model):
         return ("Experiment| Group: {0} | metadata: {1}").format(str(self.group), str(self.metadata))
      	
 class ExperimentData(models.Model):
+    company = models.ForeignKey(Company)
     class Meta:
         verbose_name_plural = "experiment data"
         
@@ -41,6 +50,7 @@ class ExperimentData(models.Model):
 
 # to make sure we have consistent field naming for searching
 class Fields(models.Model):
+    company = models.ForeignKey(Company)
     class Meta:
         verbose_name_plural: "fields"
             
@@ -50,7 +60,7 @@ class Fields(models.Model):
         return self.name
 
 class Template(models.Model):
-    #~ owner = models.ForeignKey()
+    company = models.ForeignKey(Company)
     name = models.CharField(max_length = 255)
     fields = models.ManyToManyField(Fields) 
    
@@ -58,12 +68,14 @@ class Template(models.Model):
         return self.name
         
 class Comment(models.Model):
+    company = models.ForeignKey(Company)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     content = models.CharField(max_length = 255)
 
     
 class Activity(models.Model):
+    company = models.ForeignKey(Company)
     action = models.CharField(max_length = 100)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
