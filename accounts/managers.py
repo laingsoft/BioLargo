@@ -14,7 +14,10 @@ class UserManager(BaseUserManager):
             raise ValueError('No company given')
 
         email = self.normalize_email(email)
-        user = self.model(email=email, company = company **extra_fields)
+        username = email[:email.find('@')]
+
+        user = self.model(email=email, company = company, username = username, 
+            **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -34,3 +37,4 @@ class UserManager(BaseUserManager):
     @classmethod
     def normalize_email(cls, email):
         return email.lower().strip()
+

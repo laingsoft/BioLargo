@@ -14,16 +14,15 @@ from django.db import transaction
 
 
 class Auth(View):
-    def register_user(self, request):
+    def register_user(self, url, request):
         """
         View used to register a new :model:`accounts.User` within a :model:`accounts.Company` 
         with an :model:`accounts.Invite`
         """
         # if request.method == "GET":
         #     email = request.GET.get('email')
-        #     url = request.GET.get('code')
 
-        #     if not (email and url):
+        #     if not (email):
         #         throw Http404("Invite not found!")
 
         #     try:
@@ -32,6 +31,12 @@ class Auth(View):
         #         throw Http404("Invite not found!")
 
             # verify hash and date.
+            # render registration form. with email given & company
+
+        # if request.method == "POST":
+            # check the email and url info
+            # if no errors:
+            # register user to company.
 
         pass
 
@@ -66,8 +71,10 @@ class Auth(View):
                     transaction.savepoint_commit(sid)
                 except IntegrityError:
                     transaction.savepoint_rollback(sid)
-                    return Http404("Temp error....") #TODO: replace this with 500 error.
+                    return Http404("Error creating company. Please try again later.") #TODO: replace this with 500 error.
 
+                auth_login(request, user)
+                return redirect("/app") # for now. Redirect to a success page later.
 
         context = {
             "company_form" = company_form,
@@ -75,6 +82,7 @@ class Auth(View):
         }
 
         return render(request, 'registration/company', context)
+
 
 
 class UserPages(View):

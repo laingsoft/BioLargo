@@ -43,7 +43,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255) # username is automatically generated from the email address. Used to access user profile.
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
-    is_active = models.BooleanField(_('active'), default=True)
 
     objects = UserManager()
 
@@ -83,8 +82,8 @@ class Invite(models.Model):
         Returns True if link is valid, else False.
         """
         now = datetime.now()
-        diff = now - self.days
-        if diff > 0:
+        diff = now - self.date
+        if diff.days > 0:
             return False
 
         return True
