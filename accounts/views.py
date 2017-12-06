@@ -59,7 +59,7 @@ class Auth(View):
             company_form = CompanyForm(request.POST, prefix="company")
             user_form = UserForm(request.POST, prefix="user")
 
-            if company_form,is_valid() and user_form.is_valid():
+            if company_form.is_valid() and user_form.is_valid():
 
                 company = company_form.save()
                 sid = transaction.savepoint() # create a savepoint in case saving one model fails for any reason.
@@ -77,8 +77,8 @@ class Auth(View):
                 return redirect("/app") # for now. Redirect to a success page later.
 
         context = {
-            "company_form" = company_form,
-            "user_form" = user_form
+            "company_form" : company_form ,
+            "user_form" : user_form
         }
 
         return render(request, 'registration/company', context)
