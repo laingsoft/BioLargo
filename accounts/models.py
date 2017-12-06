@@ -40,7 +40,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     """
     company = models.ForeignKey(Company, on_delete = models.CASCADE) # user gets deleted if company is deleted.
     email = models.EmailField(_('email address'), unique=True)
-    username = models.CharField(max_length=255) # username is automatically generated from the email address. Used to access user profile.
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
 
