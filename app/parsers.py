@@ -62,7 +62,7 @@ class BaseParser(ABC):
                     
             row.update(move)
                
-    def create_objects(self, group, tags):
+    def create_objects(self,commit=True, **kwargs):
         # Create the fields if they don't already exist
         for item in self.data[0].keys():
             field = Fields.objects.get_or_create(name=item.lower())
@@ -70,7 +70,9 @@ class BaseParser(ABC):
         # Create Experiment object
         self.experiment = Experiment(
             metadata = self.metadata, 
-            group = group) # TODO: add other parameters
+            group = group,
+            user = user, 
+            company = user.company)
         
         self.experiment.save()
         
@@ -87,23 +89,7 @@ class BaseParser(ABC):
             if any(line.values()):
                 data = ExperimentData(experiment = self.experiment, experimentData = line)
                 data.save()
-            
-    # returns copies of all data in the objects. So objects don't get
-    #~ accidentally modified, a copy of everything is returned
-    def get_parsed(self):
-        return {'metadata': copy.deepcopy(self.metadata), 
-        'data':copy.deepcopy(self.data), 
-        'comments':copy.deepcopy(self.comments)}
-        
-    def set_metadata(self, metadata):
-        self.metadata = metadata
-        
-    def set_data(self, data):
-        self.data = data
-    
-    def set_comments(self, comments):
-        self.comments = comments
-        
+                   
     def get_experiment(self):
         return self.experiment.id
 '''

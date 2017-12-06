@@ -15,8 +15,12 @@ class Project(models.Model):
     company = models.ForeignKey(Company)
     name = models.CharField(max_length = 255)
     start = models.DateField()
+    metadata_template = models.TextField()
     end = models.DateField(null = True, blank = True)
     description = models.TextField(blank = True, null = True)
+
+    def __str__(self):
+        return self.name
 
 class Tag(models.Model):
     company = models.ForeignKey(Company)
@@ -27,10 +31,12 @@ class Tag(models.Model):
 class Experiment(models.Model):
     # scientist = models.ForeignKey(Scientist)
     company = models.ForeignKey(Company)
+    user = settings.AUTH_USER_MODEL
+    project = models.ForeignKey(Project)
 
     group = models.ForeignKey(Group)
     tags = models.ManyToManyField(Tag)
-    metadata = JSONField(default = '') # remove the default later.
+    metadata = JSONField(default = '') 
     friendly_name = models.CharField(max_length=255, default = 0)
 
     def __str__(self):
