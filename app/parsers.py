@@ -16,30 +16,34 @@ import json
 #~ Implements all non-filetype specific operations like creating objects
 #~ and getters and setter
 class BaseParser(ABC):
-    def __init__(self, fp, metadata_fields, user):
-        self.fp = fp
-        self.metadata_fields = metadata_fields
+    def __init__(self, fp, project, user):
+        self.fp = fp # buffer to read from. 
+
+        self.user = user 
+
         self.metadata = dict() 
         self.data = [] # a list of dictionaries
         self.comments = [] # a list of strings
-        self.user = user 
+
         self.experiment = None
-        print ("user =", self.user)
         
     @abstractclassmethod
     def parse(self):
         pass
         
     # move fields around if needed + change data formats (str -> float)
+    #handles date parsing where needed.
     def reformat_data(self):
         move = {} 
+        metadata_fields = self.company.metadata_fields.split(',')
+        
         for field in self.metadata.keys():
             try:
                 metadata[field] = ast.literal_eval(self.metadata[field])
             except:
                 pass # do nothing if not a number.
                     
-            if field not in self.metadata: 
+            if field not in metadata_fields: 
                 move[field] = self.metadata[field]
                 del(self.metadata[field])
 
@@ -62,7 +66,7 @@ class BaseParser(ABC):
                     
             row.update(move)
                
-    def create_objects(self, group, tags):
+    def create_objects(self, project, commit=True):
         # Create the fields if they don't already exist
         for item in self.data[0].keys():
             field = Fields.objects.get_or_create(name=item.lower())
@@ -70,7 +74,10 @@ class BaseParser(ABC):
         # Create Experiment object
         self.experiment = Experiment(
             metadata = self.metadata, 
-            group = group) # TODO: add other parameters
+            project = project,
+            user = self.user, 
+            company = self.user.company,
+            friendly_name = name)
         
         self.experiment.save()
         
@@ -87,23 +94,7 @@ class BaseParser(ABC):
             if any(line.values()):
                 data = ExperimentData(experiment = self.experiment, experimentData = line)
                 data.save()
-            
-    # returns copies of all data in the objects. So objects don't get
-    #~ accidentally modified, a copy of everything is returned
-    def get_parsed(self):
-        return {'metadata': copy.deepcopy(self.metadata), 
-        'data':copy.deepcopy(self.data), 
-        'comments':copy.deepcopy(self.comments)}
-        
-    def set_metadata(self, metadata):
-        self.metadata = metadata
-        
-    def set_data(self, data):
-        self.data = data
-    
-    def set_comments(self, comments):
-        self.comments = comments
-        
+                   
     def get_experiment(self):
         return self.experiment.id
 '''

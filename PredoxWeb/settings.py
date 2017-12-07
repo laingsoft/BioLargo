@@ -159,3 +159,5 @@ REST_FRAMEWORK = {
 }
 
 LOGIN_REDIRECT_URL = '/app'
+
+AUTH_USER_MODEL = 'accounts.User'
