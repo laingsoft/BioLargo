@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseBadRequest, HttpResponseNotFound
 from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from django.template.loader import render_to_string
@@ -27,7 +27,9 @@ def index(request):
     other resources, such as uploading and analysis. 
     '''
 
-    latest = Experiment.objects.order_by('-id').values_list('metadata', flat=True)[:10]
+    company = request.user.company
+
+    latest = Experiment.objects.filter(company=company).order_by('-id').values_list('metadata', flat=True)[:10]
     metadata_fields = METADATA_FIELDS
     latest_table = to_table(latest, metadata_fields)
 
@@ -38,6 +40,8 @@ def index(request):
 # is done in other views.
 @login_required
 def upload(request):
+    company = request.user.company
+
     context = {
     'groups_tags' : GroupsTags(prefix = 'tags') }
         
@@ -47,6 +51,8 @@ def upload(request):
 # Renders form and handles file uploads
 @login_required
 def upload_file(request):
+    company = request.user.company
+
     if request.method == "POST":
         groups_tags = GroupsTags(request.POST, prefix="tags")
         file_upload = FileUpload(request.POST, request.FILES, prefix="file")
@@ -84,6 +90,8 @@ def upload_file(request):
 # Renders form and handles form uploads
 @login_required
 def upload_form(request):
+    company = request.user.company
+
     if request.method == "POST":
         group_tags = GroupsTags(request.POST, prefix="tags")
         experiment_data = ExperimentForm(request.POST, prefix = 'data')
@@ -119,7 +127,7 @@ def upload_form(request):
         context = {
             'experiment_data': experiment_data,
             'metadata': metadata,
-            'templates': Template.objects.all().values_list('name', flat=True)
+            'templates': Template.objects.filter(company=company).values_list('name', flat=True)
         }
         return HttpResponse(render_to_string('app/form_upload.html', context))
 
@@ -128,24 +136,20 @@ def upload_form(request):
 # used to get template (used for form upload)
 @login_required      
 def get_template(request):
+    company = request.user.company
+
     if request.method == 'GET':
         template_name = request.GET.get('template', '')
         
         try:
-            fields = Template.objects.filter(name = template_name)[0].fields.all()
+            fields = Template.objects.filter(company= company, name = template_name)[0].fields.all()
             fields = [field.name for field in fields]
         except IndexError:
             fields = ['']
             
     return JsonResponse({'fields' : fields})
        
-# autocomplete results for groups
-@login_required
-def groups_list(request):
-    if request.method == "GET":
-        result = [str(i) for i in Group.objects.all()]
-        return JsonResponse({'data' : [{'key':str(item), 'value':str(item)} for item in result]})    
-            
+           
 # Response for successful upload.
 @login_required
 def upload_success(request, exp_id):
@@ -162,14 +166,24 @@ def experiment_list_view(request):
 #------------------------Experiment Page Views--------------------------
 @login_required
 def experiment(request, exp_id):
+    company = request.user.company
     user = get_user(request)
-    this_experiment = Experiment.objects.get(id=exp_id)
+
+    this_experiment = Experiment.objects.get_object_or_404(company=company, 
+        id=exp_id)
+
     metadata = json.dumps(this_experiment.metadata)
     return render(request,"app/experiment.html", {"this_experiment":this_experiment, "usr":user, "metadata":metadata})
     
 @login_required
 def experiment_json(request, exp_id):
-    data = ExperimentData.objects.filter(experiment=exp_id)
+    company = request.user.company
+    data = ExperimentData.objects.filter(company=company,
+        experiment=exp_id)
+
+    if not data.exists():
+        raise Http404("Experiment does not exist.")
+
     newval = {}
     newval = {k: v.experimentData for k,v in enumerate(data)}
     return JsonResponse(newval)
@@ -177,22 +191,21 @@ def experiment_json(request, exp_id):
 
 @login_required
 def experimentrm(request, exp_id):
-    data = Experiment.objects.filter(id=exp_id)
-    res = data.delete()
-    return JsonResponse({"result": res[0]>0})
-    
+    company = request.user.company
+    data = Experiment.objects.filter(company=company, id=exp_id)
+    if not data.exists():
+        raise Http404("Experiment does not exist.")
 
-@login_required
-def experimentrm(request, exp_id):
-    data = Experiment.objects.get(id=exp_id)
     res = data.delete()
     return JsonResponse({"result": res[0]>0})
     
+   
 @login_required
 def get_csv(request, exp_id, header=0):
+    company = request.user.company
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="'+exp_id+'.csv"'
-    vals = ExperimentData.objects.filter(experiment=exp_id)
+    vals = ExperimentData.objects.filter(company=company, experiment=exp_id)
     newdata = []
     [newdata.append(json.loads(i.experimentData)) for i in vals]
     fieldnames = []
@@ -203,8 +216,9 @@ def get_csv(request, exp_id, header=0):
     return response
 
 def analysis_page(request):
-    all_tags = Tag.objects.all()
-    all_groups = Group.objects.all()
+    company = request.user.company
+    all_tags = Tag.objects.filter(company=company)
+    all_groups = Project.objects.filter(company=company)
     return render(request, "app/analysis.html", {"usr":get_user(request), "tags":all_tags, "groups":all_groups})
 
 
@@ -225,6 +239,7 @@ def analysis_page(request):
 #~ }
 @login_required
 def experiments_list(request):
+    company = request.user.company
     if request.method == 'GET':
         
         filters = {}
