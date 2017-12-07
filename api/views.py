@@ -3,6 +3,9 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 import json
 from app.models import *
+from rest_framework import viewsets
+from .serializers import commentSerializer, tagsSerializer, experimentSerializer, groupSerializer
+
 
 # Create your views here.
 
@@ -101,4 +104,19 @@ def comment(request):
         ret = {k: {'user':v.user.username, 'content':v.content, 'experiment':v.experiment.id} for k,v in enumerate(comment)}
         return JsonResponse(ret)
 
+
+class resttest(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = commentSerializer
     
+class tags(viewsets.ModelViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = tagsSerializer
+
+class experiments(viewsets.ModelViewSet):
+    queryset = Experiment.objects.all()
+    serializer_class = experimentSerializer
+
+class groups(viewsets.ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = groupSerializer

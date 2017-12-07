@@ -18,3 +18,11 @@
 #chart{
 
 }
+
+.animated.fadeIn{
+    background-color: #FFF;
+}
+
+.col-md-11.mx-auto{
+    padding-top: 20px;
+}

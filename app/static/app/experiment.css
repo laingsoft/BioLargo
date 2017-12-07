@@ -30,3 +30,31 @@
     margin:10px;
 
 }
+
+.nav.tabbar{
+    background-color: #fff;
+    margin-bottom: 10px;
+                          
+}
+
+.nav-link.active{
+    border-bottom:2px solid;
+    border-color:#448AFF;
+}
+
+.animated.fadeIn{
+    background-color: #FFF;
+}
+
+#metadatacard{
+    margin:5px;
+}
+
+.row{
+    padding:10px;
+}
+
+#experimental-data{
+    background-color: #FFF;
+    margin-bottom: 30px;
+}
