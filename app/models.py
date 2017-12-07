@@ -34,7 +34,7 @@ class Experiment(models.Model):
     user = settings.AUTH_USER_MODEL
     project = models.ForeignKey(Project)
 
-    group = models.ForeignKey(Group)
+    # group = models.ForeignKey(Group)
     tags = models.ManyToManyField(Tag)
     metadata = JSONField(default = '') 
     friendly_name = models.CharField(max_length=255, default = 0)
