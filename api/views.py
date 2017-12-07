@@ -9,6 +9,10 @@ from .serializers import commentSerializer, tagsSerializer, experimentSerializer
 
 # Create your views here.
 
+def requestTest(request):
+    print(request.body)
+    return JsonResponse({"test":True})
+
 def index():
     pass
 

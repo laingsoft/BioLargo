@@ -8,6 +8,7 @@ router.register(r'tags',views.tags, 'tag')
 router.register(r'experiment', views.experiments, 'experiment')
 router.register(r'groups', views.groups, 'group')
 
+
 urlpatterns = [
     url(r'^api-token-auth/', authviews.obtain_auth_token),
     url(r'^', include(router.urls)),
@@ -17,5 +18,6 @@ urlpatterns = [
     url(r'^experimentlist', views.get_experiments_id, name="get_multiple_experiments"),
     url(r'^fields',views.fields_autocomplete, name="fields_autocomplete"),
     url(r'^template', views.templates, name="template"),
-    url(r'^comment', views.comment, name="comment")
+    url(r'^comment', views.comment, name="comment"),
+    url(r'^testreq',views.requestTest, name="reqtest")
 ]
