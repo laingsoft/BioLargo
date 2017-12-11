@@ -7,6 +7,8 @@ from django.utils.translation import ugettext_lazy as _
 from datetime import datetime, timedelta
 
 from .managers import UserManager
+import hashlib
+
 
 # Create your models here.
 
@@ -98,3 +100,4 @@ class Invite(models.Model):
         return True
 
 
+    
