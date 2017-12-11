@@ -35,3 +35,7 @@ $('#id_tags-tags').selectize({
     hideSelected: true
 });
 
+$('#id_exp_form-template').selectize({
+    preload: true,
+    placeholder: 'Select a template',
+});

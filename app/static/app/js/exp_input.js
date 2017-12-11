@@ -2,23 +2,6 @@ var container = document.getElementById('experiment-data');
 var templates;
 var col;
 var hot;
-var csrftoken;
-
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i].trim();
-
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
 
 function load_template(template) {
     fields = template.fields;
@@ -53,12 +36,6 @@ manualColumnMove: true,
 manualRowMove: true,
 });
 
-csrftoken = getCookie('csrftoken');
-$.ajaxSetup({
-beforeSend: function(xhr, settings) {
-    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-    }
-});
 
 $('#add-row').click(function() {
 hot.alter('insert_row', 1);
