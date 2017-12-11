@@ -5,7 +5,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.translation import ugettext_lazy as _
 from datetime import datetime, timedelta
-
+from django.contrib.postgres.fields import JSONField
 from .managers import UserManager
 
 # Create your models here.
@@ -34,6 +34,7 @@ class Company(models.Model):
     phone = models.CharField(max_length=20)
     plan = models.ForeignKey(Plan)
     is_active = models.BooleanField(default=True)
+    settings = JSONField() 
 
     def __str__(self):
         return self.name

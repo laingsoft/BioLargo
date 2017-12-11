@@ -15,7 +15,7 @@ class Project(models.Model):
     company = models.ForeignKey(Company)
     name = models.CharField(max_length = 255)
     start = models.DateField()
-    metadata_template = models.TextField()
+    extra_metadata_fields = models.TextField(blank = True, default='')
     end = models.DateField(null = True, blank = True)
     description = models.TextField(blank = True, null = True)
 
@@ -33,7 +33,8 @@ class Experiment(models.Model):
     company = models.ForeignKey(Company)
     user = settings.AUTH_USER_MODEL
     project = models.ForeignKey(Project)
-
+    create_timestamp = models.DateTimeField(auto_now_add=True)
+    edit_timestamp = models.DateTimeField(auto_now = True)
     # group = models.ForeignKey(Group)
     tags = models.ManyToManyField(Tag)
     metadata = JSONField(default = '') 
@@ -57,10 +58,22 @@ class ExperimentData(models.Model):
 # to make sure we have consistent field naming for searching
 class Fields(models.Model):
     company = models.ForeignKey(Company)
+    name = models.CharField(max_length = 255)
+    DATA_TYPE_CHOICES = (
+        ('INT', 'Integer'),
+        ('FLOAT', 'Decimal'),
+        ('DATE', 'Date'),
+        ('STRING','Text'),
+        )
+    data_type = models.CharField(
+            max_length = 6,
+            choices = DATA_TYPE_CHOICES,
+            default = 'STRING'
+        )
+
     class Meta:
         verbose_name_plural: "fields"
             
-    name = models.CharField(max_length = 255)
     
     def __str__(self):
         return self.name
@@ -78,10 +91,6 @@ class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     content = models.CharField(max_length = 255)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     
-class Activity(models.Model):
-    company = models.ForeignKey(Company)
-    action = models.CharField(max_length = 100)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
