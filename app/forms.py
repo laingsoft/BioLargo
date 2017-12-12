@@ -40,3 +40,15 @@ class ProjectTags(forms.Form):
         self.fields['tags'] = forms.ModelMultipleChoiceField(
             queryset=Tag.objects.filter(company=company),
             to_field_name='name')
+
+
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        exclude = ('company', )
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'start': forms.TextInput(attrs={'class': 'form-control'}),
+            'end': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+        }

@@ -1,0 +1,97 @@
+{% extends 'app/base_template.html' %}
+{% load static %}
+{% block css_extra %}
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">
+    <a href="/app">Home</a>
+</li>
+<li class="breadcrumb-item">
+    <a href="/app/projects">Projects</a>
+</li>
+<li class="breadcrumb-item">
+{{ project.name }}
+</li>
+
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">{{ project.name }}</h2>
+                <div class="text-muted">{{project.start}} -
+                    {% if project.end %}
+                        {{ project.end }}
+                    {% endif %}
+                </div>
+                <div>
+                    {{ project.description }}
+                </div>
+                <div class="card-block">
+                    Some graphs and stats here.
+                </div>
+            </div>
+            <div class="card-footer">
+                <ul>
+                    <li>
+                        <div class="text-muted">Total</div>
+                        <strong>14 Experiments</strong>
+                    </li>
+                    <li class="d-none d-md-table-cell">
+                        <div class="text-muted">Participants</div>
+                        <strong>5 Scientists</strong>
+                    </li>
+                    <li>
+                        <div class="text-muted">Some stat</div>
+                        <strong>1 thing</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Experiments</h2>
+                <div class="card-block">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Date</th>
+                                <th>Scientist</th>
+                                <th>Tags</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if not experiments %}
+                                <tr><td class="text-center" colspan="4">This project has no experiments</td></tr>
+                            {% endif %}
+
+                            {% for experiment in experiments %}
+                            <tr>
+                                <td>{{ experiment.name }}</td>
+                                <td>{{ experiment.metadata.date }}</td>
+                                <td>{{ experiment.user }}</td>
+                                <td>{{ experiment.tags }}</td>
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script_extra %}
+{% endblock %}
