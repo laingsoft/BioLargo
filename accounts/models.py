@@ -38,7 +38,6 @@ class Company(models.Model):
     phone = models.CharField(max_length=20)
     plan = models.ForeignKey(Plan)
     is_active = models.BooleanField(default=True)
-    settings = JSONField()
 
     def __str__(self):
         return self.name
