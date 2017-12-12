@@ -1,0 +1,12 @@
+{% extends "app/base_template.html" %}
+{% block content %}
+
+<div class = "card">
+  <form action="/settings" method="post">
+    {% csrf_token %}
+    {{form}}
+    <input type="submit" value="Submit"/>
+  </form>
+</div>
+
+{% endblock %}
