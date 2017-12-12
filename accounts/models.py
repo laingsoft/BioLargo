@@ -6,6 +6,8 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.postgres.fields import JSONField
 from .managers import UserManager
+import hashlib
+
 
 # Create your models here.
 
@@ -82,7 +84,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Invite(models.Model):
     """
-    Stores invite information. 
+    Stores invite information.
     The hash is company + date + email.
 
     """

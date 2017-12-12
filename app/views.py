@@ -188,6 +188,7 @@ def upload_success(request, exp_id):
     get_object_or_404(Experiment, id=exp_id)
     return render(request, 'app/upload_success.html', {'exp_id': exp_id})
 
+
 @login_required
 def experiment_list_view(request):
     return render(request, 'app/experiments_page.html', {})
@@ -202,13 +203,15 @@ def experiment(request, exp_id):
         id=exp_id)
 
     metadata = json.dumps(this_experiment.metadata)
-    return render(request, "app/experiment.html", {"this_experiment": this_experiment, "usr": user, "metadata": metadata})
+
+    comments = Comment.objects.filter(experiment = this_experiment).order_by('id')
+    return render(request,"app/experiment.html", {"this_experiment": this_experiment, "usr": user, "metadata": metadata, "comments": comments})
+
 
 @login_required
 def experiment_json(request, exp_id):
     company = request.user.company
-    data = ExperimentData.objects.filter(company=company,
-        experiment=exp_id)
+    data = ExperimentData.objects.filter(company=company, experiment=exp_id)
 
     if not data.exists():
         raise Http404("Experiment does not exist.")
@@ -216,7 +219,6 @@ def experiment_json(request, exp_id):
     newval = {}
     newval = {k: v.experimentData for k, v in enumerate(data)}
     return JsonResponse(newval)
-
 
 @login_required
 def experimentrm(request, exp_id):

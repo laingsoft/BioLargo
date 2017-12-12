@@ -10,5 +10,6 @@ urlpatterns = [
     url(r'^messages/', views.messaging),
     url(r'^logout/$', auth_views.logout_then_login ),
     url(r'^register/$', views.company_register),
-    url(r'r^invite/(?P<url>[\d\w]+)', views.register_user)
+    url(r'^invite/(?P<linkHash>[\w]+)', views.register_user),
+    url(r'^invite/', views.generate_invite)
     ]

@@ -29,7 +29,8 @@
             {% endfor %} 
             {% endif %}
             <form method="POST">
-                {% csrf_token %} 
+              {% csrf_token %}
+              <div class ="alert alert-info"><strong>Hello!</strong> You've been invited to join {{company}}</div>
                 {% for field in form %}
                 <div class="form-group">
                     {{ field.errors }} {{ field.label_tag }}

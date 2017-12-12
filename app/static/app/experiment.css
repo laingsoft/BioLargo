@@ -2,3 +2,59 @@
     max-height: 300px;
     overflow-y: auto;
 }
+
+.commentContent{
+    text-align: center;
+    border: aliceblue;
+    margin-bottom:10px;
+    border-style:solid;
+}
+
+.list-group-item{
+    margin: 10px;
+    
+
+}
+
+.row.commentSubmit{
+    margin-top: 10px;
+    
+}
+
+#newCommentInput{
+    margin-right: 2px;
+}
+
+#submitCommentButton{
+    float: right;
+    margin:10px;
+
+}
+
+.nav.tabbar{
+    background-color: #fff;
+    margin-bottom: 10px;
+                          
+}
+
+.nav-link.active{
+    border-bottom:2px solid;
+    border-color:#448AFF;
+}
+
+.animated.fadeIn{
+    background-color: #FFF;
+}
+
+#metadatacard{
+    margin:5px;
+}
+
+.row{
+    padding:10px;
+}
+
+#experimental-data{
+    background-color: #FFF;
+    margin-bottom: 30px;
+}

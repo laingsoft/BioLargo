@@ -1,0 +1,28 @@
+{% extends "app/base_template.html" %}
+{% block content %}
+<div class="row">
+  <div class="card mr-2">
+    <div class="card-header">
+      <h6> Active Users </h6>
+    </div>
+    <div class="card-body">
+      <table>
+        {% for user in users %}
+        <tr>
+          <td>
+            {{user}}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+    
+  </div>
+  <div class="card">
+    
+  </div>
+  <div class="card">
+    
+  </div>
+</div>
+{% endblock %}
