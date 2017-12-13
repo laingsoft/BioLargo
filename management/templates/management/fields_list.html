@@ -1,0 +1,62 @@
+{% extends 'app/base_template.html' %}
+{% load static %}
+
+{% block css_extra %}
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">
+    <a href="/management">Manage</a>
+</li>
+<li class="breadcrumb-item active">
+    Fields
+</li>
+
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <h2>Fields</h2>
+        <div class="card">
+            <div class="card-block">
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Field name</th>
+                            <th>Data type</th>
+                            <th>Empty Value</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if not object_list %}
+                        <tr><td class="text-center" colspan="3">No fields found</td></tr>
+                        {% endif %}
+                        {% for field in object_list %}
+                        <tr data-url="/management/fields/edit/{{field.id}}">
+                            <td><input type="checkbox"></td>
+                            <td>{{ field.name }}</td>
+                            <td>{{ field.data_type }}</td>
+                            <td>{{ field.empty }}</td>
+                            <td></td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script_extra %}
+<script type="text/javascript">
+    $('tr').click(function(){
+        window.location.href = $(this).data("url");
+    });
+</script>
+{% endblock %}

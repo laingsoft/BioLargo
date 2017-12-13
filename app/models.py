@@ -98,6 +98,7 @@ class Fields(models.Model):
             choices=DATA_TYPE_CHOICES,
             default='STRING'
         )
+    empty = models.CharField(max_length=10, blank=True)
 
     class Meta:
         verbose_name_plural = "fields"
@@ -113,6 +114,7 @@ class Template(models.Model):
     company = models.ForeignKey(Company)
     name = models.CharField(max_length=255)
     fields = models.ManyToManyField(Fields)
+    metadata = models.ManyToManyField(Fields, related_name="metadata_fields")
 
     def __str__(self):
         return self.name

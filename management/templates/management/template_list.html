@@ -1,0 +1,44 @@
+{% extends 'app/base_template.html' %}
+{% load static %}
+
+{% block css_extra %}
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">
+    <a href="/management">Manage</a>
+</li>
+<li class="breadcrumb-item active">
+    Templates
+</li>
+
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <h2>Templates</h2>
+        <div class="card">
+            <div class="card-block">
+                {% if not object_list %}
+                    No templates found
+                {% endif %}
+                <ul class="list-group">
+                    {% for template in object_list %}
+                        <li class="list-group-item">
+                        <span>{{ template.name }}</span>
+                        <span class="btn-group float-right" role="group">
+                            <button type="button" class="btn btn-primary">Edit</button>
+                            <button type="button" class="btn btn-primary">Delete</button>
+                        </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script_extra %}
+{% endblock %}
