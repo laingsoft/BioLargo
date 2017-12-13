@@ -1,0 +1,56 @@
+{% extends "registration/base.html" %}
+{% load static %}
+
+{% block css_extra %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row row justify-content-md-center vertical-center">
+        <div class="card col-md-5">
+            <div class="card-body">
+                {% if form.errors and not form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% if form.errors.items|length == 1 %} 
+                        "Please correct the error below." 
+                    {% else %} 
+                        "Please correct the errors below." 
+                    {% endif %}
+                </div>
+                {% endif %} 
+
+                {% if form.non_field_errors %} 
+                    {% for error in form.non_field_errors %}
+                    <div class="alert alert-warning">
+                        {{ error }}
+                    </div>
+                    {% endfor %} 
+                {% endif %}
+
+                 <form method="POST">
+                    {% csrf_token %}
+
+                    {% for field in company_form %}
+                    <div class="form-group form-input">
+                        <label>{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+
+                    {% for field in admin_form%}
+                    <div class="form-group form-input">
+                        <label>{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+                    <div class="form-group">
+                        <button class="btn btn-secondary btn-block">Sign up</button>
+                    </div>
+                
+                </form>
+            </div>
+           
+        </div>
+    </div>
+</div>
+{% endblock %}

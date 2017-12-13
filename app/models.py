@@ -30,6 +30,9 @@ class Tag(models.Model):
 
 class Experiment(models.Model):
     # scientist = models.ForeignKey(Scientist)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+    
     company = models.ForeignKey(Company)
     user = settings.AUTH_USER_MODEL
     project = models.ForeignKey(Project)
