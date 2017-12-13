@@ -1,0 +1,9 @@
+{% extends "app/base_template.html" %}
+{% block content %}
+<ul>
+  {% for item in object_list %}
+  <li>{{item.description }} {{item.id}}</li>
+  {% endfor %}
+</ul>
+this is the item list
+{% endblock %}
