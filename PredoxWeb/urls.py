@@ -25,5 +25,6 @@ urlpatterns = [
     url(r'api-token-auth/', obtain_jwt_token),
     url(r'api-token-refresh/', refresh_jwt_token),
     url(r'management/',include('management.urls')),
-    url(r'inventory/', include('inventory.urls'))
+    url(r'inventory/', include('inventory.urls')),
+    url(r'sop/', include('SOP.urls'))
 ]
