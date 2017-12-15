@@ -14,4 +14,7 @@ class ItemField(models.Model):
     field_type = models.CharField(max_length=255)
     field_value = models.CharField(max_length=255)
     item_pointer = models.ForeignKey(Item, on_delete = models.CASCADE)
+
+    def __str__(self):
+        return "{1} {0}".format(str(self.field_type),str(self.field_value))
     

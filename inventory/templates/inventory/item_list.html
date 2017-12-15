@@ -1,9 +1,34 @@
 {% extends "app/base_template.html" %}
 {% block content %}
-<ul>
-  {% for item in object_list %}
-  <li>{{item.description }} {{item.id}}</li>
+
+
+<div class="col">
+<div class = "card">
+  <table class="table table-hover">
+    <thead>
+      <th>Inventory Items</th>
+      <th>Details
+        <div class="d-flex float-right">
+          <a class="" href="/inventory/add">+</a>
+        </div>
+     </th>
+    </thead>
+  {% for items in object_list %}
+    <tr>
+
+        <td>{{items.item.description}}</td>
+        <td>
+          {% for field in items.fields %}
+          {{field.field_type}}: {{field.field_value}}</br>
+          {% endfor %}
+        </td>
+    </tr>
   {% endfor %}
-</ul>
-this is the item list
+  </table>
+</div>
+</div>
+
+
+
+
 {% endblock %}
