@@ -83,6 +83,11 @@ def company_register(request):
     """
 
     if request.method == "GET":
+
+        # For testing. Remove this line later!
+        if not Plan.objects.all().exists():
+            Plan.objects.create(name="Test Plan", price = 0)
+
         plan = request.GET.get('p')
 
         company_form = CompanyForm(initial = {'plan': plan }, prefix = "company")

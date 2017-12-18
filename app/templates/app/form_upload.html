@@ -1,37 +1,18 @@
-{{experiment_data}}
-{% load static %}
+{{ form.json }}
 
-<div class="form-group" id= "metadata-fields">
-    <legend>Metadata</legend>
-    
-    {% for field in  metadata %}
-        <div class="col-sm-10">
-        <label for= "id_{{field|slugify}}">{{ field }}</label>
-        <input class="form-control" type="text" id = "id_{{field|slugify}}" placeholder = "Enter {{ field }}" required>
-        </div>
-    {% endfor %}
+<div class="form-group">
+    <legend>Template</legend>
+    {{ form.template }}
 </div>
 
 <div class="form-group">
-    <legend>Experiment Data</legend>
-    <div class="form-group col-sm-10">
-        <label>
-            Template
-            <select id="template-select" class="custom-select">
-                {% for template in templates %}
-                    <option value="{{ template }}">{{template}}</option>
-                {% endfor %}
-            </select>
-        </label>
-
-
-        <button type="button" class="btn btn-info btn-sm" id="add-row" >Add Row</button>
-    
-    </div>
+    <legend>Metadata</legend>
+    <div id="metadata-fields">No template selected.</div>
 </div>
 
-<div class="form-group" id="experiment-data"></div>
+<div class="form-group" >
+    <legend>Experiment Data</legend>
+    <div id="experiment-data"></div>
 
-
-
-    
+    <button type="button" class="btn btn-info mt-3" id="add-row">Add Row</button>
+</div>

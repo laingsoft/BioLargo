@@ -1,15 +1,81 @@
-{% extends "app/base_template.html"%}
-
+{% extends 'app/base_template.html' %}
 {% load static %}
+
+{% block css_extra %}
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/css/pikaday.min.css">
+{% endblock %}
 
 {% block breadcrumb %}
 <li class="breadcrumb-item">
-  <a href="/app/projects">Projects</a>
+    <a href="/app">Home</a>
 </li>
-<li class="breadcrumb-item current">
-  Create
+<li class="breadcrumb-item">
+    <a href="/app/projects">Projects</a>
+</li>
+<li class="breadcrumb-item active">
+    Create Project
+
 </li>
 {% endblock %}
 
 {% block content %}
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-block">
+                {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                <div class="alert alert-warning">
+                {{ error }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ form.name.auto_id }}">{{ form.name.label }}</label>
+                        {{ form.name.errors }}
+                        {{ form.name }}
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="{{ form.start.auto_id }}">{{ form.start.label }}</label>
+                            {{ form.start.errors }}
+                            {{ form.start }}
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label for="{{ form.end.auto_id }}">{{ form.end.label }}</label>
+                            {{ form.end.errors }}
+                            {{ form.end }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.description.auto_id }}">{{ form.description.label }}</label>
+                        {{ form.description.errors }}
+                        {{ form.description }}
+                    </div>
+
+
+                    <button class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
+
+{% block script_extra %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.4/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/pikaday.min.js"></script>
+
+<script type="text/javascript">
+    new Pikaday({ field : $("#{{ form.start.auto_id }}")[0] })
+    new Pikaday({ field : $("#{{ form.end.auto_id }}")[0] })
+</script>
+
+{% endblock %}
+

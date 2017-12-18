@@ -1,16 +1,16 @@
 from __future__ import unicode_literals
-
+import datetime
 from django.db import models
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.translation import ugettext_lazy as _
-from datetime import datetime, timedelta
-
+from django.contrib.postgres.fields import JSONField
 from .managers import UserManager
 import hashlib
 
 
 # Create your models here.
+
 
 class Plan(models.Model):
     """
@@ -24,8 +24,10 @@ class Plan(models.Model):
 
     def __str__(self):
         return self.name
+
     def __repr__(self):
         return self.name
+
 
 class Company(models.Model):
     """
@@ -39,18 +41,19 @@ class Company(models.Model):
 
     def __str__(self):
         return self.name
+
     def __repr__(self):
         return self.name
 
 
-# Taken from https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html#abstractbaseuser
-# 2017/12/04 
-
 class User(AbstractBaseUser, PermissionsMixin):
     """
-    Model used to store users. A user must belong to a company. 
+    Model used to store users. A user must belong to a company.
+
+    Taken from https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html#abstractbaseuser
+    2017/12/04
     """
-    company = models.ForeignKey(Company, on_delete = models.CASCADE) # user gets deleted if company is deleted.
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)  # user gets deleted if company is deleted.
     email = models.EmailField(_('email address'), unique=True)
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
@@ -63,7 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')
-        unique_together=(('company', 'email'))
+        unique_together = (('company', 'email'))
 
     def get_full_name(self):
         '''
@@ -77,27 +80,25 @@ class User(AbstractBaseUser, PermissionsMixin):
         '''
         return self.first_name
 
+
 class Invite(models.Model):
     """
-    Stores invite information. 
+    Stores invite information.
     The hash is company + date + email.
 
     """
     company = models.ForeignKey(Company)
     date = models.DateTimeField(auto_now_add=True)
-    hash = models.CharField(max_length=64) #SHA256 hash
+    hash = models.CharField(max_length=64)  # SHA256 hash
 
     def validate(self):
         """
         checks if the link is still active. The link expires after 24 hours.
         Returns True if link is valid, else False.
         """
-        now = datetime.now()
+        now = datetime.datetime.now()
         diff = now - self.date
         if diff.days > 0:
             return False
 
         return True
-
-
-    

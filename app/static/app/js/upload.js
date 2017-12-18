@@ -1,40 +1,41 @@
-var url; 
-$("input[type=radio]").change(function(){
-    url = $(this).val()
-    $("#exp-form").attr("action", url);
-    if (url === "/app/upload_form"){
-        $.getScript("https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.34.4/handsontable.full.min.js", function(){
-            $.getScript("/static/app/js/exp_input.js");
-            });    
-        }
-    
-    $.get(url, {}, function(result){
-        form = $("#form");
-        form.removeAttr("hidden");
-        form.html(result);
-        })
+$("document").ready(function(){
+
+    form = $("input[type=radio]:checked").val()
+    if (form){
+        $("#exp_data").append($("#" + form))
+    }
+
+});
+
+$("input[type=radio]").change(function() {
+    $("#hidden_fields").append($("#exp_data > .form"))
+    $("#exp_data").append($("#" + this.value))
 });
 
 //~ Autocomplete initalization
 
-    $('#id_tags-group').selectize({
+$('#id_exp-project').selectize({
     preload: true,
-    plugins: ["restore_on_backspace"],
-    placeholder: 'Enter Experiment Group',
-    create: true,
-    createOnBlur: true,
-    maxItems: 1,
-    persist: false
+    placeholder: 'Select a project',
 });
 
-$('#id_tags-tags').selectize({
+$('#id_exp-tags').selectize({
     preload: true,
-    placeholder: 'Enter Tags',
-    plugins: ['remove_button', "restore_on_backspace" ],
+    placeholder: 'Add Tags',
+    plugins: ['remove_button', "restore_on_backspace"],
     delimiter: ',',
-    create: true,
+    create: function(input, callback){
+        csrf_token = $("input[name=csrfmiddlewaretoken]").val()
+        $.post("/app/create_tag/",
+            {'csrfmiddlewaretoken': csrf_token, 'tag': input },
+            callback({'value' : input, 'text' : input })
+            );
+    },
     createOnBlur: true,
-    persist: false,
+    persist: true,
     hideSelected: true
-    });
-  
+});
+
+$('#id_exp_form-template').selectize({
+    placeholder: 'Select a template',
+});

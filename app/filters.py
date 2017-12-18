@@ -13,7 +13,7 @@ def order_by(qs, q):
     field = q[0]
     order = q[1]
         
-    if field in ('id', 'tag', 'group'):
+    if field in ('id', 'tag', 'project'):
         if order == "desc":
             field = '-' + field
         
@@ -54,14 +54,10 @@ def filter_experiment_data(qs, q):
 # returns: a queryset.
 def filter_tags(qs, q):
     return qs.filter(tags__name__in = q).distinct()
-    
-# filters by group
-# q: group name
-#   qs: queryset
-# returns: a queryset.
-def filter_group(qs, q):
-    return qs.filter(group__name__icontains = q)
-     
+
+
+def filter_project(qs, q):
+    return qs.filter(project = q)
 
 # dictionary of all available filters 
 FILTERS = {
@@ -70,12 +66,18 @@ FILTERS = {
     "order_by": order_by,
     "tags": filter_tags,
     "id": filter_id,
-    "group": filter_group,
+    "project": filter_project,
 }
 
 
 def filter_experiments(**kwargs):
-    qs = Experiment.objects.all()
+    try:
+        company = kwargs.pop("company")
+    except KeyError:
+        raise ValueError("Company argument required")
+
+    qs = Experiment.objects.filter(company = company)
+    
     limit = kwargs.pop('limit', 20) # limit will default to 20 if not provided.
     offset = kwargs.pop('offset', 0)
     

@@ -1,49 +1,58 @@
 {% extends 'app/base_template.html' %}
 {% load staticfiles %}
-
 {% block css_extra%}
-<link rel='stylesheet' media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.34.4/handsontable.full.min.css">
+<link rel='stylesheet' media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.35.0/handsontable.full.min.css">
 <link rel='stylesheet' href="{% static "app/selectize.bootstrap3.css" %}">
 {% endblock %}
-
 {% block breadcrumb %}
+<li class="breadcrumb-item">
+    <a href="/app">Home</a>
+</li>
 <li class="breadcrumb-item active">
-  Upload
+    Upload
 </li>
 {% endblock %}
-
 {% block content %}
 <form method="POST" enctype=multipart/form-data id="exp-form">
     {% csrf_token %}
     <!--Start Tags and Groups-->
-    <div class = "card form-group">
-      <div class = "card-header">Group and Tags</div>
-      <div class = "card-block my-2 ml-2">
-        <div class = "form-group form-inline">{{ groups_tags }}</div>
-      </div>
+    <div class = "card">
+        <div class = "card-header">Experiment Info</div>
+        <div class = "card-block my-2 ml-2">
+            <div class="form-group">
+                <label for="{{exp_form.tags.auto_id}}">{{exp_form.friendly_name.label}}</label>
+                {{exp_form.friendly_name}}
+            </div>
+            <div class="form-group">
+                <label for="{{exp_form.project.auto_id}}">{{exp_form.project.label}}</label>
+                {{exp_form.project}}
+            </div>
+            <div class="form-group">
+                <label for="{{exp_form.tags.auto_id}}">
+                {{exp_form.tags.label}}</label>
+                {{exp_form.tags}}
+            </div>
+        </div>
     </div>
     <!--End tags and groups-->
-
     <div class = "card form-group">
-      <div class = "card-header">Upload Data</div>
-      <div class = "card-block my-2 ml-2">
-        <label class="custom-control custom-radio">
-          <input id="radio1" name = "radio1" type="radio" value="/app/upload_file" class="custom-control-input">
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description">Upload file</span>
-        </label>
-        <label class="custom-control custom-radio">
-          <input id="radio2" type="radio" name = "radio1" value="/app/upload_form" class="custom-control-input">
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description">Form</span>
-        </label>
-      </div>
+        <div class = "card-header">Upload Data</div>
+        <div class = "card-block my-2 ml-2" >
+            <label class="custom-control custom-radio">
+            <input id="radio1" name = "radio1" type="radio" value="file_form" class="custom-control-input">
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description">Upload file</span>
+            </label>
+            <label class="custom-control custom-radio">
+            <input id="radio2" type="radio" name = "radio1" value="exp_form" class="custom-control-input">
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description">Form</span>
+            </label>
 
-      <div class = "card-block my-2 ml-2" id="form" hidden>
-<!--
-        Empty div to be filled on upload type selection
--->
-      </div>
+
+            <div id="exp_data"></div>
+
+        </div>
 
     </div>
 
@@ -55,10 +64,25 @@
 
 </form>
 
-{% endblock %}
+<div id="hidden_fields" hidden >
 
+    <div class="form" id="exp_form">
+        {% with exp_data as form %}
+        {% include "app/form_upload.html" %}
+
+        {% endwith %}
+    </div>
+
+    <div class="form" id="file_form">
+        {{ file_form }}
+    </div>
+
+</div>
+{% endblock %}
 {% block script_extra %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.35.0/handsontable.full.min.js"></script>
 <script src="{% static 'app/js/selectize.min.js' %}"></script>
 <script src="{% static 'app/js/upload.js' %}"></script>
-{% endblock %}
+<script src="{% static 'app/js/exp_input.js' %}"></script>
 
+{% endblock %}
