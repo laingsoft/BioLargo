@@ -1,9 +1,12 @@
 from django import forms
 from .models import Template
-from .models import Tag, Project
+from .models import Tag, Project, Experiment
 
 
-class ExperimentForm(forms.Form):
+class ExperimentDataForm(forms.Form):
+    """
+    Form that accepts JSON with experiement data and metadata
+    """
     json = forms.CharField(widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
@@ -23,7 +26,16 @@ class FileUpload(forms.Form):
     upload_file = forms.FileField(label='Select file to upload')
 
 
-class ProjectTags(forms.Form):
+class ExperimentForm(forms.ModelForm):
+    """
+    model form for base experiment information. Metadata is added  later by
+    with data from the ExperimentDataForm. Sends template used along with
+    the json.
+    """
+    class Meta:
+        model = Experiment
+        fields = ('friendly_name', 'project', 'tags',)
+        widgets = {'friendly_name': forms.TextInput(attrs={'class': 'form-control'}), }
 
     def __init__(self, *args, **kwargs):
         try:
@@ -43,6 +55,10 @@ class ProjectTags(forms.Form):
 
 
 class ProjectForm(forms.ModelForm):
+    """
+    Form for creating projects. Will be removed in a later refactor switching
+    to class based generic views for lists, adding and updating.
+    """
     class Meta:
         model = Project
         exclude = ('company', )

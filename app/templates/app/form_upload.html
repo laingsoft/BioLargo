@@ -1,19 +1,18 @@
-{% load static %}
+{{ form.json }}
 
-{{ exp_form.json }}
-
-<div class="form-group" id="metadata-fields">
-    <legend>Metadata</legend>
-    <!-- use ajax to get metadata from company and from project -->
+<div class="form-group">
+    <legend>Template</legend>
+    {{ form.template }}
 </div>
 
 <div class="form-group">
-    <legend>Experiment Data</legend>
-    <label for="{{ exp_form.template.id }}">
-    {{ exp_form.template.label }}</label>
-    {{ exp_form.template }}
+    <legend>Metadata</legend>
+    <div id="metadata-fields">No template selected.</div>
 </div>
 
-<div class="form-group" id="experiment-data" hidden >
-     <button type="button" class="btn btn-info mt-3" id="add-row">Add Row</button>
+<div class="form-group" >
+    <legend>Experiment Data</legend>
+    <div id="experiment-data"></div>
+
+    <button type="button" class="btn btn-info mt-3" id="add-row">Add Row</button>
 </div>

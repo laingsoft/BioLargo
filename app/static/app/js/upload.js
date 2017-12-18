@@ -14,28 +14,28 @@ $("input[type=radio]").change(function() {
 
 //~ Autocomplete initalization
 
-$('#id_tags-project').selectize({
+$('#id_exp-project').selectize({
     preload: true,
-    plugins: ["restore_on_backspace"],
-    placeholder: 'Enter Project',
-    create: true,
-    createOnBlur: true,
-    maxItems: 1,
-    persist: false
+    placeholder: 'Select a project',
 });
 
-$('#id_tags-tags').selectize({
+$('#id_exp-tags').selectize({
     preload: true,
-    placeholder: 'Enter Tags',
+    placeholder: 'Add Tags',
     plugins: ['remove_button', "restore_on_backspace"],
     delimiter: ',',
-    create: true,
+    create: function(input, callback){
+        csrf_token = $("input[name=csrfmiddlewaretoken]").val()
+        $.post("/app/create_tag/",
+            {'csrfmiddlewaretoken': csrf_token, 'tag': input },
+            callback({'value' : input, 'text' : input })
+            );
+    },
     createOnBlur: true,
-    persist: false,
+    persist: true,
     hideSelected: true
 });
 
 $('#id_exp_form-template').selectize({
-    preload: true,
     placeholder: 'Select a template',
 });

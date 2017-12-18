@@ -17,15 +17,20 @@
     {% csrf_token %}
     <!--Start Tags and Groups-->
     <div class = "card">
-        <div class = "card-header">Project and Tags</div>
+        <div class = "card-header">Experiment Info</div>
         <div class = "card-block my-2 ml-2">
             <div class="form-group">
-                <label for="{{project_tags.tags.id}}">{{project_tags.project.label}}</label>
-                {{project_tags.project}}
+                <label for="{{exp_form.tags.auto_id}}">{{exp_form.friendly_name.label}}</label>
+                {{exp_form.friendly_name}}
             </div>
             <div class="form-group">
-                <label for="{{project_tags.tags.id}}">{{project_tags.tags.label}}</label>
-                {{project_tags.tags}}
+                <label for="{{exp_form.project.auto_id}}">{{exp_form.project.label}}</label>
+                {{exp_form.project}}
+            </div>
+            <div class="form-group">
+                <label for="{{exp_form.tags.auto_id}}">
+                {{exp_form.tags.label}}</label>
+                {{exp_form.tags}}
             </div>
         </div>
     </div>
@@ -62,13 +67,16 @@
 <div id="hidden_fields" hidden >
 
     <div class="form" id="exp_form">
+        {% with exp_data as form %}
         {% include "app/form_upload.html" %}
+
+        {% endwith %}
     </div>
 
     <div class="form" id="file_form">
         {{ file_form }}
     </div>
-    
+
 </div>
 {% endblock %}
 {% block script_extra %}

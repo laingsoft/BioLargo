@@ -2,22 +2,17 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, Http404
 from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
-from django.template.loader import render_to_string
 from .parsers import Parser, JsonParser
-from .models import *
+from .models import Experiment, ExperimentData, Template, Fields, Comment
+from .models import Project, Tag
 from io import TextIOWrapper
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
 import json
 import csv
-from .forms import FileUpload, ProjectTags, ExperimentForm, ProjectForm
+from .forms import FileUpload, ExperimentForm, ExperimentDataForm, ProjectForm
 from io import StringIO
 from .filters import filter_experiments
-from .utils import to_table
-
-# a placeholder while this setting is not implemented
-METADATA_FIELDS = ["Reactor Diameter [inch]", "Reactor Length [inch]",
-"#Chambers", "Date (d/m/y)","Removal Target", "Age of reactor [L]"]
 
 
 @login_required
@@ -31,155 +26,86 @@ def index(request):
     company = request.user.company
 
     latest = Experiment.objects.filter(company=company).order_by('-id').values_list('metadata', flat=True)[:10]
-    metadata_fields = METADATA_FIELDS
-    latest_table = to_table(latest, metadata_fields)
 
-    return render(request, 'app/index.html', {'latest_table': latest_table})
+    return render(request, 'app/index.html', {'latest': latest})
 
 
 @login_required
 def upload(request):
     """
-    View for uploading data through form or upload.
+    View for uploading data through form or upload file.
     Will accept any file format supported by the parser.
-    The form itself sends JSON.
+    The form itself sends experiment data and metadata as JSON.
 
     """
     company = request.user.company
 
     if request.method == "POST":
-        project_tags = ProjectTags(request.POST, prefix='tags', company=company)
-        file_form = FileUpload(request.POST, request.FILES, prefix='file_form')
-        exp_form = ExperimentForm(request.POST, prefix='exp_form', company=company)
+        exp_form = ExperimentForm(request.POST, prefix='exp', company=company)
+        file_form = FileUpload(request.POST, request.FILES, prefix='file')
+        exp_data = ExperimentDataForm(request.POST, prefix='exp_data', company=company)
 
-        if project_tags.is_valid() and (file_form.is_valid() or exp_form.is_valid()):
-            project = project_tags.cleaned_data.get('project')
-            tags = project_tags.cleaned_data.get('tags')
 
+        if exp_form.is_valid() and (file_form.is_valid() or exp_data.is_valid()):
+
+            # get experiment object and add missing attributes.
+            # still missing metadata.
+
+            experiment = exp_form.save(commit=False)
+            experiment.company = company
+            experiment.user = request.user
+
+            # if it was a file upload, parse and populate form with data for
+            # confirmation.
             if file_form.is_valid():
+                parser = Parser(buffer=TextIOWrapper(
+                    request.FILES['file-upload_file'],
+                    encoding=request.encoding
+                    ))
+                parser.get_parser().create_objects(experiment)
+
+            # if it was a form upload
+            elif exp_data.is_valid():
                 pass
 
-            elif exp_form.is_valid():
-                pass
-
-            return redirect("/app/upload/success/" + str(exp.id))
-
+            return redirect("/app/upload/success/" + str(experiment.id))
 
     if request.method == "GET":
-        project_tags = ProjectTags(prefix = 'tags', company = company)
-        file_form = FileUpload(prefix = 'file_form')
-        exp_form = ExperimentForm(prefix='exp_form', company=company)
+        exp_form = ExperimentForm(prefix='exp', company=company)
+        file_form = FileUpload(prefix='file')
+        exp_data = ExperimentDataForm(prefix='exp_data', company=company)
 
     # to handle errors, the context declaration is here.
     context = {
-        'project_tags' : project_tags,
-        'file_form' : file_form,
-        'exp_form' : exp_form
+        'exp_form': exp_form,
+        'file_form': file_form,
+        'exp_data': exp_data
     }
 
     return render(request, 'app/upload.html', context)
 
-# # Renders form and handles file uploads
-# @login_required
-# def upload_file(request):
-#     company = request.user.company
 
-#     if request.method == "POST":
-#         groups_tags = ProjectTags(request.POST, prefix="tags")
-#         file_upload = FileUpload(request.POST, request.FILES, prefix="file")
+@login_required
+def get_template(request):
+    """
+    Responds to ajax request for getting fields in template.
+    """
+    if request.method == 'GET':
 
-#         if groups_tags.is_valid() and file_upload.is_valid():
-#             # groups and tags are created/fetched on validation.
-#             g = groups_tags.cleaned_data.get('group')
-#             t = groups_tags.cleaned_data.get('tags')
+        template = get_object_or_404(
+            Template,
+            company=request.user.company,
+            name=request.GET.get('name'))
 
-#             # parse the file.
-#             try:
-#                 parser = Parser(fp = TextIOWrapper(request.FILES['file-upload_file'], encoding=request.encoding),
-#                 metadata_fields = METADATA_FIELDS,
-#                 user = request.user,
-#                 file_type = "CSV"
-#                 )
-#             except KeyError:
-#                 return HttpResponseBadRequest('File type not supported')
+        metadata = template.metadata.values_list('name', 'data_type')
+        fields = template.fields.values_list('name', 'data_type')
 
-#             # show user the parsed data (Implement eventually)
-#             parser = parser.get_parser()
-#             parser.create_objects(g, t)
+        context = {
+            "metadata": metadata,
+            "fields": fields,
+        }
 
-#             return HttpResponseRedirect('/app/upload/success/' + str(parser.get_experiment()))
-
-#         return HttpResponse("Error uploading experiment")
-
-#     if request.method == "GET":
-#         # TODO: fill in the template here.
-#         form = FileUpload(prefix="file")
-#         return HttpResponse(render_to_string('app/file_upload.html', {'form': form}))
-
-#     return HttpResponseNotFound('<h1>Page not found</h1>') # change to more appropriate error later
-
-# # Renders form and handles form uploads
-# @login_required
-# def upload_form(request):
-#     company = request.user.company
-
-#     if request.method == "POST":
-#         group_tags = ProjectTags(request.POST, prefix="tags")
-#         experiment_data = ExperimentForm(request.POST, prefix = 'data')
-#         if group_tags.is_valid() and experiment_data.is_valid():
-
-#             # get group and tags (created on validation)
-#             g = group_tags.cleaned_data.get('group')
-#             t = group_tags.cleaned_data.get('tags')
-
-#             # get string from experiment_data
-#             data = experiment_data.cleaned_data.get("json")
-
-#             # TODO:
-#             # get metadata fields for user's company
-
-#             # create parser
-#             parser = JsonParser(StringIO(data), request.user, METADATA_FIELDS)
-
-#             # create objects
-#             parser.create_objects(g, t)
-
-#             # redirect to success
-#             return HttpResponseRedirect('/app/upload/success/' + str(parser.get_experiment()))
-
-
-#     if request.method == "GET":
-#         # get metdata template
-#         # create ExperimentForm
-#         experiment_data = ExperimentForm(prefix = 'data')
-#         metadata = METADATA_FIELDS #TODO: get the template from database
-
-#         # put in dictionary
-#         context = {
-#             'experiment_data': experiment_data,
-#             'metadata': metadata,
-#             'templates': Template.objects.filter(company=company).values_list('name', flat=True)
-#         }
-#         return HttpResponse(render_to_string('app/form_upload.html', context))
-
-#     return HttpResponseNotFound('<h1>Page not found</h1>')
-
-# used to get template (used for form upload)
-# @login_required
-# def get_template(request):
-#     View used to
-#     company = request.user.company
-
-#     if request.method == 'GET':
-#         template_name = request.GET.get('template', '')
-
-#         try:
-#             fields = Template.objects.filter(company= company, name = template_name)[0].fields.all()
-#             fields = [field.name for field in fields]
-#         except IndexError:
-#             fields = ['']
-
-#     return JsonResponse({'fields' : fields})
+        return JsonResponse(request, context)
 
 
 # Response for successful upload.
@@ -199,7 +125,7 @@ def experiment(request, exp_id):
     company = request.user.company
     user = get_user(request)
 
-    this_experiment = Experiment.objects.get_object_or_404(company=company,
+    this_experiment = get_object_or_404(Experiment, company=company,
         id=exp_id)
 
     metadata = json.dumps(this_experiment.metadata)
@@ -279,8 +205,10 @@ def experiments_list(request):
         filters['limit'] = int(request.GET.get("pageSize", 0))
         filters['offset'] = (page - 1) * filters['limit']
 
-        filters['order_by'] = (request.GET.get("sortField", 'id'),
-        request.GET.get("sortOrder", 'asc'))
+        filters['order_by'] = (
+            request.GET.get("sortField", 'id'),
+            request.GET.get("sortOrder", 'asc')
+            )
 
         exp_id = request.GET.get('id')
         if exp_id:
@@ -364,3 +292,13 @@ def project_page(request, p_id):
     }
 
     return render(request, "app/view_project.html", context)
+
+@login_required
+def create_tag(request):
+    if request.method == "POST":
+        tag = request.POST.get("tag")
+        Tag.objects.create(name=tag, company=request.user.company)
+
+        return HttpResponse(status=201)
+
+    raise Http404

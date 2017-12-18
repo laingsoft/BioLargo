@@ -23,7 +23,7 @@ class Project(models.Model):
     project.
     """
     company = models.ForeignKey(Company)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     start = models.DateField()
     end = models.DateField(null=True, blank=True)
     description = models.TextField(blank=True, null=True)
@@ -37,7 +37,7 @@ class Tag(models.Model):
     Stores tags for experiments. Stores tag name only.
     """
     company = models.ForeignKey(Company)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.name
@@ -48,19 +48,13 @@ class Experiment(models.Model):
     Store experiments. Does not store the data for each experiment.
     """
     company = models.ForeignKey(Company)
-    user = settings.AUTH_USER_MODEL
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     project = models.ForeignKey(Project)
     create_timestamp = models.DateTimeField(auto_now_add=True)
     edit_timestamp = models.DateTimeField(auto_now=True)
     tags = models.ManyToManyField(Tag)
     metadata = JSONField(default='')
     friendly_name = models.CharField(max_length=255, default=0)
-
-    def __str__(self):
-        return ("Experiment| Group: {0} | metadata: {1}").format(str(self.group), str(self.metadata))
-
-    def __repr__(self):
-        return ("Experiment| Group: {0} | metadata: {1}").format(str(self.group), str(self.metadata))
 
 
 class ExperimentData(models.Model):
@@ -112,7 +106,7 @@ class Template(models.Model):
     Stores templates. It is a collection of predefined fields.
     """
     company = models.ForeignKey(Company)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     fields = models.ManyToManyField(Fields)
     metadata = models.ManyToManyField(Fields, related_name="metadata_fields")
 
