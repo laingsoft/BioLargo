@@ -76,8 +76,7 @@ class BaseParser(ABC):
 
         # then the data.
         for field in self.data.keys():
-            try:
-                data_field =
+            pass
 
 
 
@@ -117,7 +116,7 @@ class BaseParser(ABC):
         """
 
         company = experiment.company
-        # self.check_data(company)
+        self.check_data(company)
 
         experiment.metadata = self.metadata
         experiment.save()

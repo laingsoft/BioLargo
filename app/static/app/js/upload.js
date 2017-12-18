@@ -33,9 +33,14 @@ $('#id_exp-tags').selectize({
     },
     createOnBlur: true,
     persist: true,
-    hideSelected: true
+    hideSelected: true,
 });
 
-$('#id_exp_form-template').selectize({
+var template_select = $('#id_exp_data-template').selectize({
     placeholder: 'Select a template',
+    onChange: function(value){
+        $.get('/app/get_template', {name: value}, function(result){
+            console.log(result)
+        });
+    }
 });

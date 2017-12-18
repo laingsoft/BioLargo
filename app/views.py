@@ -98,14 +98,18 @@ def get_template(request):
             name=request.GET.get('name'))
 
         metadata = template.metadata.values_list('name', 'data_type')
+        metadata = { key : (key.name, key.data_type) for key in metadata}
         fields = template.fields.values_list('name', 'data_type')
+        fields = { key : (key.name, key.data_type) for key in fields}
 
         context = {
             "metadata": metadata,
             "fields": fields,
         }
 
-        return JsonResponse(request, context)
+        return JsonResponse(context)
+
+    raise Http404
 
 
 # Response for successful upload.

@@ -1,25 +1,23 @@
 var container = document.getElementById('experiment-data');
-var templates;
-var col;
+var col_headers;
 var hot;
 
-// will not validate dates because format can vary. Will leave that to the server to parse and reformat if needed.
+// will use default validator for dates?
 var VALIDATORS = {
     "INT" : /\d*/,
     "FLOAT" : /\d*(\.\d+)?/,
     "STRING" : /.*/
 };
 
+var options = {data: [['']],
+    rowHeaders: true,
+    colHeaders: col_headers,
+    contextMenu: true,
+    preventOverflow: 'horizontal',
+    manualRowMove: true,
+}
 
-hot = new Handsontable(container, {
-data: [['']],
-rowHeaders: true,
-colHeaders: col,
-contextMenu: true,
-preventOverflow: 'horizontal',
-manualColumnMove: true,
-manualRowMove: true,
-});
+hot = new Handsontable(container, options);
 
 
 $('#add-row').click(function() {
