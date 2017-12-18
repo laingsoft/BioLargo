@@ -77,9 +77,9 @@ class BaseParser(ABC):
         # then the data.
         for field in self.data.keys():
             try:
-                data_field =
-
-
+                pass
+            except:
+                pass
 
 
     def check_data_type(value, company):
