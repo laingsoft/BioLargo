@@ -97,10 +97,8 @@ def get_template(request):
             company=request.user.company,
             name=request.GET.get('name'))
 
-        metadata = template.metadata.values_list('name', 'data_type')
-        metadata = { key : (key.name, key.data_type) for key in metadata}
-        fields = template.fields.values_list('name', 'data_type')
-        fields = { key : (key.name, key.data_type) for key in fields}
+        metadata = list(template.metadata.values_list('name', 'data_type'))
+        fields = list(template.fields.values_list('name', 'data_type'))
 
         context = {
             "metadata": metadata,
@@ -296,6 +294,7 @@ def project_page(request, p_id):
     }
 
     return render(request, "app/view_project.html", context)
+
 
 @login_required
 def create_tag(request):

@@ -59,3 +59,7 @@ $("#exp-form").submit(function(e) {
     $("#id_data-json").val(JSON.stringify({'metadata': metadata_values, 'data': parsed}));
 });
 
+
+function update_metadata(fields){
+
+}

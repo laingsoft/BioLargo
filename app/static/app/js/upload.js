@@ -40,7 +40,8 @@ var template_select = $('#id_exp_data-template').selectize({
     placeholder: 'Select a template',
     onChange: function(value){
         $.get('/app/get_template', {name: value}, function(result){
-            console.log(result)
+            console.log(result.fields)
+            console.log(result.metadata)
         });
     }
 });
