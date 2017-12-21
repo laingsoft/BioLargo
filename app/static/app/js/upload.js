@@ -36,21 +36,17 @@ $('#template-select').change(function() {
 
 $("#exp-form").submit(function(e) {
 
-    $("#template-select").attr("disabled")
     headers = hot.getColHeader();
     data = hot.getData();
 
-    metadata = document.getElementById("metadata-fields");
-    metadata = metadata.getElementsByTagName("input");
+    metadata = $(".metadata")
 
     metadata_values = {}
 
     for (var i = 0 ; i < metadata.length; i++){
-        key = metadata[i].labels[0].textContent
+        key = metadata[i].placeholder
         metadata_values[key] = metadata[i].value
     }
-
-    console.log(metadata_values)
 
     var parsed = [];
     for (row = 0; row < data.length; row++) {
@@ -60,16 +56,15 @@ $("#exp-form").submit(function(e) {
         }
         parsed.push(d);
     }
-    console.log(parsed)
 
-    $("#id_data-json").val(JSON.stringify({'metadata': metadata_values, 'data': parsed}));
+    $("#id_exp_data-json").val(JSON.stringify({'metadata': metadata_values, 'data': parsed}));
 });
 
 function update_metadata(fields){
     var container = $("#metadata-fields")
     container.empty()
     for (i=0; i < fields.length; i++){
-        container.append("<label for='id_"+ fields[i][0] +"'>"+ fields[i][0] + "</label><input id='id_" + fields[i][0] + "' name='"+ fields[i][0] + "' class='form-control'></input>")
+        container.append("<label for='id_"+ fields[i][0] +"'>"+ fields[i][0] + "</label><input id='id_" + fields[i][0] + "' placeholder='"+ fields[i][0] + "' class='form-control metadata'></input>")
     }
 }
 
@@ -77,7 +72,7 @@ function update_data_fields(fields){
     try {
         hot.destroy() // destroy table
     }
-    catch(err){
+    catch(TypeError){
         // do nothing if the hot instance doesn't exist.
     }
 
