@@ -66,7 +66,9 @@ def upload(request):
 
             # if it was a form upload
             elif exp_data.is_valid():
-                pass
+                data = experiment_data.cleaned_data.get("json")
+                parser = JsonParser(buffer=StringIO(data))
+                parser.create_objects(experiment)
 
             return redirect("/app/upload/success/" + str(experiment.id))
 
