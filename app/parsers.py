@@ -78,9 +78,6 @@ class BaseParser(ABC):
         for field in self.data.keys():
             pass
 
-
-
-
     def check_data_type(value, company):
         """
         Detects type of value given.
@@ -116,7 +113,7 @@ class BaseParser(ABC):
         """
 
         company = experiment.company
-        self.check_data(company)
+        # self.check_data(company)
 
         experiment.metadata = self.metadata
         experiment.save()

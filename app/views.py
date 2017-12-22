@@ -13,6 +13,7 @@ import csv
 from .forms import FileUpload, ExperimentForm, ExperimentDataForm, ProjectForm
 from io import StringIO
 from .filters import filter_experiments
+from django.views.generic import ListView
 
 
 @login_required
@@ -66,7 +67,7 @@ def upload(request):
 
             # if it was a form upload
             elif exp_data.is_valid():
-                data = experiment_data.cleaned_data.get("json")
+                data = exp_data.cleaned_data.get("json")
                 parser = JsonParser(buffer=StringIO(data))
                 parser.create_objects(experiment)
 
@@ -119,10 +120,13 @@ def upload_success(request, exp_id):
     return render(request, 'app/upload_success.html', {'exp_id': exp_id})
 
 
-@login_required
-def experiment_list_view(request):
-    return render(request, 'app/experiments_page.html', {})
+# @login_required
+# def experiment_list_view(request):
+#     return render(request, 'app/experiments_page.html', {})
 
+class ExperimentListView(ListView):
+    model = Experiment
+    template_name = 'app/experiments_page.html'
 
 @login_required
 def experiment(request, exp_id):

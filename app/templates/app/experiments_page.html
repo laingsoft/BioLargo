@@ -17,10 +17,34 @@
 
 {% block content %}
 <div class="card"  id="experiments">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Scientist</th>
+                <th>Tags</th>
+            </tr>
+            <tbody>
+                {% for experiment in object_list %}
+                <tr class="data-row" data-url="/app/experiment/{{experiment.id}}">
+                    <td>{{experiment.friendly_name}}</td>
+                    <td>{{experiment.create_timestamp}}</td>
+                    <td>{{experiment.user}}</td>
+                    <td>{{experiment.tags}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </thead>
+    </table>
 </div>
 {% endblock %}
 
 {% block script_extra %}
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
-<script type="text/javascript" src="{% static 'app/js/experiments_list.js' %}"></script>
+<script type="text/javascript">
+    $(".data-row").click(function(){
+        window.location.href = $(this).data('url')
+    });
+</script>
 {% endblock %}
