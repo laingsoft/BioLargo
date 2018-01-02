@@ -68,6 +68,7 @@ class CompanyObjectCreateMixin:
         self.object = form.save(commit=False)
         self.object.company = self.request.user.company
         self.object.save()
+        form.save_m2m()
 
         return redirect(self.get_success_url())
 
