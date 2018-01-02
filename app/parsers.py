@@ -118,6 +118,7 @@ class BaseParser(ABC):
         experiment.metadata = self.metadata
         experiment.save()
 
+
         # create comments
         for comment in self.comments:
             c = Comment.objects.create(experiment=experiment, user=self.user, content=comment, company=company)

@@ -75,6 +75,8 @@ def upload(request):
                 parser = JsonParser(buffer=StringIO(data))
                 parser.create_objects(experiment)
 
+            exp_form.save_m2m()
+
             return redirect("/app/upload/success/" + str(experiment.id))
 
     if request.method == "GET":
