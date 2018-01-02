@@ -16,6 +16,77 @@ $("document").ready(function(){
         $("#exp_data").append($("#" + form))
     }
 
+    $("input[type=radio]").change(function() {
+    $("#hidden_fields").append($("#exp_data > .form"))
+    $("#exp_data").append($("#" + this.value))
+    });
+
+    //~ Autocomplete initalization
+    $('#id_exp_data-template').selectize({
+        placeholder: 'Select a template',
+        onChange: function(value){
+            $.get('/app/get_template', {name: value}, function(result){
+                update_metadata(result.fields);
+                update_data_fields(result.metadata);
+            });
+        }
+});
+
+    $('#id_exp-project').selectize({
+        preload: true,
+        placeholder: 'Select a project',
+    });
+
+    $('#id_exp-tags').selectize({
+        preload: true,
+        placeholder: 'Add Tags',
+        plugins: ['remove_button', "restore_on_backspace"],
+        delimiter: ',',
+        create: function(input, callback){
+            csrf_token = $("input[name=csrfmiddlewaretoken]").val()
+            $.post("/app/create_tag/",
+                {'csrfmiddlewaretoken': csrf_token, 'tag': input },
+                callback({'value' : input, 'text' : input })
+                );
+        },
+        createOnBlur: true,
+        persist: true,
+        hideSelected: true,
+    });
+
+    $('#add-row').click(function() {
+    hot.alter('insert_row', 1);
+    });
+
+    $('#template-select').change(function() {
+        get_template($(this).val());
+    });
+
+    $("#exp-form").submit(function(e) {
+
+        headers = hot.getColHeader();
+        data = hot.getData();
+
+        metadata = $(".metadata")
+
+        metadata_values = {}
+
+        for (var i = 0 ; i < metadata.length; i++){
+            key = metadata[i].placeholder
+            metadata_values[key] = metadata[i].value
+        }
+
+        var parsed = [];
+        for (row = 0; row < data.length; row++) {
+            d = {};
+            for (h = 0; h < headers.length; h++) {
+                d[headers[h]] = data[row][h];
+            }
+            parsed.push(d);
+        }
+
+        $("#id_exp_data-json").val(JSON.stringify({'metadata': metadata_values, 'data': parsed}));
+    });
 });
 
 
@@ -26,39 +97,6 @@ var VALIDATORS = {
     "STRING" : /.*/
 };
 
-$('#add-row').click(function() {
-    hot.alter('insert_row', 1);
-});
-
-$('#template-select').change(function() {
-    get_template($(this).val());
-});
-
-$("#exp-form").submit(function(e) {
-
-    headers = hot.getColHeader();
-    data = hot.getData();
-
-    metadata = $(".metadata")
-
-    metadata_values = {}
-
-    for (var i = 0 ; i < metadata.length; i++){
-        key = metadata[i].placeholder
-        metadata_values[key] = metadata[i].value
-    }
-
-    var parsed = [];
-    for (row = 0; row < data.length; row++) {
-        d = {};
-        for (h = 0; h < headers.length; h++) {
-            d[headers[h]] = data[row][h];
-        }
-        parsed.push(d);
-    }
-
-    $("#id_exp_data-json").val(JSON.stringify({'metadata': metadata_values, 'data': parsed}));
-});
 
 function update_metadata(fields){
     var container = $("#metadata-fields")
@@ -86,42 +124,3 @@ function update_data_fields(fields){
 
 }
 
-
-$("input[type=radio]").change(function() {
-    $("#hidden_fields").append($("#exp_data > .form"))
-    $("#exp_data").append($("#" + this.value))
-});
-
-//~ Autocomplete initalization
-
-$('#id_exp-project').selectize({
-    preload: true,
-    placeholder: 'Select a project',
-});
-
-$('#id_exp-tags').selectize({
-    preload: true,
-    placeholder: 'Add Tags',
-    plugins: ['remove_button', "restore_on_backspace"],
-    delimiter: ',',
-    create: function(input, callback){
-        csrf_token = $("input[name=csrfmiddlewaretoken]").val()
-        $.post("/app/create_tag/",
-            {'csrfmiddlewaretoken': csrf_token, 'tag': input },
-            callback({'value' : input, 'text' : input })
-            );
-    },
-    createOnBlur: true,
-    persist: true,
-    hideSelected: true,
-});
-
-var template_select = $('#id_exp_data-template').selectize({
-    placeholder: 'Select a template',
-    onChange: function(value){
-        $.get('/app/get_template', {name: value}, function(result){
-            update_metadata(result.fields);
-            update_data_fields(result.metadata);
-        });
-    }
-});

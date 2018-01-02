@@ -12,9 +12,8 @@ urlpatterns = [
     url(r'^experimentrm/(?P<exp_id>[0-9]+)', views.experimentrm, name="experimentrm"),
     url(r'^experiment/csv/(?P<exp_id>[0-9]+)', views.get_csv, name='get_csv'),
     url(r'^analysis', views.analysis_page, name='analysis_page'),
-    url(r'^experiments_list', views.experiments_list, name="experiments_list"),
     url(r'^projects/(?P<p_id>[0-9]+)/$', views.project_page, name="project_page"),
-    url(r'^projects/$', views.project_list, name="project_list"),
+    url(r'^projects/$', views.ProjectListView.as_view(), name="project_list"),
     url(r'^projects/create/$', views.create_project, name="create_project"),
     url(r'^create_tag/$', views.create_tag, name="create_tag"),
 

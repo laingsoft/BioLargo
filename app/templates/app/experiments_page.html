@@ -21,8 +21,9 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Date</th>
+                <th>Upload Date</th>
                 <th>Scientist</th>
+                <th>Project</th>
                 <th>Tags</th>
             </tr>
             <tbody>
@@ -31,7 +32,15 @@
                     <td>{{experiment.friendly_name}}</td>
                     <td>{{experiment.create_timestamp}}</td>
                     <td>{{experiment.user}}</td>
-                    <td>{{experiment.tags}}</td>
+                    <td>{{experiment.project}}</td>
+                    <td>
+                        {% if not experiment.tags.all %}
+                        -
+                        {% endif %}
+                        {% for tag in experiment.tags.all %}
+                        {{tag.name}}
+                        {% endfor %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
