@@ -54,7 +54,7 @@ class Experiment(models.Model):
     edit_timestamp = models.DateTimeField(auto_now=True)
     tags = models.ManyToManyField(Tag)
     metadata = JSONField(default='')
-    friendly_name = models.CharField(max_length=255, default=0)
+    friendly_name = models.CharField(max_length=255)
 
 
 class ExperimentData(models.Model):
@@ -96,6 +96,7 @@ class Fields(models.Model):
 
     class Meta:
         verbose_name_plural = "fields"
+        unique_together = (("company", "name"))
 
     def __str__(self):
         return self.name

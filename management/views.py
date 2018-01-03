@@ -5,7 +5,7 @@ from app.models import Template, Fields
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 # from django.urls import reverse
 from django.views.generic.detail import SingleObjectMixin
-
+from app.mixins import CompanyObjectCreateMixin, CompanyObjectsMixin
 # Create your views here.
 
 def dashboard(request):
@@ -48,28 +48,6 @@ def settingsmgr(request):
     else:
         form = SettingsForm()
     return render(request, 'management/settings.html', {"form": form})
-
-
-class CompanyObjectsMixin:
-    """
-    Mixin for overriding get_queryset.
-    """
-    def get_queryset(self):
-        """
-        method to set queryset for retrieving objects for user's company only.
-        """
-        qs = super().get_queryset()
-        qs.filter(company=self.request.user.company)
-        return qs
-
-
-class CompanyObjectCreateMixin:
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.company = self.request.user.company
-        self.object.save()
-
-        return redirect(self.get_success_url())
 
 
 class TemplateListView(CompanyObjectsMixin, ListView):

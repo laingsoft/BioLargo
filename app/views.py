@@ -12,7 +12,8 @@ import json
 import csv
 from .forms import FileUpload, ExperimentForm, ExperimentDataForm, ProjectForm
 from io import StringIO
-from .filters import filter_experiments
+from django.views.generic import ListView
+from .mixins import CompanyObjectsMixin, ExpFilterMixin
 
 
 @login_required
@@ -45,8 +46,11 @@ def upload(request):
         file_form = FileUpload(request.POST, request.FILES, prefix='file')
         exp_data = ExperimentDataForm(request.POST, prefix='exp_data', company=company)
 
+        print("request", request)
 
         if exp_form.is_valid() and (file_form.is_valid() or exp_data.is_valid()):
+            print("exp_form cleaned_data", exp_form.cleaned_data)
+
 
             # get experiment object and add missing attributes.
             # still missing metadata.
@@ -66,7 +70,11 @@ def upload(request):
 
             # if it was a form upload
             elif exp_data.is_valid():
-                pass
+                data = exp_data.cleaned_data.get("json")
+                parser = JsonParser(buffer=StringIO(data))
+                parser.create_objects(experiment)
+
+            exp_form.save_m2m()
 
             return redirect("/app/upload/success/" + str(experiment.id))
 
@@ -97,15 +105,17 @@ def get_template(request):
             company=request.user.company,
             name=request.GET.get('name'))
 
-        metadata = template.metadata.values_list('name', 'data_type')
-        fields = template.fields.values_list('name', 'data_type')
+        metadata = list(template.metadata.values_list('name', 'data_type'))
+        fields = list(template.fields.values_list('name', 'data_type'))
 
         context = {
             "metadata": metadata,
             "fields": fields,
         }
 
-        return JsonResponse(request, context)
+        return JsonResponse(context)
+
+    raise Http404
 
 
 # Response for successful upload.
@@ -115,10 +125,12 @@ def upload_success(request, exp_id):
     return render(request, 'app/upload_success.html', {'exp_id': exp_id})
 
 
-@login_required
-def experiment_list_view(request):
-    return render(request, 'app/experiments_page.html', {})
-
+class ExperimentListView(ExpFilterMixin, ListView):
+    """
+    View for Experiment list
+    """
+    model = Experiment
+    template_name = 'app/experiments_page.html'
 
 @login_required
 def experiment(request, exp_id):
@@ -172,6 +184,7 @@ def get_csv(request, exp_id, header=0):
     [writer.writerow(i) for i in newdata]
     return response
 
+
 def analysis_page(request):
     company = request.user.company
     all_tags = Tag.objects.filter(company=company)
@@ -179,75 +192,9 @@ def analysis_page(request):
     return render(request, "app/analysis.html", {"usr":get_user(request), "tags":all_tags, "groups":all_groups})
 
 
-#~ From get request:
-    #~ pageIndex     // current page index
-    #~ pageSize      // the size of page
-    #~ group
-    #~ tags
-    #~ sortField     // the name of sorting field
-    #~ sortOrder     // the order of sorting as string "asc"|"desc"
-    #~ experiment_data_filters[]
-    #~ metadata_filters[]
-
-#~ returns
-#~ {
-    #~ data          // array of items
-    #~ itemsCount    // total items amount
-#~ }
-@login_required
-def experiments_list(request):
-    company = request.user.company
-    if request.method == 'GET':
-
-        filters = {}
-
-        page = int(request.GET.get("pageIndex", 1))
-        filters['limit'] = int(request.GET.get("pageSize", 0))
-        filters['offset'] = (page - 1) * filters['limit']
-
-        filters['order_by'] = (
-            request.GET.get("sortField", 'id'),
-            request.GET.get("sortOrder", 'asc')
-            )
-
-        exp_id = request.GET.get('id')
-        if exp_id:
-            filters['id'] = exp_id
-
-
-        # filters for metadata and experiment data
-        metadata_filters = request.GET.getlist("metadata_filters[]", [])
-        filters['metadata_filters'] = {val.split('=')[0] : val.split('=')[1] for val in metadata_filters}
-
-        experiment_filters = request.GET.getlist("experiment_filters[]", [])
-        filters['experiment_filters'] = {val.split('=')[0]: val.split('=')[1] for val in experiment_filters}
-
-        filters['group'] = request.GET.get('group', '')
-        tags = request.GET.get('tags', '')
-        if tags:
-            filters['tags'] = tags.split(',')
-
-        data, itemsCount = filter_experiments(**filters)
-
-        # change data format to match what is used by table
-        data = list(data.values('id', 'metadata'))
-
-        for item in data:
-            item.update(item['metadata'])
-            del item['metadata']
-
-        return JsonResponse({'data': data, 'itemsCount': [itemsCount]})
-
-
-def project_list(request):
-    """
-    View to display a list of all projects within the authenticated user's
-    company.
-    """
-    company = request.user.company
-    projects = Project.objects.filter(company=company)
-
-    return render(request, 'app/project_list.html', {'projects': projects})
+class ProjectListView(CompanyObjectsMixin, ListView):
+    model = Project
+    template_name = 'app/project_list.html'
 
 
 def create_project(request):
@@ -292,6 +239,7 @@ def project_page(request, p_id):
     }
 
     return render(request, "app/view_project.html", context)
+
 
 @login_required
 def create_tag(request):
