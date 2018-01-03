@@ -11,7 +11,7 @@ class CompanyObjectsMixin:
         method to set queryset for retrieving objects for user's company only.
         """
         qs = super().get_queryset()
-        qs.filter(company=self.request.user.company)
+        qs = qs.filter(company=self.request.user.company)
         return qs
 
 
