@@ -18,6 +18,17 @@
 {% block content %}
 <div class="row">
     <div class="col">
+        <form action="/app/experiments" method="GET">
+        <input type="text" name="name" placeholder="Name">
+        <input type="text" name="project_name" placeholder="Project">
+        <input type="text" name="metadata" placeholder="Metadata (JSON)">
+        <input type="text" name="fields" placeholder="Fields (JSON)">
+        <button>Filter</button>
+    </form>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
         <div class="card"  id="experiments">
             <table class="table table-hover">
                 <thead>
