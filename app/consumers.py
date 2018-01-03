@@ -75,3 +75,30 @@ def ws_analytics_columns(tagsgroups):
 
     
     '''
+
+
+
+
+def num_uploads(data, channel):
+    experiment_query = Experiments.objects.all().order_by("created_at")[:10]
+    dates = []
+    for experiment in experiment_query:
+        dates.append(experiment.created_at)
+    dateset = set(dates)
+    retval = {}
+    for i in dateset:
+        retval[i] = dates.count(i)
+    channel.reply_channel.send({
+        "text":json.dumps(retval),
+        })
+        
+
+
+
+
+
+INDEX_OBJECTS = {"num_uploads": num_uploads}
+def ws_index_page(consumable):
+    data = json.loads(consumable.content['text'])
+    INDEX_OBJECTS[data['action']](data['data'], consumable)
+    

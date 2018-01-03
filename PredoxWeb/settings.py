@@ -31,10 +31,12 @@ ALLOWED_HOSTS = ['0.0.0.0', 'localhost', 'pasteur.io','208.75.74.213', '192.168.
 # Application definition
 
 INSTALLED_APPS = [
+    'SOP.apps.SopConfig',
     'frontpage.apps.FrontpageConfig',
     'accounts.apps.AccountsConfig',
     'app.apps.AppConfig',
     'api.apps.ApiConfig',
+    'inventory.apps.InventoryConfig',
     'management.apps.ManagementConfig',
     'django.contrib.admin',
     'django.contrib.auth',

@@ -1,0 +1,47 @@
+{% extends 'frontpage/base.html' %}
+{% block style_extra %}
+<style type="text/css">
+body {
+    background-color: #fff;
+}
+
+.nav-masthead .nav-link {
+    color: #fff;
+}
+#background {
+    background-image: url(/static/images/bg-resize.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 40%;
+    width: 100%;
+    position: fixed;
+}
+
+.plan {
+    color: #000;
+    text-shadow: none;
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    {% for plan in plans %}
+    <div class="col col-md-6 mx-auto">
+        <div class="card plan">
+            <div class="card-body">
+                <div class="card-title pb-2"><h3>{{ plan.name }}</h3></div>
+                <div class="card-text">
+                    <p>{{ plan.description }}</p>
+                    <h4>${{ plan.price | floatformat:"2" }}</h4>
+                    <div class="small text-muted">per user/month</div>
+                    <a class="btn btn-info btn-block mt-4" href="/accounts/register?p={{ plan.id }}">Buy</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "app/base_template.html" %}
+{% block content %}
+
+
+<div class="col">
+<div class = "card">
+  <table class="table table-hover">
+    <thead>
+      <th>Inventory Items</th>
+      <th>Details
+      </th>
+      <th>
+        <div class="d-flex float-right">
+          <a class="" href="/inventory/add">+</a>
+        </div>
+      </th>
+    </thead>
+  {% for items in object_list %}
+    <tr>
+
+        <td>{{items.item.description}}</td>
+        <td>
+          {% for field in items.fields %}
+          {{field.field_type}}: {{field.field_value}}</br>
+          {% endfor %}
+        </td>
+        <td>
+          <div class="d-flex float-right">
+          <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" href="#" role="button"
+               data-toggle="dropdown" aria-haspopup="true"
+               aria-expanded="false">Actions
+            </button>
+          
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="drowdown-item" href="">Delete</a><br>
+              <a class="drowdown-item" href="item/{{items.item.id}}">Edit </a>
+            </div>
+          </div>
+          </div>
+        </td>
+    </tr>
+  {% endfor %}
+  </table>
+</div>
+</div>
+
+
+
+
+{% endblock %}

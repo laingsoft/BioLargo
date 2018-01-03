@@ -1,0 +1,11 @@
+{% extends "app/base_template.html" %}
+{% block content %}
+{{item.description}}
+{{item.company}}
+{{item.id}}
+{% for field in fields %}
+<h2>{{field}}</h2>
+{% endfor %}
+
+this is the item list
+{% endblock %}
