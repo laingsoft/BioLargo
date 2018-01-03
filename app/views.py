@@ -12,9 +12,8 @@ import json
 import csv
 from .forms import FileUpload, ExperimentForm, ExperimentDataForm, ProjectForm
 from io import StringIO
-from .filters import filter_experiments
 from django.views.generic import ListView
-from management.views import CompanyObjectsMixin  # TODO: move to another file
+from .mixins import CompanyObjectsMixin, ExpFilterMixin
 
 
 @login_required
@@ -126,7 +125,7 @@ def upload_success(request, exp_id):
     return render(request, 'app/upload_success.html', {'exp_id': exp_id})
 
 
-class ExperimentListView(CompanyObjectsMixin, ListView):
+class ExperimentListView(ExpFilterMixin, ListView):
     """
     View for Experiment list
     """

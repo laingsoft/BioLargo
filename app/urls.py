@@ -16,5 +16,4 @@ urlpatterns = [
     url(r'^projects/$', views.ProjectListView.as_view(), name="project_list"),
     url(r'^projects/create/$', views.create_project, name="create_project"),
     url(r'^create_tag/$', views.create_tag, name="create_tag"),
-
     ]
