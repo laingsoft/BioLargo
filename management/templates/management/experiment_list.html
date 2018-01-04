@@ -9,22 +9,15 @@
     <a href="/management">Manage</a>
 </li>
 <li class="breadcrumb-item active">
-    Fields
+    Experiments
 </li>
 
 {% endblock %}
 
 {% block content %}
 <div class="row">
-    <div class="col-sm-10">
-        <h1>Fields</h1>
-    </div>
-    <div class="col-sm-2">
-        <a href="/management/fields/create" class="btn btn-secondary float-right">Add Field</a>
-    </div>
-</div>
-<div class="row">
     <div class="col">
+        <h2>Experiments</h2>
         <div class="card">
             <div class="card-block">
 
@@ -32,29 +25,33 @@
                     <thead>
                         <tr>
                             <th></th>
-                            <th>Field name</th>
-                            <th>Data type</th>
-                            <th>Empty Value</th>
+                            <th>Name</th>
+                            <th>Upload Date</th>
+                            <th>Scientist</th>
+                            <th>Project</th>
+                            <th>Tags</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for field in object_list %}
+                        {% for item in object_list %}
                         <tr data-url="/management/fields/edit/{{field.id}}">
                             <td><input type="checkbox"></td>
-                            <td>{{ field.name }}</td>
-                            <td>{{ field.data_type }}</td>
-                            <td>{{ field.empty }}</td>
+                            <td>{{ item.friendly_name }}</td>
+                            <td>{{ item.create_timestamp }}</td>
+                            <td>{{ item.user }}</td>
+                            <td>{{ item.project.name }}</td>
+                            <td>{{ item.tags.all|join:", " }}</td>
                             <td>
-                                <div class="btn-group" role="group">
-                                    <a href="edit/{{ field.id }}"class="btn btn-secondary">Edit</a>
-                                    <a href="delete/{{ field.id }}" class="btn btn-danger">Delete</a>
+                                <div class="btn-group" rowl="group">
+                                    <a href="edit/{{item.id}}" class="btn btn-secondary">Edit</a>
+                                    <a href="delete/{{item.id}}" class="btn btn-danger">Delete</a>
                                 </div>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td class="text-center" colspan="1000">No Fields found</td>
+                            <td class="text-center" colspan="1000">No Experiments found</td>
                         </tr>
                         {% endfor %}
 

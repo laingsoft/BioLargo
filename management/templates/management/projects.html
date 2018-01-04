@@ -1,5 +1,42 @@
 {% extends "management/base_template.html" %}
 {% block content %}
+<div class="row">
+    <div class="col">
+        <h2>Projects</h2>
+        <div class="card">
+            <table class="table table hover">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Description</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in object_list %}
+                    <tr>
+                        <td><input type="checkbox" name="{{ item.id }}"></td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.start }}</td>
+                        <td>{{ item.end }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>
+                            <div class="btn-group" rowl="group">
+                                <a  href="edit/{{ item.id }}" class="btn btn-secondary">Edit</a>
+                                <a href="delete/{{item.id}}" class="btn btn-danger">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
 
-<p> test</p>
+                    {% empty %}
+                        <tr><td class="text-center" colspan="1000">No Projects Found</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
