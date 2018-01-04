@@ -11,7 +11,7 @@ class CompanyObjectsMixin:
         method to set queryset for retrieving objects for user's company only.
         """
         qs = super().get_queryset()
-        qs.filter(company=self.request.user.company)
+        qs = qs.filter(company=self.request.user.company)
         return qs
 
 
@@ -76,7 +76,8 @@ class ExpFilterMixin(CompanyObjectsMixin):
 
         for exp_filter in filters:
             try:
-                qs = self.FILTERS[exp_filter](qs, filters[exp_filter])
+                if any(filters[exp_filter]):
+                    qs = self.FILTERS[exp_filter](qs, filters[exp_filter])
             except KeyError:
                 pass
                 # do nothing if not a filter

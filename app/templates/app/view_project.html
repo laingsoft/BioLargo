@@ -38,7 +38,7 @@
                 <ul>
                     <li>
                         <div class="text-muted">Total</div>
-                        <strong>14 Experiments</strong>
+                        <strong>{{ experiments|length }} Experiments</strong>
                     </li>
                     <li class="d-none d-md-table-cell">
                         <div class="text-muted">Participants</div>
@@ -64,7 +64,7 @@
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Date</th>
+                                <th>Upload Date</th>
                                 <th>Scientist</th>
                                 <th>Tags</th>
                             </tr>
@@ -75,11 +75,15 @@
                             {% endif %}
 
                             {% for experiment in experiments %}
-                            <tr>
-                                <td>{{ experiment.name }}</td>
-                                <td>{{ experiment.metadata.date }}</td>
+                            <tr class="clickable" data-id={{experiment.id}}>
+                                <td>{{ experiment.friendly_name }}</td>
+                                <td>{{ experiment.create_timestamp }}</td>
                                 <td>{{ experiment.user }}</td>
-                                <td>{{ experiment.tags }}</td>
+                                <td>
+                                    {% for tag in experiment.tags.all %}
+                                    {{ tag }}
+                                    {% endfor %}
+                                </td>
                             </tr>
                             {% endfor %}
 
@@ -94,4 +98,9 @@
 {% endblock %}
 
 {% block script_extra %}
+<script type="text/javascript">
+    $(".clickable").click(function(){
+        window.location.href = "/app/experiment/" + $(this).data('id')
+    })
+</script>
 {% endblock %}
