@@ -23,7 +23,7 @@ class Project(models.Model):
     project.
     """
     company = models.ForeignKey(Company)
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     start = models.DateField()
     end = models.DateField(null=True, blank=True)
     description = models.TextField(blank=True, null=True)
@@ -31,16 +31,22 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        unique_together = (("company", "name"))
+
 
 class Tag(models.Model):
     """
     Stores tags for experiments. Stores tag name only.
     """
     company = models.ForeignKey(Company)
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        unique_together = (("company", "name"))
 
 
 class Experiment(models.Model):
@@ -107,12 +113,15 @@ class Template(models.Model):
     Stores templates. It is a collection of predefined fields.
     """
     company = models.ForeignKey(Company)
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     fields = models.ManyToManyField(Fields)
     metadata = models.ManyToManyField(Fields, related_name="metadata_fields")
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        unique_together = (("company", "name"))
 
 
 class Comment(models.Model):
