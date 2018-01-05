@@ -1,0 +1,77 @@
+{% extends "management/base_template.html" %}
+{% load static %}
+
+{% block css_extra %}
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.bootstrap3.min.css">
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">
+    <a href="/management">Manage</a>
+</li>
+<li class="breadcrumb-item">
+    <a href="/management/templates">Templates</a>
+</li>
+<li class="breadcrumb-item active">
+    Create Template
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-block">
+                {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                <div class="alert alert-warning">
+                {{ error }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ form.name.auto_id }}">{{ form.name.label }}</label>
+                        {{ form.name.errors }}
+                        {{ form.name }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.start.auto_id }}">{{ form.start.label }}</label>
+                        {{ form.start.errors }}
+                        {{ form.start }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.end.auto_id }}">{{ form.end.label }}</label>
+                        {{ form.end.errors }}
+                        {{ form.end }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.description.auto_id }}">{{ form.description.label }}</label>
+                        {{ form.description.errors }}
+                        {{ form.description }}
+                    </div>
+
+                    <button class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script_extra %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
+<script type="text/javascript">
+    $("#{{ form.fields.auto_id }}").selectize({
+        plugins: ['remove_button']
+    });
+
+    $("#{{ form.metadata.auto_id }}").selectize({
+        plugins: ['remove_button']
+    });
+</script>
+{% endblock %}

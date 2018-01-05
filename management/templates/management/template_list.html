@@ -13,11 +13,18 @@
 </li>
 
 {% endblock %}
-
 {% block content %}
 <div class="row">
+    <div class="col-sm-10">
+        <h1>Templates</h1>
+    </div>
+    <div class="col-sm-2">
+        <a href="/management/templates/create" class="btn btn-secondary float-right">Add Template</a>
+    </div>
+
+</div>
+<div class="row">
     <div class="col">
-        <h2>Templates</h2>
         <div class="card">
             <div class="card-block">
                 {% if not object_list %}
@@ -28,8 +35,8 @@
                         <li class="list-group-item">
                         <span>{{ template.name }}</span>
                         <span class="btn-group float-right" role="group">
-                            <button type="button" class="btn btn-primary">Edit</button>
-                            <button type="button" class="btn btn-primary">Delete</button>
+                            <a href="edit/{{ template.id }}" class="btn btn-primary">Edit</a>
+                            <a href="delete/{{ template.id }}" class="btn btn-primary">Delete</a>
                         </span>
                         </li>
                     {% endfor %}
