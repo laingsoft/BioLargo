@@ -8,12 +8,15 @@ from .models import Project, Tag
 from io import TextIOWrapper
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
+from django.db.models import Count
+from django.db.models.functions import TruncDay
 import json
 import csv
 from .forms import FileUpload, ExperimentForm, ExperimentDataForm, ProjectForm
 from io import StringIO
 from django.views.generic import ListView
-from .mixins import CompanyObjectsMixin, ExpFilterMixin
+from .mixins import CompanyObjectsMixin, ExpFilterMixin 
+import datetime
 
 
 @login_required
@@ -25,6 +28,8 @@ def index(request):
     """
 
     company = request.user.company
+
+
 
     latest = Experiment.objects.filter(company=company).order_by('-id').values_list('metadata', flat=True)[:10]
 
