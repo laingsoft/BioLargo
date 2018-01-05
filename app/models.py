@@ -55,7 +55,7 @@ class Experiment(models.Model):
     """
     company = models.ForeignKey(Company)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    project = models.ForeignKey(Project)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     create_timestamp = models.DateTimeField(auto_now_add=True)
     edit_timestamp = models.DateTimeField(auto_now=True)
     tags = models.ManyToManyField(Tag)
