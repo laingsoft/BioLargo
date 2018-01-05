@@ -17,4 +17,5 @@ urlpatterns = [
     url(r'^fields/create/$', views.FieldCreateView.as_view()),
     url(r'^fields/edit/(?P<pk>\d+)/$', views.FieldUpdateView.as_view()),
     url(r'^experiments/$', views.ExperimentListView.as_view()),
+    url(r'^experiments/edit/(?P<pk>\d+)/$', views.ExperimentUpdateView.as_view()),
     ]

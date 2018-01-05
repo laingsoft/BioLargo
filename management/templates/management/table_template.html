@@ -1,0 +1,25 @@
+<table class="table table hover">
+    <thead>
+        <tr>
+            <!-- Headers -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in object_list %}
+        <tr>
+            <td><input type="checkbox" name="{{ item.id }}"></td>
+            <td><!-- item attribute here --></td>
+            <td>
+                <div class="btn-group" rowl="group">
+                    <button class="btn btn-secondary">Edit</button>
+                    <button class="btn btn-danger">Delete</button>
+                </div>
+            </td>
+        </tr>
+
+        {% empty %}
+            <tr><td colspan="1000"><!-- No entries found message --></td></tr>
+        {% endfor %}
+    </tbody>
+        }
+</table>

@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
 from accounts.models import User
 from .forms import SettingsForm
-from app.models import Template, Fields, Project, Experiment
+from app.models import Template, Fields, Project, Experiment, ExperimentData
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 # from django.urls import reverse
-from django.views.generic.detail import SingleObjectMixin
 from app.mixins import CompanyObjectCreateMixin, CompanyObjectsMixin
+from json import loads
+from django.http import HttpResponseBadRequest, HttpResponseRedirect
 # Create your views here.
 
 def dashboard(request):
@@ -61,9 +62,52 @@ class ExperimentListView(CompanyObjectsMixin, ListView):
     paginate_by = 20
 
 
+class ExperimentUpdateView(CompanyObjectsMixin, UpdateView):
+    model = Experiment
+    template_name = "management/experiment_update.html"
+    success_url = "/management/experiments"
+    fields = ('friendly_name', 'metadata', 'tags', 'project')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["exp_data"] = ExperimentData.objects.filter(experiment=self.kwargs['pk'], company=self.request.user.company)
+        try:  # remove this try except and require some data to be added.
+            context["headers"] = list(context["exp_data"][0].experimentData.keys())
+        except IndexError:
+            pass
+
+        return context
+
+    def form_valid(self, form):
+        # parse the json & validate
+        exp_data = self.request.POST.get("exp_data")
+
+        try:
+            exp_data = loads(exp_data)
+        except ValueError:
+            return HttpResponseBadRequest("Invalid Data")
+
+        # save Experiment
+        self.object = form.save()
+
+        # delete old data
+        ExperimentData.objects.filter(experiment=self.kwargs['pk'], company=self.request.user.company).delete()
+
+        # Create with Experiment
+        data_objects = []
+        for item in exp_data:
+            data_objects.append(ExperimentData(experimentData=item, experiment=self.object))
+
+        # save ExperimentData objects
+        ExperimentData.objects.bulk_create(data_objects)
+
+        return redirect(self.get_success_url())
+
+
 def settingsmgr(request):
     '''
-    Here is where settings like the metadata, at a glance settings, and the date format are set.
+    Here is where settings like the metadata, at a glance settings, and the
+    date format are set.
     '''
     if request.method == "POST":
         form = SettingsForm(request.POST)

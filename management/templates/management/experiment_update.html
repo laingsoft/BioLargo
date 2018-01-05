@@ -1,0 +1,102 @@
+{% extends "management/base_template.html" %}
+{% load static %}
+
+{% block css_extra %}
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.bootstrap3.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.35.0/handsontable.full.min.css">
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">
+    <a href="/management">Manage</a>
+</li>
+<li class="breadcrumb-item">
+    <a href="/management/experiments">Experiments</a>
+</li>
+<li class="breadcrumb-item active">
+{{ object.friendly_name }}
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-block">
+                <h1 class="card-title">{{ object.friendly_name }}</h1>
+                {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                <div class="alert alert-warning">
+                {{ error }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                <form id="exp_form" method="POST">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="{{form.friendly_name.auto_id}}">
+                        {{form.friendly_name.label}}</label>
+                        {{form.friendly_name}}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{form.project.auto_id}}">
+                        {{form.project.label}}</label>
+                        {{form.project}}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{form.tags.auto_id}}">
+                        {{form.tags.label}}</label>
+                        {{form.tags}}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{form.metadata.auto_id}}">
+                        {{form.metadata.label}}</label>
+                        {{form.metadata}}
+                    </div>
+
+                    <input id="exp_data" name="exp_data" hidden>
+                    <div id="hot"></div>
+                    <button class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script_extra %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.35.0/handsontable.full.min.js"></script>
+<script type="text/javascript">
+var data = [
+    {% for item in exp_data %}
+        {{ item.experimentData|safe }},
+    {% endfor %}
+];
+
+var container = document.getElementById("hot");
+var headers = {{ headers|safe }} or [[]];
+
+if !headers:
+    headers = ['']
+
+var options = {data: data,
+    colHeaders: headers,
+    rowHeaders: true,
+    contextMenu: true,
+    preventOverflow: 'horizontal',
+    manualRowMove: true,
+};
+
+var hot = new Handsontable(container, options);
+
+$("#exp_form").submit(function(e){
+    $("#exp_data").val(JSON.stringify(hot.getSourceData()));
+})
+
+</script>
+{% endblock %}
