@@ -38,15 +38,21 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="{{ form.data_type.auto_id }}">{{ form.data_type.label }}</label>
-                        {{ form.data_type.errors }}
-                        {{ form.data_type }}
+                        <label for="{{ form.start.auto_id }}">{{ form.start.label }}</label>
+                        {{ form.start.errors }}
+                        {{ form.start }}
                     </div>
 
                     <div class="form-group">
-                        <label for="{{ form.empty.auto_id }}">{{ form.empty.label }}</label>
-                        {{ form.empty.errors }}
-                        {{ form.empty }}
+                        <label for="{{ form.end.auto_id }}">{{ form.end.label }}</label>
+                        {{ form.end.errors }}
+                        {{ form.end }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.description.auto_id }}">{{ form.description.label }}</label>
+                        {{ form.description.errors }}
+                        {{ form.description }}
                     </div>
 
                     <button class="btn btn-primary">Save</button>

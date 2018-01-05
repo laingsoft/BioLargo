@@ -8,4 +8,4 @@ class Settings(models.Model):
     Company = models.ForeignKey(Company)
     dateformat = models.CharField(max_length=10)
     ataglance = JSONField() #May change in the future
-    
+

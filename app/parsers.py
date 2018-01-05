@@ -76,10 +76,7 @@ class BaseParser(ABC):
 
         # then the data.
         for field in self.data.keys():
-            try:
-                pass
-            except:
-                pass
+            pass
 
 
     def check_data_type(value, company):
@@ -117,10 +114,11 @@ class BaseParser(ABC):
         """
 
         company = experiment.company
-        self.check_data(company)
+        # self.check_data(company)
 
         experiment.metadata = self.metadata
         experiment.save()
+
 
         # create comments
         for comment in self.comments:

@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from accounts.models import User
 from .forms import SettingsForm
-from app.models import Template, Fields
+from app.models import Template, Fields, Project, Experiment
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 # from django.urls import reverse
 from django.views.generic.detail import SingleObjectMixin
-
+from app.mixins import CompanyObjectCreateMixin, CompanyObjectsMixin
 # Create your views here.
 
 def dashboard(request):
@@ -23,17 +23,43 @@ def usermgr(request):
     return render(request, 'management/experiment.html')
 
 
-def projectmgr(request):
-    '''
-    Allows the management to change projects as required.
-    '''
-    return render(request, 'management/projects.html')
+class ProjectListView(CompanyObjectsMixin, ListView):
+    model = Project
+    template_name = "management/projects.html"
+    paginate_by = 20
 
-def experimentmgr(request):
-    '''
-    Allows the management to change experiments as required.
-    '''
-    return render (request, 'management/experiment.html')
+
+class ProjectCreateView(CompanyObjectCreateMixin, CompanyObjectsMixin, CreateView):
+    """
+    View for creating templates.
+    """
+    model = Project
+    fields = ('name', 'start', 'end', 'description')
+    template_name = "management/project_update.html"
+    success_url = "/management/projects"
+
+
+class ProjectUpdateView(CompanyObjectsMixin, UpdateView):
+    model = Project
+    fields = ("name", "start", "end", "description")
+    template_name = "management/project_update.html"
+    success_url = "/management/projects"
+
+
+class ProjectDeleteView(CompanyObjectsMixin, DeleteView):
+    """
+    View for deleting template.
+    """
+    model = Project
+    template_name = "management/template_confirm_delete.html"
+    success_url = "/management/projects"
+
+
+class ExperimentListView(CompanyObjectsMixin, ListView):
+    model = Experiment
+    template_name = "management/experiment_list.html"
+    paginate_by = 20
+
 
 def settingsmgr(request):
     '''
@@ -48,28 +74,6 @@ def settingsmgr(request):
     else:
         form = SettingsForm()
     return render(request, 'management/settings.html', {"form": form})
-
-
-class CompanyObjectsMixin:
-    """
-    Mixin for overriding get_queryset.
-    """
-    def get_queryset(self):
-        """
-        method to set queryset for retrieving objects for user's company only.
-        """
-        qs = super().get_queryset()
-        qs.filter(company=self.request.user.company)
-        return qs
-
-
-class CompanyObjectCreateMixin:
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.company = self.request.user.company
-        self.object.save()
-
-        return redirect(self.get_success_url())
 
 
 class TemplateListView(CompanyObjectsMixin, ListView):
@@ -106,7 +110,7 @@ class TemplateDeleteView(CompanyObjectsMixin, DeleteView):
     View for deleting template.
     """
     model = Template
-    template_name = "management/template_delete.html"
+    template_name = "management/template_confirm_delete.html"
     success_url = "/management/templates"
 
 

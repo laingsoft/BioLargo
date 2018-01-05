@@ -39,7 +39,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for project in projects %}
+                        {% for project in object_list %}
                         <tr class="project-row" data-url='/app/projects/{{project.id}}'>
                             <td>{{project.name}}</td>
                             <td>{{project.start}}</td>
