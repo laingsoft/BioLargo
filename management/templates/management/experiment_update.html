@@ -52,14 +52,17 @@
                         {{form.tags}}
                     </div>
 
-                    <div class="form-group">
-                        <label for="{{form.metadata.auto_id}}">
-                        {{form.metadata.label}}</label>
+                    <div id="metadata_fields">
+                        <legend>{{form.metadata.label}}</legend>
                         {{form.metadata}}
+
+                        <div class="metadata_fields">
+                        </div>
                     </div>
 
                     <input id="exp_data" name="exp_data" hidden>
-                    <div id="hot"></div>
+                    <legend>Experiment Data </legend>
+                    <div id="hot" class="form-group"></div>
                     <button class="btn btn-primary">Save</button>
                 </form>
             </div>
@@ -72,30 +75,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.35.0/handsontable.full.min.js"></script>
 <script type="text/javascript">
-var data = [
+    metadata_field = $("#{{ form.metadata.auto_id}}");
+    var headers = {{ headers|safe }};
+    var data = [
     {% for item in exp_data %}
         {{ item.experimentData|safe }},
     {% endfor %}
 ];
-
-var container = document.getElementById("hot");
-var headers = {{ headers|safe }};
-
-if (!headers){ headers = [''] };
-
-var options = {data: data,
-    colHeaders: headers,
-    rowHeaders: true,
-    contextMenu: true,
-    preventOverflow: 'horizontal',
-    manualRowMove: true,
-};
-
-var hot = new Handsontable(container, options);
-
-$("#exp_form").submit(function(e){
-    $("#exp_data").val(JSON.stringify(hot.getSourceData()));
-})
-
 </script>
+
+<script src="{% static 'js/exp_update.js' %}"></script>
 {% endblock %}

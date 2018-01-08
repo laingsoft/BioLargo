@@ -1,5 +1,5 @@
 from django import forms
-from app.models import Fields, Template
+from app.models import Fields, Template, Experiment
 
 class SettingsForm(forms.Form):
     dateformat = forms.CharField(label="Format to Use for Dates", max_length=10)
@@ -24,3 +24,11 @@ class FieldForm(forms.ModelForm):
         model = Fields
         exclude = ('company',)
 
+
+class ExperimentForm(forms.ModelForm):
+    class Meta:
+        model = Experiment
+        fields = ("friendly_name", "project", "tags", "metadata")
+        widgets = {
+            "metadata": forms.HiddenInput()
+        }

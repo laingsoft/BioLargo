@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from accounts.models import User
-from .forms import SettingsForm
+from .forms import SettingsForm, ExperimentForm
 from app.models import Template, Fields, Project, Experiment, ExperimentData
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 # from django.urls import reverse
@@ -68,7 +68,8 @@ class ExperimentUpdateView(CompanyObjectsMixin, UpdateView):
     model = Experiment
     template_name = "management/experiment_update.html"
     success_url = "/management/experiments"
-    fields = ('friendly_name', 'metadata', 'tags', 'project')
+    # fields = ('friendly_name', 'metadata', 'tags', 'project')
+    form_class = ExperimentForm
 
     def get_context_data(self, **kwargs):
         """
