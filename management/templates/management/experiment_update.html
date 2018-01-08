@@ -79,10 +79,9 @@ var data = [
 ];
 
 var container = document.getElementById("hot");
-var headers = {{ headers|safe }} or [[]];
+var headers = {{ headers|safe }};
 
-if !headers:
-    headers = ['']
+if (!headers){ headers = [''] };
 
 var options = {data: data,
     colHeaders: headers,

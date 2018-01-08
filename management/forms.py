@@ -23,3 +23,4 @@ class FieldForm(forms.ModelForm):
     class Meta:
         model = Fields
         exclude = ('company',)
+

@@ -6,7 +6,9 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 # from django.urls import reverse
 from app.mixins import CompanyObjectCreateMixin, CompanyObjectsMixin
 from json import loads
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
+from django.db.utils import Error
+
 # Create your views here.
 
 def dashboard(request):
@@ -69,37 +71,52 @@ class ExperimentUpdateView(CompanyObjectsMixin, UpdateView):
     fields = ('friendly_name', 'metadata', 'tags', 'project')
 
     def get_context_data(self, **kwargs):
+        """
+        returns ExperimentData objects of Experiment and headers for experiment
+        data along with default context.
+        """
         context = super().get_context_data(**kwargs)
         context["exp_data"] = ExperimentData.objects.filter(experiment=self.kwargs['pk'], company=self.request.user.company)
-        try:  # remove this try except and require some data to be added.
+
+        # TODO: require SOME data to be added on upload.
+
+        try:
             context["headers"] = list(context["exp_data"][0].experimentData.keys())
         except IndexError:
-            pass
+            context["headers"] = [' ']
+            context["exp_data"] = [[' ']]
 
         return context
 
     def form_valid(self, form):
-        # parse the json & validate
+        """
+        handles exp_data json experiment form.
+        TODO: add data type checking for fields.
+        """
         exp_data = self.request.POST.get("exp_data")
 
         try:
             exp_data = loads(exp_data)
         except ValueError:
-            return HttpResponseBadRequest("Invalid Data")
+            return HttpResponse("Invalid Data", status="400")
 
-        # save Experiment
+        exp_data = [x for x in exp_data if any(x.values())]
+        if not exp_data:
+            return HttpResponse("No experiment data found.", status="400")
+
         self.object = form.save()
 
-        # delete old data
         ExperimentData.objects.filter(experiment=self.kwargs['pk'], company=self.request.user.company).delete()
 
-        # Create with Experiment
-        data_objects = []
-        for item in exp_data:
-            data_objects.append(ExperimentData(experimentData=item, experiment=self.object))
+        try:
+            data_objects = []
+            for item in exp_data:
+                data_objects.append(ExperimentData(company=self.request.user.company, experimentData=item, experiment=self.object))
 
-        # save ExperimentData objects
-        ExperimentData.objects.bulk_create(data_objects)
+            ExperimentData.objects.bulk_create(data_objects)
+
+        except Error:  # a generic database error
+            return HttpResponse(status=500)
 
         return redirect(self.get_success_url())
 
