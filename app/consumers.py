@@ -1,6 +1,8 @@
 from channels.handler import AsgiHandler
 from app.models import Tag, Group, Experiment, ExperimentData
 import json
+from django.db.models.functions import TruncDay
+from django.db.models import Count
 
 def getcols(data, channel):
     tags = []
@@ -93,12 +95,28 @@ def num_uploads(data, channel):
         })
         
 
+def getUserStats(data, channel):
+    uploads_dates = Experiment.objects\
+                    .annotate(day=TruncDay('create_timestamp'))\
+                    .values('day')\
+                    .annotate(count =Count('id'))\
+                    .values('day', 'count')
+
+    tupl = ([],[])
+    for i in uploads_dates:
+        tupl[0].append(i['day'].strftime("%A"))
+        tupl[1].append(i['count'])
+
+    retval = {"data":tupl, "action":"userstats"}
+    channel.reply_channel.send({
+        "text":json.dumps(retval)
+        })
 
 
 
-
-INDEX_OBJECTS = {"num_uploads": num_uploads}
+INDEX_OBJECTS = {"getUserStats": getUserStats}
 def ws_index_page(consumable):
+    print("this is a test")
     data = json.loads(consumable.content['text'])
     INDEX_OBJECTS[data['action']](data['data'], consumable)
     
