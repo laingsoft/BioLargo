@@ -1,12 +1,16 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user
 import json
 from app.models import *
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from .serializers import commentSerializer, tagsSerializer, experimentSerializer, groupSerializer
 from django.http import Http404
-# Create your views here.
+from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 
 def requestTest(request):
     print(request.body)
@@ -132,3 +136,12 @@ class experiments(viewsets.ModelViewSet):
 class groups(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = groupSerializer
+
+#This class will return the token of the user
+#It is called by the /api/getToken URL
+class CustomObtainAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        response = super(CustomObtainAuthToken, self).post(request, *args, **kwargs)
+        token = Token.objects.get(key = response.data['token'])
+        return Response({'token' : token.key})
+    

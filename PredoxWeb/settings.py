@@ -26,7 +26,8 @@ SECRET_KEY = 'zl88d=ab=wk!q@h08xi$wer-p2#3%$=mw&%q6$oj$($^!ice1d'
 DEBUG = True
 
 ALLOWED_HOSTS = ['192.168.1.10', '0.0.0.0', 'localhost', 'pasteur.io','208.75.74.213', '192.168.1.25', '192.168.99.100']
-
+#192.168.1.10 = connect from remote device directly to VM
+#192.168.99.100 = Mac IP
 
 # Application definition
 
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'channels',
     'rest_framework',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
