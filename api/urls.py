@@ -19,5 +19,6 @@ urlpatterns = [
     url(r'^fields',views.fields_autocomplete, name="fields_autocomplete"),
     url(r'^template', views.templates, name="template"),
     url(r'^comment', views.comment, name="comment"),
-    url(r'^testreq',views.requestTest, name="reqtest")
+    url(r'^testreq', views.requestTest, name="reqtest"),
+    url(r'^getToken', views.CustomObtainAuthToken.as_view(), name="CustomObtainAuthToken"),
 ]

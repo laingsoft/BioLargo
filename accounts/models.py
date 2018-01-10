@@ -8,7 +8,7 @@ from django.contrib.postgres.fields import JSONField
 from .managers import UserManager
 from django.contrib.auth.models import Group
 import hashlib
-
+from django.utils import timezone
 
 
 # Create your models here.
@@ -59,13 +59,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    is_active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
-    # below are the two fields that are equivalent to is_superuser and
-    # is_staff for django's admin panel for the management panel. Allows
-    # user to access the management panel without giving access to the admin
-    # panel.
+    # For accessing management panel
     is_admin = models.BooleanField(default=False)
     is_manager = models.BooleanField(default=False)
+
+    # for accessing admin panel
+    is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
 

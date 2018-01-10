@@ -19,39 +19,93 @@
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col">
-        <div class="card">
-            <div class="card-block">
-                {% if form.non_field_errors %}
-                {% for error in form.non_field_errors %}
-                <div class="alert alert-warning">
-                {{ error }}
+    {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+        <div class="alert alert-warning">
+        {{ error }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-block">
+                            <div class="row">
+                                <div class="col-md-3 p-5">
+                                    {% csrf_token %} {{object.email | gravatar:150 }}
+                                    <div>
+                                        <h3 class="mt-3">{{ object.first_name }} {{ object.last_name }}</h3>
+                                        <small class="text-muted">Last login on {{ object.last_login }}</small>
+                                        <small class="text-muted">Joined {{ object.date_joined }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div>
+                                        <legend>User Details</legend>
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.first_name.errors }}
+                                        <label for="{{form.first_name.auto_id}}">{{ form.first_name.label}}</label>
+                                        {{ form.first_name }}
+
+                                        {{ form.last_name.errors }}
+                                        <label for="{{form.last_name.auto_id}}">{{ form.last_name.label}}</label>
+                                        {{ form.last_name }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.email.errors }}
+                                        <label for="{{form.email.auto_id}}">{{ form.email.label}}</label>
+                                        {{ form.email }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.password.errors }}
+                                        <label for="{{form.password.auto_id}}">{{ form.password.label}}</label>
+                                        {{ form.password }}
+                                        <small class="text-muted">{{ form.password.help_text}}</small>
+                                    </div>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                {% endfor %}
-                {% endif %}
-                <div class="row">
-                    <div class="col-md-3 p-5">
-                        {{object.email | gravatar:150 }}
-                        <div>
-                            <h3>{{ object.first_name }} {{ object.last_name }}</h3>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-block">
+                            <legend>Permissions</legend>
+                            <div class="form-group ">
+                                {{ form.is_admin.errors }}
+                                <label for="{{form.is_admin.auto_id}}">{{ form.is_admin.label}}</label>
+                                {{ form.is_admin }}
+
+                            </div>
+                            <div class="form-group ">
+                                {{ form.is_manager.errors }}
+                                <label for="{{form.is_manager.auto_id}}">{{ form.is_manager.label}}</label>
+                                {{ form.is_manager }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form.groups.errors }}
+                                <label for="{{form.groups.auto_id}}">{{ form.groups.label}}</label>
+                                {{ form.groups }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form.user_permissions.errors }}
+                                <label for="{{form.user_permissions.auto_id}}">{{ form.user_permissions.label}}</label>
+                                {{ form.user_permissions }}
+                            </div>
 
                         </div>
                     </div>
-                    <div class="col-md-9">
-                         <form method="POST">
-                            {% csrf_token %}
-
-                            {{ form }}
-
-                            <button class="btn btn-primary">Save</button>
-                        </form>
-                    </div>
                 </div>
+                <button class="btn btn-primary">Save</button>
             </div>
         </div>
-    </div>
-</div>
+    </form>
 {% endblock %}
 
 {% block script_extra %}

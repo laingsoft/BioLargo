@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from accounts.models import User
-from .forms import SettingsForm, ExperimentForm
+from .forms import SettingsForm, ExperimentForm, UserChangeForm
 from app.models import Template, Fields, Project, Experiment, ExperimentData
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 # from django.urls import reverse
@@ -9,8 +9,18 @@ from json import loads
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.utils import Error
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import UserPassesTestMixin
+
+
 
 # Create your views here.
+class ManagerTestMixin(UserPassesTestMixin):
+    """
+    mixin used to limit access to managers and admin only.
+    """
+    def test_func(self):
+        return self.request.user.is_manager or self.user.is_admin
+
 
 def dashboard(request):
     '''
@@ -27,13 +37,13 @@ def dashboard(request):
 #     return render(request, 'management/experiment.html')
 
 
-class ProjectListView(CompanyObjectsMixin, ListView):
+class ProjectListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
     model = Project
     template_name = "management/projects.html"
     paginate_by = 20
 
 
-class ProjectCreateView(CompanyObjectCreateMixin, CompanyObjectsMixin, CreateView):
+class ProjectCreateView(ManagerTestMixin, CompanyObjectCreateMixin, CompanyObjectsMixin, CreateView):
     """
     View for creating templates.
     """
@@ -43,14 +53,14 @@ class ProjectCreateView(CompanyObjectCreateMixin, CompanyObjectsMixin, CreateVie
     success_url = "/management/projects"
 
 
-class ProjectUpdateView(CompanyObjectsMixin, UpdateView):
+class ProjectUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
     model = Project
     fields = ("name", "start", "end", "description")
     template_name = "management/project_update.html"
     success_url = "/management/projects"
 
 
-class ProjectDeleteView(CompanyObjectsMixin, DeleteView):
+class ProjectDeleteView(ManagerTestMixin, CompanyObjectsMixin, DeleteView):
     """
     View for deleting template.
     """
@@ -59,13 +69,13 @@ class ProjectDeleteView(CompanyObjectsMixin, DeleteView):
     success_url = "/management/projects"
 
 
-class ExperimentListView(CompanyObjectsMixin, ListView):
+class ExperimentListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
     model = Experiment
     template_name = "management/experiment_list.html"
     paginate_by = 20
 
 
-class ExperimentUpdateView(CompanyObjectsMixin, UpdateView):
+class ExperimentUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
     model = Experiment
     template_name = "management/experiment_update.html"
     success_url = "/management/experiments"
@@ -123,7 +133,7 @@ class ExperimentUpdateView(CompanyObjectsMixin, UpdateView):
         return redirect(self.get_success_url())
 
 
-class ExperimentDeleteView(DeleteView):
+class ExperimentDeleteView(ManagerTestMixin, CompanyObjectsMixin, DeleteView):
     model = Experiment
     success_url = "/management/experiments"
     template_name = "management/template_confirm_delete.html"
@@ -145,7 +155,7 @@ def settingsmgr(request):
     return render(request, 'management/settings.html', {"form": form})
 
 
-class TemplateListView(CompanyObjectsMixin, ListView):
+class TemplateListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
     """
     Class based view for displaying a list of templates.
     """
@@ -154,7 +164,7 @@ class TemplateListView(CompanyObjectsMixin, ListView):
     paginate_by = 20
 
 
-class TemplateCreateView(CompanyObjectCreateMixin, CompanyObjectsMixin, CreateView):
+class TemplateCreateView(ManagerTestMixin, CompanyObjectCreateMixin, CompanyObjectsMixin, CreateView):
     """
     View for creating templates.
     """
@@ -164,7 +174,7 @@ class TemplateCreateView(CompanyObjectCreateMixin, CompanyObjectsMixin, CreateVi
     success_url = "/management/templates"
 
 
-class TemplateUpdateView(CompanyObjectsMixin, UpdateView):
+class TemplateUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
     """
     View for editing templates.
     """
@@ -174,7 +184,7 @@ class TemplateUpdateView(CompanyObjectsMixin, UpdateView):
     success_url = "/management/templates"
 
 
-class TemplateDeleteView(CompanyObjectsMixin, DeleteView):
+class TemplateDeleteView(ManagerTestMixin, CompanyObjectsMixin, DeleteView):
     """
     View for deleting template.
     """
@@ -183,7 +193,7 @@ class TemplateDeleteView(CompanyObjectsMixin, DeleteView):
     success_url = "/management/templates"
 
 
-class FieldListView(CompanyObjectsMixin, ListView):
+class FieldListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
     """
     Displays a list of fields.
     """
@@ -192,7 +202,7 @@ class FieldListView(CompanyObjectsMixin, ListView):
     template_name = "management/fields_list.html"
 
 
-class FieldCreateView(CompanyObjectCreateMixin, CompanyObjectsMixin, CreateView):
+class FieldCreateView(ManagerTestMixin, CompanyObjectCreateMixin, CompanyObjectsMixin, CreateView):
     """
     Displays a list of fields.
     """
@@ -202,7 +212,7 @@ class FieldCreateView(CompanyObjectCreateMixin, CompanyObjectsMixin, CreateView)
     success_url = "/management/fields"
 
 
-class FieldUpdateView(CompanyObjectsMixin, UpdateView):
+class FieldUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
     """
     View for editing fields.
     """
@@ -212,7 +222,7 @@ class FieldUpdateView(CompanyObjectsMixin, UpdateView):
     success_url = "/management/fields"
 
 
-class FieldDeleteView(CompanyObjectsMixin, DeleteView):
+class FieldDeleteView(ManagerTestMixin, CompanyObjectsMixin, DeleteView):
     """
     View for editing fields.
     """
@@ -221,7 +231,7 @@ class FieldDeleteView(CompanyObjectsMixin, DeleteView):
     success_url = "/management/fields"
 
 
-class UserListview(CompanyObjectsMixin, ListView):
+class UserListview(ManagerTestMixin, CompanyObjectsMixin, ListView):
     """
     displays a list of users. Users can be found by first name, last name
     and email.
@@ -231,8 +241,9 @@ class UserListview(CompanyObjectsMixin, ListView):
     paginate_by = 20
 
 
-class UserUpdateView(CompanyObjectsMixin, UpdateView):
+class UserUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
     model = get_user_model()
     template_name = "management/user_update.html"
-    fields = ("first_name", "last_name", "email", "password", "groups", "user_permissions" )
+    # fields = ("first_name", "last_name", "email", "password", "groups", "user_permissions" )
+    form_class = UserChangeForm
     success_url = "/management/users"
