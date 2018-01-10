@@ -1,0 +1,68 @@
+{% extends "management/base_template.html" %}
+{% load static %}
+{% load accounts_tags %}
+
+{% block css_extra %}
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.bootstrap3.min.css">
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">
+    <a href="/management">Manage</a>
+</li>
+<li class="breadcrumb-item">
+    <a href="/management/users">Users</a>
+</li>
+<li class="breadcrumb-item active">
+    {{ object }}
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-block">
+                {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                <div class="alert alert-warning">
+                {{ error }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                <div class="row">
+                    <div class="col-md-3 p-5">
+                        {{object.email | gravatar:150 }}
+                        <div>
+                            <h3>{{ object.first_name }} {{ object.last_name }}</h3>
+
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                         <form method="POST">
+                            {% csrf_token %}
+
+                            {{ form }}
+
+                            <button class="btn btn-primary">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script_extra %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
+<script type="text/javascript">
+    $("#{{ form.fields.auto_id }}").selectize({
+        plugins: ['remove_button']
+    });
+
+    $("#{{ form.metadata.auto_id }}").selectize({
+        plugins: ['remove_button']
+    });
+</script>
+{% endblock %}

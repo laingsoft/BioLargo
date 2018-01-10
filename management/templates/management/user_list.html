@@ -1,0 +1,43 @@
+{% extends "management/base_template.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <table class="table table hover">
+                <thead>
+                    <tr>
+                        <th class="checkbox"></th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Last Login</th>
+                        <th>Is Active?</th>
+                        <th class="control"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in object_list %}
+                    <tr>
+                        <td><input type="checkbox" name="{{ item.id }}"></td>
+                        <td>{{ item.first_name }}</td>
+                        <td>{{ item.last_name }}</td>
+                        <td>{{ item.email }}</td>
+                        <td>{{ item.last_login }}</td>
+                        <td>{% if item.is_active %}Yes{% else %}No{% endif %}</td>
+                        <td>
+                            <div class="btn-group" rowl="group">
+                                <a href="edit/{{ item.id }}" class="btn btn-secondary">Edit</a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                        <tr><td colspan="1000">No users found </td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

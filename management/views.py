@@ -8,6 +8,7 @@ from app.mixins import CompanyObjectCreateMixin, CompanyObjectsMixin
 from json import loads
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.utils import Error
+from django.contrib.auth import get_user_model
 
 # Create your views here.
 
@@ -19,11 +20,11 @@ def dashboard(request):
     users = User.objects.filter(company=request.user.company)
     return render(request, 'management/dashboard.html',{"users": users})
 
-def usermgr(request):
-    '''
-    Allows the management to assign and create new users. This means that they can invite, delete, update, change user accounts
-    '''
-    return render(request, 'management/experiment.html')
+# def usermgr(request):
+#     '''
+#     Allows the management to assign and create new users. This means that they can invite, delete, update, change user accounts
+#     '''
+#     return render(request, 'management/experiment.html')
 
 
 class ProjectListView(CompanyObjectsMixin, ListView):
@@ -122,6 +123,12 @@ class ExperimentUpdateView(CompanyObjectsMixin, UpdateView):
         return redirect(self.get_success_url())
 
 
+class ExperimentDeleteView(DeleteView):
+    model = Experiment
+    success_url = "/management/experiments"
+    template_name = "management/template_confirm_delete.html"
+
+
 def settingsmgr(request):
     '''
     Here is where settings like the metadata, at a glance settings, and the
@@ -212,3 +219,20 @@ class FieldDeleteView(CompanyObjectsMixin, DeleteView):
     model = Fields
     template_name = "management/fields_delete.html"
     success_url = "/management/fields"
+
+
+class UserListview(CompanyObjectsMixin, ListView):
+    """
+    displays a list of users. Users can be found by first name, last name
+    and email.
+    """
+    model = get_user_model()
+    template_name = "management/user_list.html"
+    paginate_by = 20
+
+
+class UserUpdateView(CompanyObjectsMixin, UpdateView):
+    model = get_user_model()
+    template_name = "management/user_update.html"
+    fields = ("first_name", "last_name", "email", "password", "groups", "user_permissions" )
+    success_url = "/management/users"

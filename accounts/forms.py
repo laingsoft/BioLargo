@@ -2,38 +2,39 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from accounts.models import Company
-
+from django.contrib.auth import authenticate
 
 
 class profileForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
-        fields = ['first_name','last_name','email']
+        fields = ['first_name', 'last_name', 'email']
+
 
 class UserForm(UserCreationForm):
     email = forms.EmailField()
 
     class Meta:
         model = get_user_model()
-        fields = ("email", "password1", "password2")
+        fields = ("first_name", "last_name", "email", "password1", "password2")
 
-    def save(self, company, commit=True):
+    def save(self, commit=True):
         user = super().save(commit=False)
         email = self.cleaned_data["email"]
 
         user.email = email
-        user.company = company
 
         if commit:
             user.save()
 
         return user
 
+
 class UserLoginForm(AuthenticationForm):
     """
     Authentication form that accepts an email/username and a password.
     """
-    email = forms.CharField(label = "Email", max_length="255")
+    email = forms.CharField(label="Email", max_length="255")
 
     def clean(self):
         email = self.cleaned_data.get('email')
@@ -55,13 +56,8 @@ class UserLoginForm(AuthenticationForm):
 
 
 class CompanyForm(forms.ModelForm):
+    name = forms.CharField(label="Company Name")
+
     class Meta:
         model = Company
         exclude = ['is_active']
-
-
-
-
-
-
-

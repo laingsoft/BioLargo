@@ -6,7 +6,9 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.postgres.fields import JSONField
 from .managers import UserManager
+from django.contrib.auth.models import Group
 import hashlib
+
 
 
 # Create your models here.
@@ -58,6 +60,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
 
+    # below are the two fields that are equivalent to is_superuser and
+    # is_staff for django's admin panel for the management panel. Allows
+    # user to access the management panel without giving access to the admin
+    # panel.
+    is_admin = models.BooleanField(default=False)
+    is_manager = models.BooleanField(default=False)
+
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
@@ -102,3 +111,11 @@ class Invite(models.Model):
             return False
 
         return True
+
+
+class PermissionGroupCompany(models.Model):
+    """
+    Creates a one-to-one for Django's user Group objects to Company, allowing
+    a company can add custom permission groups.
+    """
+    company = models.OneToOneField(Group, related_name="company")
