@@ -102,10 +102,9 @@ def getUserStats(data, channel):
                     .annotate(count =Count('id'))\
                     .values('day', 'count')
 
-    tupl = ([],[])
+    tupl = {}
     for i in uploads_dates:
-        tupl[0].append(i['day'].strftime("%A"))
-        tupl[1].append(i['count'])
+        tupl[i['day'].strftime("%a %b %d")] = i['count']
 
     retval = {"data":tupl, "action":"userstats"}
     channel.reply_channel.send({
