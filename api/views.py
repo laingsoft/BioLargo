@@ -136,12 +136,3 @@ class experiments(viewsets.ModelViewSet):
 class groups(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = groupSerializer
-
-#This class will return the token of the user
-#It is called by the /api/getToken URL
-class CustomObtainAuthToken(ObtainAuthToken):
-    def post(self, request, *args, **kwargs):
-        response = super(CustomObtainAuthToken, self).post(request, *args, **kwargs)
-        token = Token.objects.get(key = response.data['token'])
-        return Response({'token' : token.key})
-    
