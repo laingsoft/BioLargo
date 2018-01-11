@@ -7,7 +7,7 @@ urlpatterns = [
     url(r'^projects/edit/(?P<pk>\d+)/$', views.ProjectUpdateView.as_view()),
     url(r'^projects/create/$', views.ProjectCreateView.as_view()),
     url(r'^projects/delete/(?P<pk>\d+)/$', views.ProjectDeleteView.as_view()),
-    url(r'^settings', views.settingsmgr),
+    url(r'^settings', views.SettingsUpdateView.as_view()),
     url(r'^templates/$', views.TemplateListView.as_view()),
     url(r'^templates/create/$', views.TemplateCreateView.as_view()),
     url(r'^templates/edit/(?P<pk>\d+)/$', views.TemplateUpdateView.as_view()),

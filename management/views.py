@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
 from accounts.models import User
 from .forms import SettingsForm, ExperimentForm, UserChangeForm
+from .models import Settings
 from app.models import Template, Fields, Project, Experiment, ExperimentData
+from accounts.models import Company
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 # from django.urls import reverse
 from app.mixins import CompanyObjectCreateMixin, CompanyObjectsMixin
@@ -10,10 +12,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.db.utils import Error
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import UserPassesTestMixin
-
-
+from copy import deepcopy
 
 # Create your views here.
+
+
 class ManagerTestMixin(UserPassesTestMixin):
     """
     mixin used to limit access to managers and admin only.
@@ -139,20 +142,67 @@ class ExperimentDeleteView(ManagerTestMixin, CompanyObjectsMixin, DeleteView):
     template_name = "management/template_confirm_delete.html"
 
 
-def settingsmgr(request):
-    '''
-    Here is where settings like the metadata, at a glance settings, and the
-    date format are set.
-    '''
-    if request.method == "POST":
-        form = SettingsForm(request.POST)
+class SettingsUpdateView(UpdateView):
+    """
+    View for editing settings and company information.
+    Overrides methods from mixins and parent class to accomodate the extra
+    settings modelform.
+    """
+    fields = ('name',)
+    model = Company
+    template_name = "management/settings.html"
+    success_url = "/management/settings"
 
-        if form.is_valid():
-            return HttpResponseRedirect('success')
+    def get_object(self, **kwargs):
+        """
+        returns the request user's company.
+        """
+        return self.request.user.company
 
-    else:
-        form = SettingsForm()
-    return render(request, 'management/settings.html', {"form": form})
+    def get_context_data(self, **kwargs):
+        """
+        creates the settings form. Will create new settings object if one
+        doesn't already exist.
+        """
+
+        if 'form' not in kwargs:
+            kwargs['form'] = self.get_form()
+            settings = Settings.objects.get_or_create(company = self.object)
+            kwargs['settings'] = SettingsForm(instance=settings[0], prefix="settings")
+
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form, settings):
+        """
+        handles model saving for company and settings.
+        """
+
+        settings.save()
+        self.object = form.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form, settings):
+        """
+        if invalid, returns both forms.
+        """
+        return self.render_to_response(self.get_context_data(form=form, settings=settings))
+
+    def post(self, request):
+        """
+        overriden to validate two both company and settings forms.
+        """
+        self.object = self.get_object()
+
+        form = self.get_form()
+        settings_instance = Settings.objects.get(company=self.object)
+        settings = SettingsForm(self.request.POST, prefix="settings", instance=settings_instance)
+
+        if form.is_valid() and settings.is_valid():
+            return self.form_valid(form, settings)
+
+        else:
+            return self.form_invalid(form, settings)
 
 
 class TemplateListView(ManagerTestMixin, CompanyObjectsMixin, ListView):

@@ -1,10 +1,12 @@
 {% extends "management/base_template.html" %}
+
 {% block content %}
 
 <div class = "card">
-  <form action="/settings" method="post">
+  <form method="post">
     {% csrf_token %}
-    {{form}}
+    {{ form }}
+    {{ settings}}
     <input type="submit" value="Submit"/>
   </form>
 </div>

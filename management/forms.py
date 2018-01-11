@@ -1,10 +1,13 @@
 from django import forms
 from app.models import Fields, Template, Experiment
 from django.contrib.auth import get_user_model
+from .models import Settings
 
-class SettingsForm(forms.Form):
-    dateformat = forms.CharField(label="Format to Use for Dates", max_length=10)
-    ataglance = forms.CharField(label="At A Glance Data", max_length = 100)
+
+class SettingsForm(forms.ModelForm):
+    class Meta:
+        model = Settings
+        exclude = ('company',)
 
 
 class TemplateForm(forms.ModelForm):
