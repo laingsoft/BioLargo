@@ -3,6 +3,8 @@ from app.models import Tag, Group, Experiment, ExperimentData
 import json
 from django.db.models.functions import TruncDay
 from django.db.models import Count
+from accounts.models import User
+from channels.auth import http_session_user, channel_session_user, channel_session_user_from_http
 
 def getcols(data, channel):
     tags = []
@@ -81,18 +83,22 @@ def ws_analytics_columns(tagsgroups):
 
 
 
-def num_uploads(data, channel):
-    experiment_query = Experiments.objects.all().order_by("created_at")[:10]
-    dates = []
-    for experiment in experiment_query:
-        dates.append(experiment.created_at)
-    dateset = set(dates)
-    retval = {}
-    for i in dateset:
-        retval[i] = dates.count(i)
-    channel.reply_channel.send({
-        "text":json.dumps(retval),
-        })
+#def num_uploads(data, channel):
+#    experiment_query = Experiments.objects.all().order_by("created_at")[:10]
+#    dates = []
+#    for experiment in experiment_query:
+ #       dates.append(experiment.created_at)
+  #  dateset = set(dates)
+   # retval = {}
+   # for i in dateset:
+   #     retval[i] = dates.count(i)
+   # channel.reply_channel.send({
+   #     "text":json.dumps(retval),
+   #     })
+def uploadsPerUser(data, channel):
+    
+    pass
+
         
 
 def getUserStats(data, channel):
@@ -114,8 +120,14 @@ def getUserStats(data, channel):
 
 
 INDEX_OBJECTS = {"getUserStats": getUserStats}
+                                
+@channel_session_user
 def ws_index_page(consumable):
-    print("this is a test")
+    print(consumable.user)
     data = json.loads(consumable.content['text'])
     INDEX_OBJECTS[data['action']](data['data'], consumable)
-    
+
+@channel_session_user_from_http
+def ws_index_connect(consumable):
+    print("User Connected" + str(consumable.user))
+    consumable.reply_channel.send({'accept':True})
