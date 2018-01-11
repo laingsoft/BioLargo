@@ -95,14 +95,28 @@ def ws_analytics_columns(tagsgroups):
    # channel.reply_channel.send({
    #     "text":json.dumps(retval),
    #     })
-def uploadsPerUser(data, channel):
+
+
+def getUploadsPerUser(data, channel):
+    company_users = User.objects.filter(company=channel.user.company).annotate(num_exp=Count('experiment'))
+    retval = {}
+
+    for user in company_users:
+        retval[user.first_name] = user.num_exp
+
+    retval = {"data":retval, "action":"showUserUploadGraph"}
+    channel.reply_channel.send({
+        "text":json.dumps(retval)
+        })
     
-    pass
+
+    
+
 
         
 
 def getUserStats(data, channel):
-    uploads_dates = Experiment.objects\
+    uploads_dates = Experiment.objects.filter(company = channel.user.company)\
                     .annotate(day=TruncDay('create_timestamp'))\
                     .values('day')\
                     .annotate(count =Count('id'))\
@@ -119,15 +133,24 @@ def getUserStats(data, channel):
 
 
 
-INDEX_OBJECTS = {"getUserStats": getUserStats}
+INDEX_OBJECTS = {"getUserStats": getUserStats, "getUploadsPerUser":getUploadsPerUser}
                                 
 @channel_session_user
 def ws_index_page(consumable):
+    '''
+    Serves as the dispacher for the websocket for the index page. 
+    '''
     print(consumable.user)
     data = json.loads(consumable.content['text'])
     INDEX_OBJECTS[data['action']](data['data'], consumable)
 
 @channel_session_user_from_http
 def ws_index_connect(consumable):
+    '''
+    Handles the incoming connection for the websocket. 
+    It's not really necessary, but we need to be able to get the user object
+    Because of how channels optimises the data sent of the wire, if we don't 
+    grab the user object at connection, we never get it. 
+    '''
     print("User Connected" + str(consumable.user))
     consumable.reply_channel.send({'accept':True})

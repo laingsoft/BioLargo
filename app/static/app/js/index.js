@@ -34,33 +34,12 @@ function showUserStats(data){
 
 };
 
-var ACTIONS = {'userstats': showUserStats};
-
-function socket_dispach(e){
-    console.log("Recieved: "+e.data);
-    recv = JSON.parse(e.data);
-    ACTIONS[recv['action']](recv['data']);
-};
-
-
-$(document).ready(function() {
-    socket = new WebSocket("ws://"+window.location.host+window.location.pathname);
-    socket.onmessage = function(e){
-        socket_dispach(e);
-    }
-    socket.onopen = function(){
-        console.log("sent");
-        socket.send(JSON.stringify({'action':'getUserStats', 'data':0}))
-    }
-
-    $("tr").click(function() {
-        console.log("clicked") // Change when we figure out how we're accessing experiments.
-    })
-
+function showUserUploadGraph(data){
+    console.log(data);
     var user_data = [{
         type: 'bar',
-        x: [5, 7, 7, 8, 12],
-        y: ['User E', 'User D', 'User C', 'User B', 'User A'],
+        x: Object.values(data),
+        y: Object.keys(data),
         orientation: 'h',
     }];
 
@@ -87,7 +66,34 @@ $(document).ready(function() {
     }
 
     Plotly.newPlot('active_users', user_data, user_layout, { displayModeBar: false });
-    
+}
+
+
+var ACTIONS = {'userstats': showUserStats, "showUserUploadGraph":showUserUploadGraph};
+
+function socket_dispach(e){
+    console.log("Recieved: "+e.data);
+    recv = JSON.parse(e.data);
+    ACTIONS[recv['action']](recv['data']);
+};
+
+
+$(document).ready(function() {
+    socket = new WebSocket("ws://"+window.location.host+window.location.pathname);
+    socket.onmessage = function(e){
+        socket_dispach(e);
+    }
+    socket.onopen = function(){
+	socket.send(JSON.stringify({'action':'getUploadsPerUser', 'data':0}));
+        socket.send(JSON.stringify({'action':'getUserStats', 'data':0}));
+	
+	console.log("sent");
+    }
+
+    $("tr").click(function() {
+        console.log("clicked") // Change when we figure out how we're accessing experiments.
+    })
+
 
     
 })
