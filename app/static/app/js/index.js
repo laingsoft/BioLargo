@@ -1,5 +1,11 @@
+/*
+* Fills in the "Most Active Users Graph
+* Sister function is located in consumers: getUploadsPerUser
+* 
+*/
+
 function showUserStats(data){
-    console.log(data);
+   // console.log(data);
     var exp_data = [{
         type: 'line',
         x: Object.keys(data),
@@ -33,6 +39,12 @@ function showUserStats(data){
     Plotly.newPlot('num_exp', exp_data, exp_layout, { displayModeBar: false });
 
 };
+
+/*
+* Fills in the "Number of experiments uploaded" graph
+* Sister function is in consumers.py: getUserStats
+*
+*/
 
 function showUserUploadGraph(data){
     console.log(data);
@@ -68,9 +80,13 @@ function showUserUploadGraph(data){
     Plotly.newPlot('active_users', user_data, user_layout, { displayModeBar: false });
 }
 
-
+// ACTIONS is the dispacher graph. Register the functions you want to use here. 
 var ACTIONS = {'userstats': showUserStats, "showUserUploadGraph":showUserUploadGraph};
 
+/*
+* Dispacher function. Uses the data sent from the server to tell the client what to do with
+* the data. 
+*/
 function socket_dispach(e){
     console.log("Recieved: "+e.data);
     recv = JSON.parse(e.data);
@@ -79,6 +95,9 @@ function socket_dispach(e){
 
 
 $(document).ready(function() {
+    // Do some basic setup stuff
+    // Basically just everything that needs to be done on the page. Perhaps think
+    // about using a loader so the page doesn't seem lethargic.
     socket = new WebSocket("ws://"+window.location.host+window.location.pathname);
     socket.onmessage = function(e){
         socket_dispach(e);

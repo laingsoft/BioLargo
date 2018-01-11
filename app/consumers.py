@@ -72,32 +72,17 @@ ANALYTICS_OBJECTS = {"getcols": getcols, "getdata":getdata}
 def ws_analytics_columns(tagsgroups):
     data = json.loads(tagsgroups.content['text'])
     ANALYTICS_OBJECTS[data['action']](data['data'], tagsgroups)
-    '''
-    for keya in search:
-        print(search[keya]['table'])
-        tags.append(search[keya]['id']) if search[keya]['table'] == 'tag' else groups.append(search[keya]['id'])
-
-    
-    '''
 
 
 
 
-#def num_uploads(data, channel):
-#    experiment_query = Experiments.objects.all().order_by("created_at")[:10]
-#    dates = []
-#    for experiment in experiment_query:
- #       dates.append(experiment.created_at)
-  #  dateset = set(dates)
-   # retval = {}
-   # for i in dateset:
-   #     retval[i] = dates.count(i)
-   # channel.reply_channel.send({
-   #     "text":json.dumps(retval),
-   #     })
+
 
 
 def getUploadsPerUser(data, channel):
+    '''
+    Populates the section "Most Active Users"
+    '''
     company_users = User.objects.filter(company=channel.user.company).annotate(num_exp=Count('experiment'))
     retval = {}
 
@@ -110,12 +95,10 @@ def getUploadsPerUser(data, channel):
         })
     
 
-    
-
-
-        
-
 def getUserStats(data, channel):
+    '''
+    Fills in the "Number of Experiments Uploaded" graph. I really should rename these
+    '''
     uploads_dates = Experiment.objects.filter(company = channel.user.company)\
                     .annotate(day=TruncDay('create_timestamp'))\
                     .values('day')\
@@ -140,7 +123,6 @@ def ws_index_page(consumable):
     '''
     Serves as the dispacher for the websocket for the index page. 
     '''
-    print(consumable.user)
     data = json.loads(consumable.content['text'])
     INDEX_OBJECTS[data['action']](data['data'], consumable)
 
@@ -152,5 +134,4 @@ def ws_index_connect(consumable):
     Because of how channels optimises the data sent of the wire, if we don't 
     grab the user object at connection, we never get it. 
     '''
-    print("User Connected" + str(consumable.user))
     consumable.reply_channel.send({'accept':True})
