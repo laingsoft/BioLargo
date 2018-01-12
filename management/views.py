@@ -12,7 +12,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.db.utils import Error
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import UserPassesTestMixin
-from copy import deepcopy
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.contrib.auth.views import LoginView
 
 # Create your views here.
 
@@ -21,10 +23,11 @@ class ManagerTestMixin(UserPassesTestMixin):
     """
     mixin used to limit access to managers and admin only.
     """
+    login_url = "/management/login"
     def test_func(self):
-        return self.request.user.is_manager or self.user.is_admin
+        return self.request.user.is_manager or self.request.user.is_admin
 
-
+@login_required
 def dashboard(request):
     '''
     Main entry point for the management part of the website. Intially this should show information like last logins,
@@ -39,7 +42,7 @@ def dashboard(request):
 #     '''
 #     return render(request, 'management/experiment.html')
 
-
+@method_decorator(login_required, name='dispatch')
 class ProjectListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
     model = Project
     template_name = "management/projects.html"
@@ -148,7 +151,7 @@ class SettingsUpdateView(UpdateView):
     Overrides methods from mixins and parent class to accomodate the extra
     settings modelform.
     """
-    fields = ('name',)
+    fields = ('name', 'address', 'phone')
     model = Company
     template_name = "management/settings.html"
     success_url = "/management/settings"
@@ -212,6 +215,7 @@ class TemplateListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
     model = Template
     template_name = "management/template_list.html"
     paginate_by = 20
+
 
 
 class TemplateCreateView(ManagerTestMixin, CompanyObjectCreateMixin, CompanyObjectsMixin, CreateView):
@@ -297,3 +301,30 @@ class UserUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
     # fields = ("first_name", "last_name", "email", "password", "groups", "user_permissions" )
     form_class = UserChangeForm
     success_url = "/management/users"
+
+
+class ManagementLoginView(LoginView):
+    """
+    a log in view to (hopefully) fix the redirect loop
+    """
+    template_name = "admin/login.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        user = self.request.user
+        if user.is_authenticated and (user.is_manager or user.is_manager):
+            redirect_to = self.get_success_url()
+
+            if redirect_to == self.request.path:
+                raise ValueError(
+                    "Redirection loop for authenticated user detected. Check that "
+                    "your LOGIN_REDIRECT_URL doesn't point to a login page."
+                )
+
+            return HttpResponseRedirect(redirect_to)
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        url = self.get_redirect_url()
+        return url
+

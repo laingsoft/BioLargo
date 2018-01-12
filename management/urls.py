@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^experiments/delete/(?P<pk>\d+)/$', views.ExperimentDeleteView.as_view()),
     url(r'^users/$', views.UserListview.as_view()),
     url(r'^users/edit/(?P<pk>\d+)/$', views.UserUpdateView.as_view()),
+    url(r'^login/$', views.ManagementLoginView.as_view()),
     ]
