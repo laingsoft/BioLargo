@@ -15,34 +15,32 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.views import LoginView
+from django.views import View
 
 # Create your views here.
 
 
 class ManagerTestMixin(UserPassesTestMixin):
     """
-    mixin used to limit access to managers and admin only.
+    mixin used to limit access to managers and admin only. To check for
+    class based permissions, add test_func method to view with condition.
     """
     login_url = "/management/login"
     def test_func(self):
-        return self.request.user.is_manager or self.request.user.is_admin
+        return self.request.user.is_authenticated and (self.request.user.is_manager or self.request.user.is_admin)
 
-@login_required
-def dashboard(request):
-    '''
-    Main entry point for the management part of the website. Intially this should show information like last logins,
-    and allow ease of access to other services that are available on the management portion of the site
-    '''
-    users = User.objects.filter(company=request.user.company)
-    return render(request, 'management/dashboard.html',{"users": users})
 
-# def usermgr(request):
-#     '''
-#     Allows the management to assign and create new users. This means that they can invite, delete, update, change user accounts
-#     '''
-#     return render(request, 'management/experiment.html')
+class Dashboard(ManagerTestMixin, View):
+    """
+    Main entry point for the management part of the website. Intially this
+    should show information like last logins,and allow ease of access to other
+    services that are available on the management portion of the site
+    """
+    def get(self, request):
+        users = User.objects.filter(company=request.user.company)
+        return render(request, 'management/dashboard.html', {"users": users})
 
-@method_decorator(login_required, name='dispatch')
+
 class ProjectListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
     model = Project
     template_name = "management/projects.html"
@@ -215,7 +213,6 @@ class TemplateListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
     model = Template
     template_name = "management/template_list.html"
     paginate_by = 20
-
 
 
 class TemplateCreateView(ManagerTestMixin, CompanyObjectCreateMixin, CompanyObjectsMixin, CreateView):

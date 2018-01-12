@@ -2,7 +2,7 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.dashboard),
+    url(r'^$', views.Dashboard.as_view()),
     url(r'^projects/$', views.ProjectListView.as_view()),
     url(r'^projects/edit/(?P<pk>\d+)/$', views.ProjectUpdateView.as_view()),
     url(r'^projects/create/$', views.ProjectCreateView.as_view()),
