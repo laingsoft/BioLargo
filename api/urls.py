@@ -11,8 +11,9 @@ router.register(r'groups', views.groups, 'group')
 
 
 urlpatterns = [
+    url(r'^getUser', views.get_user),
     url(r'^getToken', obtain_jwt_token),
-    url(r'^getTokenRefresh', refresh_jwt_token),
+    url(r'^get_new_token', views.get_new_token),
     url(r'^verifyToken', verify_jwt_token),
     url(r'^', include(router.urls)),
     url(r'^$', views.index, name='index'),
