@@ -117,7 +117,9 @@ class Invite(models.Model):
 
 class PermissionGroupCompany(models.Model):
     """
-    Creates a one-to-one for Django's user Group objects to Company, allowing
-    a company can add custom permission groups.
+    Creates a one-to-one with Django's user Group objects, allowing
+    a company can add custom permission groups with a description
     """
-    company = models.OneToOneField(Group, related_name="company")
+    group = models.OneToOneField(Group, related_name="extra")
+    description = models.CharField(max_length=255, blank=True)
+    company = models.ForeignKey(Company)

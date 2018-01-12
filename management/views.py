@@ -12,10 +12,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.db.utils import Error
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.contrib.auth.views import LoginView
 from django.views import View
+from app.mixins import ExpFilterMixin
+from django.contrib.auth.models import Group
 
 # Create your views here.
 
@@ -34,7 +34,7 @@ class Dashboard(ManagerTestMixin, View):
     """
     Main entry point for the management part of the website. Intially this
     should show information like last logins,and allow ease of access to other
-    services that are available on the management portion of the site
+    services that are available on the management portion of the site.
     """
     def get(self, request):
         users = User.objects.filter(company=request.user.company)
@@ -42,6 +42,10 @@ class Dashboard(ManagerTestMixin, View):
 
 
 class ProjectListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
+    """
+    Shows a list of projects. Allows a user (with permissions) to search for a
+    project, add a project, edit or delete.
+    """
     model = Project
     template_name = "management/projects.html"
     paginate_by = 20
@@ -58,6 +62,9 @@ class ProjectCreateView(ManagerTestMixin, CompanyObjectCreateMixin, CompanyObjec
 
 
 class ProjectUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
+    """
+    View used for updaing an existing project.
+    """
     model = Project
     fields = ("name", "start", "end", "description")
     template_name = "management/project_update.html"
@@ -73,13 +80,19 @@ class ProjectDeleteView(ManagerTestMixin, CompanyObjectsMixin, DeleteView):
     success_url = "/management/projects"
 
 
-class ExperimentListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
+class ExperimentListView(ManagerTestMixin, ExpFilterMixin, CompanyObjectsMixin, ListView):
+    """
+    Lists Experiments within a company, if user has permissions to page.
+    """
     model = Experiment
     template_name = "management/experiment_list.html"
     paginate_by = 20
 
 
 class ExperimentUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
+    """
+    View for editing experiments through the management panel.
+    """
     model = Experiment
     template_name = "management/experiment_update.html"
     success_url = "/management/experiments"
@@ -138,6 +151,9 @@ class ExperimentUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
 
 
 class ExperimentDeleteView(ManagerTestMixin, CompanyObjectsMixin, DeleteView):
+    """
+    confirms the delete request on get and deletes on post
+    """
     model = Experiment
     success_url = "/management/experiments"
     template_name = "management/template_confirm_delete.html"
@@ -300,6 +316,14 @@ class UserUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
     success_url = "/management/users"
 
 
+class PermissionGroupView(CompanyObjectsMixin, ListView):
+    """
+    Displays a list of user groups.
+    """
+    model = Group
+    template_name = "management/groups_list.html"
+    paginate_by = 20
+
 class ManagementLoginView(LoginView):
     """
     a log in view to (hopefully) fix the redirect loop
@@ -324,4 +348,3 @@ class ManagementLoginView(LoginView):
     def get_success_url(self):
         url = self.get_redirect_url()
         return url
-

@@ -1,0 +1,67 @@
+{% extends "management/base_template.html" %}
+{% load static %}
+
+{% block css_extra %}
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">
+    <a href="/management">Manage</a>
+</li>
+<li class="breadcrumb-item active">
+    Experiments
+</li>
+
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <h2>Experiments</h2>
+        <div class="card">
+            <div class="card-block">
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Number of users</th>
+                            <th>Scientist</th>
+                            <th>Project</th>
+                            <th>Tags</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in object_list %}
+                        <tr data-url="/management/fields/edit/{{field.id}}">
+                            <td><input type="checkbox"></td>
+                            <td>{{ item.friendly_name }}</td>
+                            <td>{{ item.create_timestamp }}</td>
+                            <td>{{ item.user }}</td>
+                            <td>{{ item.project.name }}</td>
+                            <td>{{ item.tags.all|join:", " }}</td>
+                            <td>
+                                <div class="btn-group" rowl="group">
+                                    <a href="edit/{{item.id}}" class="btn btn-secondary">Edit</a>
+                                    <a href="delete/{{item.id}}" class="btn btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td class="text-center" colspan="1000">No Groups found</td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script_extra %}
+{% endblock %}
