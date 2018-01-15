@@ -53,7 +53,7 @@
 
 -->
 
-<body class="app header-fixed sidebar-fixed sidebar-minimized aside-menu-hidden aside-menu-fixed">
+<body class="app header-fixed sidebar-fixed aside-menu-hidden aside-menu-fixed">
     <img src="{% static 'common/svg/open-iconic.min.svg' %}" class="iconic-sprite" style="display:none;" />
     <header class="app-header navbar">
         <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
@@ -80,7 +80,7 @@
                 <a class="nav-link" href="/management/fields">Fields</a>
             </li>
             <li class="nav-item px-3">
-                <a class="nav-link" href="/accounts/userlist">Users</a>
+                <a class="nav-link" href="/management/users">Users</a>
             </li>
         </ul>
         <ul class="nav navbar-nav ml-auto">
@@ -171,11 +171,26 @@
                     </li>
                     <li class="nav-title">Users</li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/accounts/userlist">
+                        <a class="nav-link" href="/management/users">
                         <svg class="icon" viewBox="0 0 8 8"><use xlink:href="#people"></use></svg>
                         User list</a>
                     </li>
-
+                    <li class="nav-item">
+                        <a class="nav-link" href="/management/groups">
+                        <svg class="icon" viewBox="0 0 8 8"><use xlink:href="#people"></use></svg>
+                        User Groups</a>
+                    </li>
+                    <li class="nav-title">Settings</li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/management/settings">
+                        <svg class="icon" viewBox="0 0 8 8"><use xlink:href="#people"></use></svg>
+                        Company</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/management/settings">
+                        <svg class="icon" viewBox="0 0 8 8"><use xlink:href="#people"></use></svg>
+                        Settings</a>
+                    </li>
                 </ul>
 
             </nav>
