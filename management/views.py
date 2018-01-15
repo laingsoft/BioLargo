@@ -328,7 +328,7 @@ class UserGroupListView(ListView):
         Gets queryset of groups for specified company
         """
         qs = super().get_queryset()
-        qs.filter(extra__company=self.request.user.company)
+        qs = qs.filter(extra__company=self.request.user.company)
 
         return qs
 
@@ -362,7 +362,7 @@ class UserGroupUpdateView(UpdateView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        qs.filter(extra__company=self.request.user.company)
+        qs = qs.filter(extra__company=self.request.user.company)
         return qs
 
     def form_valid(self, form):
@@ -380,7 +380,7 @@ class UserGroupDeleteView(DeleteView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        qs.filter(extra__company=self.request.user.company)
+        qs = qs.filter(extra__company=self.request.user.company)
         return qs
 
 
