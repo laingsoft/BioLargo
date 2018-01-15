@@ -1,12 +1,17 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user
 import json
 from app.models import *
 from rest_framework import viewsets
-from .serializers import commentSerializer, tagsSerializer, experimentSerializer, groupSerializer
+from rest_framework_jwt.settings import api_settings
+from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from .serializers import commentSerializer, tagsSerializer, experimentSerializer, userSerializer, groupSerializer
+from django.core.serializers import serialize
 from django.http import Http404
-# Create your views here.
+from rest_framework.response import Response
 
 def requestTest(request):
     print(request.body)
@@ -82,6 +87,28 @@ def get_experiments_id(request):
 def get_csv(request, exp_id):
     pass
 
+#This will return the user's information so that it can be used to customize the client's applicaiton
+@api_view(['GET'])
+def get_user(request):
+    user = request.user
+    return Response({"email" : user.email,
+                    "first_name" :user.first_name,
+                    "last_name" : user.last_name})
+
+#This generates a new Token for the user when an old token is passed in. This is used instead of 
+#   the default refresh_jwt_token since that was not working.  
+@api_view(['POST'])
+def get_new_token(request):
+    jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+    jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+    payload = jwt_payload_handler(request.user)
+    token = jwt_encode_handler(payload)
+    return Response(token)
+
+
+
+
+
 #This will delete an experiment assuming that the company is correct
 #It requires an Experiment ID to be passed into it. 
 @login_required
@@ -115,8 +142,7 @@ def comment(request):
 
         ret = {k: {'user':v.user.username, 'content':v.content, 'experiment':v.experiment.id} for k,v in enumerate(comment)}
         return JsonResponse(ret)
-
-
+    
 class resttest(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = commentSerializer

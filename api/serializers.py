@@ -10,7 +10,7 @@ class commentSerializer(serializers.HyperlinkedModelSerializer):
 class userSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name','last_name']
+        fields = ['email', 'first_name','last_name']
 
 class experimentDataSerializer(serializers.ModelSerializer):
     class Meta:

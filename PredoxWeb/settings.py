@@ -25,8 +25,9 @@ SECRET_KEY = 'zl88d=ab=wk!q@h08xi$wer-p2#3%$=mw&%q6$oj$($^!ice1d'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost', 'pasteur.io','208.75.74.213', '192.168.1.25', '192.168.99.100']
-
+ALLOWED_HOSTS = ['192.168.1.10', '0.0.0.0', 'localhost', 'pasteur.io','208.75.74.213', '192.168.1.25', '192.168.99.100']
+#192.168.1.10 = connect from remote device directly to VM
+#192.168.99.100 = Mac IP
 
 # Application definition
 
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'channels',
     'rest_framework',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -164,3 +166,17 @@ REST_FRAMEWORK = {
 LOGIN_REDIRECT_URL = '/app'
 
 AUTH_USER_MODEL = 'accounts.User'
+
+import datetime 
+
+JWT_AUTH = {
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(datetime.MAXYEAR),
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=30),
+    'JWT_ENCODE_HANDLER':
+    'rest_framework_jwt.utils.jwt_encode_handler',
+    'JWT_DECODE_HANDLER':
+    'rest_framework_jwt.utils.jwt_decode_handler',
+    'JWT_PAYLOAD_HANDLER':
+    'rest_framework_jwt.utils.jwt_payload_handler',
+}
