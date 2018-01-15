@@ -9,7 +9,7 @@
     <a href="/management">Manage</a>
 </li>
 <li class="breadcrumb-item active">
-    Experiments
+    Groups
 </li>
 
 {% endblock %}
@@ -17,7 +17,7 @@
 {% block content %}
 <div class="row">
     <div class="col">
-        <h2>Experiments</h2>
+        <h2>User Groups</h2>
         <div class="card">
             <div class="card-block">
 
@@ -26,10 +26,8 @@
                         <tr>
                             <th></th>
                             <th>Name</th>
-                            <th>Number of users</th>
-                            <th>Scientist</th>
-                            <th>Project</th>
-                            <th>Tags</th>
+                            <th>Description</th>
+                            <th>Number of Users</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -37,11 +35,9 @@
                         {% for item in object_list %}
                         <tr data-url="/management/fields/edit/{{field.id}}">
                             <td><input type="checkbox"></td>
-                            <td>{{ item.friendly_name }}</td>
-                            <td>{{ item.create_timestamp }}</td>
-                            <td>{{ item.user }}</td>
-                            <td>{{ item.project.name }}</td>
-                            <td>{{ item.tags.all|join:", " }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.extra.description }}</td>
+                            <td>{{ item.user_set.all.count }}</td>
                             <td>
                                 <div class="btn-group" rowl="group">
                                     <a href="edit/{{item.id}}" class="btn btn-secondary">Edit</a>

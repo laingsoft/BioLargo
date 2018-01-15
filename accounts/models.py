@@ -4,10 +4,7 @@ from django.db import models
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.postgres.fields import JSONField
 from .managers import UserManager
-from django.contrib.auth.models import Group
-import hashlib
 from django.utils import timezone
 
 
@@ -113,13 +110,3 @@ class Invite(models.Model):
             return False
 
         return True
-
-
-class PermissionGroupCompany(models.Model):
-    """
-    Creates a one-to-one with Django's user Group objects, allowing
-    a company can add custom permission groups with a description
-    """
-    group = models.OneToOneField(Group, related_name="extra")
-    description = models.CharField(max_length=255, blank=True)
-    company = models.ForeignKey(Company)

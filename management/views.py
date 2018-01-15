@@ -1,11 +1,10 @@
 from django.shortcuts import render, redirect
 from accounts.models import User
-from .forms import SettingsForm, ExperimentForm, UserChangeForm
+from .forms import SettingsForm, ExperimentForm, UserChangeForm, GroupForm
 from .models import Settings
 from app.models import Template, Fields, Project, Experiment, ExperimentData
 from accounts.models import Company
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-# from django.urls import reverse
 from app.mixins import CompanyObjectCreateMixin, CompanyObjectsMixin
 from json import loads
 from django.http import HttpResponse, HttpResponseRedirect
@@ -316,13 +315,74 @@ class UserUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
     success_url = "/management/users"
 
 
-class PermissionGroupView(CompanyObjectsMixin, ListView):
+class UserGroupListView(ListView):
     """
     Displays a list of user groups.
     """
     model = Group
     template_name = "management/groups_list.html"
     paginate_by = 20
+
+    def get_queryset(self):
+        """
+        Gets queryset of groups for specified company
+        """
+        qs = super().get_queryset()
+        qs.filter(extra__company=self.request.user.company)
+
+        return qs
+
+
+class UserGroupCreateView(CreateView):
+    """
+    Displays form for creating new user group.
+    """
+    model = Group
+    template_name = "management/groups_form.html"
+    form_class = GroupForm
+    success_url = '/management/groups'
+
+    def form_valid(self, form):
+        """
+        handles valid form. Overriden to add company argument to form
+        """
+        self.object = form.save(company=self.request.user.company)
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class UserGroupUpdateView(UpdateView):
+    """
+    Updates an existing group. contains some copy-paste code
+    from the two previous views.
+    """
+    model = Group
+    template_name = "management/groups_form.html"
+    form_class = GroupForm
+    success_url = '/management/groups'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs.filter(extra__company=self.request.user.company)
+        return qs
+
+    def form_valid(self, form):
+        """
+        handles valid form.
+        """
+        self.object = form.save(company=self.request.user.company)
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class UserGroupDeleteView(DeleteView):
+    model = Group
+    template_name = 'management/template_confirm_delete.html'
+    success_url = '/management/groups'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs.filter(extra__company=self.request.user.company)
+        return qs
+
 
 class ManagementLoginView(LoginView):
     """

@@ -1,7 +1,9 @@
 from django import forms
 from app.models import Fields, Template, Experiment
+from .models import GroupExtra
 from django.contrib.auth import get_user_model
 from .models import Settings
+from django.contrib.auth.models import Group
 
 
 class SettingsForm(forms.ModelForm):
@@ -62,3 +64,36 @@ class UserChangeForm(forms.ModelForm):
 
         else:
             return super().save()
+
+
+class GroupForm(forms.ModelForm):
+    description = forms.CharField()
+
+    class Meta:
+        model = Group
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance:
+            self.fields['description'].initial = self.instance.extra.description
+
+    def save(self, **kwargs):
+        """
+        overridden save function for saving the extra description field.
+        company is used in place of commit.
+        requires company argument for saving extra
+        """
+
+        group = super().save()
+
+        if self.instance:
+            extra = group.extra
+            extra.description = self.cleaned_data['description']
+
+        else:
+            extra = GroupExtra(description=self.cleaned_data['description'], group=group, company=kwargs.get('company'))
+
+        extra.save()
+
+        return group

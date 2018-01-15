@@ -21,4 +21,8 @@ urlpatterns = [
     url(r'^users/$', views.UserListview.as_view()),
     url(r'^users/edit/(?P<pk>\d+)/$', views.UserUpdateView.as_view()),
     url(r'^login/$', views.ManagementLoginView.as_view()),
+    url(r'^groups/$', views.UserGroupListView.as_view()),
+    url(r'^groups/create/$', views.UserGroupCreateView.as_view()),
+    url(r'^groups/edit/(?P<pk>\d+)/$', views.UserGroupUpdateView.as_view()),
+    url(r'^groups/delete/(?P<pk>\d+)/$', views.UserGroupDeleteView.as_view()),
     ]
