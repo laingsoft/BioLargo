@@ -75,7 +75,8 @@ class GroupForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance:
+
+        if self.instance.pk:
             self.fields['description'].initial = self.instance.extra.description
 
     def save(self, **kwargs):
@@ -87,13 +88,12 @@ class GroupForm(forms.ModelForm):
 
         group = super().save()
 
-        if self.instance:
+        try:
             extra = group.extra
-            extra.description = self.cleaned_data['description']
+        except GroupExtra.DoesNotExist:
+            extra = GroupExtra(group=group, company=kwargs.get('company'))
 
-        else:
-            extra = GroupExtra(description=self.cleaned_data['description'], group=group, company=kwargs.get('company'))
-
+        extra.description = self.cleaned_data['description']
         extra.save()
 
         return group
