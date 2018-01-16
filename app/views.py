@@ -15,7 +15,7 @@ import csv
 from .forms import FileUpload, ExperimentForm, ExperimentDataForm, ProjectForm
 from io import StringIO
 from django.views.generic import ListView
-from .mixins import CompanyObjectsMixin, ExpFilterMixin 
+from .mixins import CompanyObjectsMixin, ExpFilterMixin
 import datetime
 
 
@@ -29,9 +29,7 @@ def index(request):
 
     company = request.user.company
 
-
-
-    latest = Experiment.objects.filter(company=company).order_by('-id').values_list('metadata', flat=True)[:10]
+    latest = Experiment.objects.filter(company=company).order_by('-id')[:10]
 
     return render(request, 'app/index.html', {'latest': latest})
 

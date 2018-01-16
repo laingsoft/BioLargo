@@ -1,7 +1,7 @@
 /*
 * Fills in the "Most Active Users Graph
 * Sister function is located in consumers: getUploadsPerUser
-* 
+*
 */
 
 function showUserStats(data){
@@ -80,12 +80,12 @@ function showUserUploadGraph(data){
     Plotly.newPlot('active_users', user_data, user_layout, { displayModeBar: false });
 }
 
-// ACTIONS is the dispacher graph. Register the functions you want to use here. 
+// ACTIONS is the dispacher graph. Register the functions you want to use here.
 var ACTIONS = {'userstats': showUserStats, "showUserUploadGraph":showUserUploadGraph};
 
 /*
 * Dispacher function. Uses the data sent from the server to tell the client what to do with
-* the data. 
+* the data.
 */
 function socket_dispach(e){
     console.log("Recieved: "+e.data);
@@ -105,15 +105,14 @@ $(document).ready(function() {
     socket.onopen = function(){
 	socket.send(JSON.stringify({'action':'getUploadsPerUser', 'data':0}));
         socket.send(JSON.stringify({'action':'getUserStats', 'data':0}));
-	
+
 	console.log("sent");
     }
 
-    $("tr").click(function() {
-        console.log("clicked") // Change when we figure out how we're accessing experiments.
-    })
 
+$(".clickable").click(function(){
+window.location.href="/app/experiment/" + $(this).data('id')
+})
 
-    
 })
 

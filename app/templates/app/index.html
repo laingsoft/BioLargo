@@ -63,7 +63,9 @@
         <div class="card">
             <div class="card-header"><a href="/app/experiments">Latest Experiments</a></div>
             <div class="card-body">
-                Latest experiments here,
+                {% with data=latest %}
+                {% include "app/experiment_table.html" %}
+                {% endwith %}
             </div>
         </div>
     </div>

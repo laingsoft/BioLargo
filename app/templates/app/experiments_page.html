@@ -30,35 +30,9 @@
 <div class="row">
     <div class="col">
         <div class="card"  id="experiments">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Upload Date</th>
-                        <th>Scientist</th>
-                        <th>Project</th>
-                        <th>Tags</th>
-                    </tr>
-                    <tbody>
-                        {% for experiment in object_list %}
-                        <tr class="data-row" data-url="/app/experiment/{{experiment.id}}">
-                            <td>{{experiment.friendly_name}}</td>
-                            <td>{{experiment.create_timestamp}}</td>
-                            <td>{{experiment.user}}</td>
-                            <td>{{experiment.project}}</td>
-                            <td>
-                                {% if not experiment.tags.all %}
-                                -
-                                {% endif %}
-                                {% for tag in experiment.tags.all %}
-                                {{tag.name}}
-                                {% endfor %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </thead>
-            </table>
+            {% with data=object_list %}
+                {% include "app/experiment_table.html" %}
+            {% endwith %}
         </div>
     </div>
 </div>
@@ -67,8 +41,8 @@
 {% block script_extra %}
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
 <script type="text/javascript">
-    $(".data-row").click(function(){
-        window.location.href = $(this).data('url')
+    $(".clickable").click(function(){
+        window.location.href = "/app/experiment/" + $(this).data('id')
     });
 </script>
 {% endblock %}
