@@ -8,7 +8,7 @@ from rest_framework import viewsets
 from rest_framework_jwt.settings import api_settings
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
-from .serializers import commentSerializer, tagsSerializer, experimentSerializer, userSerializer, groupSerializer
+from .serializers import projectSerializer, commentSerializer, tagsSerializer, experimentSerializer, userSerializer, groupSerializer
 from django.core.serializers import serialize
 from django.http import Http404
 from rest_framework.response import Response
@@ -106,9 +106,6 @@ def get_new_token(request):
     return Response(token)
 
 
-
-
-
 #This will delete an experiment assuming that the company is correct
 #It requires an Experiment ID to be passed into it.
 @login_required
@@ -157,5 +154,14 @@ class experiments(viewsets.ModelViewSet):
 
 class groups(viewsets.ModelViewSet):
     queryset = Group.objects.all()
-
     serializer_class = groupSerializer
+
+#Retrieves the list of projects from the same company the user is part of.
+class projects(APIView):
+    
+    def get(self, request, *args, **kwargs):
+        # queryset = Project.objects.all()
+        user_company = request.user.company
+        serializer = projectSerializer
+        project_list = Project.objects.filter(company = user_company)
+        return Response(serializer(project_list, many=True).data)

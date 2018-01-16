@@ -31,3 +31,9 @@ class tagsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tag
         fields = ['name']
+
+class projectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = '__all__'
+        # fields = ['company', 'name', 'start', 'end', 'description']
