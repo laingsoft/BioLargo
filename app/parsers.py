@@ -5,6 +5,8 @@ from app.models import ExperimentData, Fields, Comment
 from magic import from_buffer # file type identification isn't implemented.
 import json
 from datetime import datetime
+from django.db import transaction, IntegrityError
+from django.http import HttpResponseServerError
 
 # if file type is not known, create Parser object.
 # parser = Parser(fp, metadata_fields, user)
@@ -31,7 +33,8 @@ class BaseParser(ABC):
         self.metadata = dict()
         self.data = []  # a list of dictionaries
         self.comments = []  # a list of strings
-        self.errors = {}  # a dictionary of errors, if data types don't match.
+        self.errors = {}
+        self.comment_field = kwargs.get('comment_field', "Comments")
 
     @abstractclassmethod
     def parse(self):
@@ -40,72 +43,17 @@ class BaseParser(ABC):
         """
         pass
 
-    def check_data(self, company):
+    def reformat_data(self):
         """
-        gets field objects from data and metadata dictionaries and checks that
-        data type matches what is already set.
-        For new fields, it'll just reate the field using a detected data type
-        and skip the check. Empty value will be set to a blank for fields
-        being added.
+        Moves data to whatever type it is. Currently only moves comments from
+        experiment data.
         """
-
-        ERRORS = (
-            "INCORRECT TYPE"
-            )
-
-        TYPES = {
-            "INT": int,
-            "FLOAT": float,
-            "STRING": str,
-            "DATE": datetime
-        }
-
-        # first, check metadata.
-        for field in self.metadata.keys():
+        for row in self.data:
             try:
-                metadata_field = Fields.objects.get(name=field.lower())
-                if not isinstance(self.check_data_type(self.metadata[field])[1], TYPES[metadata_field.data_type]):
-                    self.errors.append((field, ERRORS[0]))
-
-            except Fields.DoesNotExist:
-                Fields.objects.create(
-                    name=field.lower(),
-                    data_type=self.check_data_type(self.metadata[field])[0],
-                    company=company
-                    )
-
-        # then the data.
-        for field in self.data.keys():
-            pass
-
-
-    def check_data_type(value, company):
-        """
-        Detects type of value given.
-        Arguments: value: value to check type of
-        company: company object for date format
-        return type string and converted value.
-        """
-
-        TYPES = {
-            int: "INT",
-            float: "FLOAT",
-            str: "STRING",
-            datetime: "DATE"
-        }
-
-        try:
-            # check if number
-            value = literal_eval(value)
-
-        except (SyntaxError, ValueError):
-            try:
-                # check if date
-                value = datetime.strptime(value, company.dateformat)
-            except ValueError:
-                # default to string if not int, float or date.
+                self.comments.append(row.pop(self.comment_field).strip())
+            except KeyError:
                 pass
-            return TYPES[type(value)], value
+                # do nothing if no comment field or comment field name not correct.
 
     def create_objects(self, experiment):
         """
@@ -114,20 +62,27 @@ class BaseParser(ABC):
         """
 
         company = experiment.company
-        # self.check_data(company)
 
-        experiment.metadata = self.metadata
-        experiment.save()
+        try:
+            with transaction.atomic():
+                # Create the fields if they don't already exist
+                for item in {**self.data[0], **self.metadata}.keys():
+                    Fields.objects.get_or_create(company=company, name=item.lower())
 
+                experiment.metadata = self.metadata
+                experiment.save()
 
-        # create comments
-        for comment in self.comments:
-            c = Comment.objects.create(experiment=experiment, user=self.user, content=comment, company=company)
+                # create comments
+                for comment in self.comments:
+                    if comment.strip():
+                        Comment.objects.create(experiment=experiment, user=experiment.user, content=comment, company=company)
 
-        # Create ExperimentData objects
-        for line in self.data:
-            if any(line.values()):
-                data = ExperimentData.objects.create(experiment=experiment, experimentData=line, company=company)
+                # Create ExperimentData objects
+                for line in self.data:
+                    if any(line.values()):
+                        ExperimentData.objects.create(experiment=experiment, experimentData=line, company=company)
+        except IntegrityError:
+            raise HttpResponseServerError
 
     def get_parsed(self):
         """
@@ -166,6 +121,8 @@ class CsvParser(BaseParser):
         for line in reader:
             self.data.append(line)
 
+        self.reformat_data()
+
 
 class JsonParser(BaseParser):
     """
@@ -190,6 +147,8 @@ class JsonParser(BaseParser):
         self.metadata = data['metadata']
         self.data = data['data']
         self.comments = data.get('comments', [])
+
+        self.reformat_data()
 
 
 class Parser():
