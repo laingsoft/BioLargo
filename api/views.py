@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
 import json
 from app.models import *
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework_jwt.settings import api_settings
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
@@ -165,3 +165,12 @@ class projects(APIView):
         serializer = projectSerializer
         project_list = Project.objects.filter(company = user_company)
         return Response(serializer(project_list, many=True).data)
+    
+    def post(self, request, *args, **kwargs):
+        user_company = request.user.company
+        
+        serializer = projectSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
