@@ -15,7 +15,7 @@ import csv
 from .forms import FileUpload, ExperimentForm, ExperimentDataForm, ProjectForm
 from io import StringIO
 from django.views.generic import ListView
-from .mixins import CompanyObjectsMixin, ExpFilterMixin 
+from .mixins import CompanyObjectsMixin, ExpFilterMixin, ProjectFilterMixin
 import datetime
 
 
@@ -29,9 +29,7 @@ def index(request):
 
     company = request.user.company
 
-
-
-    latest = Experiment.objects.filter(company=company).order_by('-id').values_list('metadata', flat=True)[:10]
+    latest = Experiment.objects.filter(company=company).order_by('-id')[:10]
 
     return render(request, 'app/index.html', {'latest': latest})
 
@@ -197,7 +195,7 @@ def analysis_page(request):
     return render(request, "app/analysis.html", {"usr":get_user(request), "tags":all_tags, "groups":all_groups})
 
 
-class ProjectListView(CompanyObjectsMixin, ListView):
+class ProjectListView(ProjectFilterMixin, CompanyObjectsMixin, ListView):
     model = Project
     template_name = 'app/project_list.html'
 
@@ -240,7 +238,8 @@ def project_page(request, p_id):
 
     context = {
         "experiments": experiments,
-        "project": project
+        "project": project,
+        "user_count": experiments.values_list("user").distinct("user").count()
     }
 
     return render(request, "app/view_project.html", context)
