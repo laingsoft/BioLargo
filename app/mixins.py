@@ -25,7 +25,44 @@ class CompanyObjectCreateMixin:
         return redirect(self.get_success_url())
 
 
-class ExpFilterMixin(CompanyObjectsMixin):
+class BaseFilterMixin(CompanyObjectsMixin):
+    """
+    Base Filter Mixin for query sets. FILTERS and ORDER_BY from another mixin.
+    """
+
+    def get_queryset(self):
+        """
+        Gets a queryset with specified filters from request.GET
+        overrides django.views.generic.list.MultipleObjectMixin.get_queryset
+        """
+
+        qs = super().get_queryset()  # get company specific queryset
+
+        filters = dict(self.request.GET.lists())  # dictionary of lists
+
+        # pull out order_by and order
+        order_by = filters.pop("order_by", None)
+        order = filters.pop("order", "asc")
+
+        if order_by in self.ORDER_FIELDS:
+            if order == "desc":
+                qs = qs.order_by("-" + order_by)
+            else:
+                qs = qs.order_by(order_by)
+        else:
+            qs = qs.order_by("-id")  # default to descending id order
+
+        for f in filters:
+            try:
+                if any(filters[f]):
+                    qs = self.FILTERS[f](qs, filters[f])
+            except KeyError:
+                pass  # do nothing if not a filter.
+
+        return qs
+
+
+class ExpFilterMixin(BaseFilterMixin):
     """
     Filter mixin for filtering experiments. Inherits from CompanyObjectMixin
     to get company specific experiments.
@@ -48,53 +85,29 @@ class ExpFilterMixin(CompanyObjectsMixin):
           tags__name__in=x).distinct('id'),
     }
 
-    def get_queryset(self):
-        """
-        Gets a queryset with specified filters from request.GET
-        overrides django.views.generic.list.MultipleObjectMixin.get_queryset
-        """
-
-        qs = super().get_queryset()  # get company specific queryset
-
-        filters = dict(self.request.GET.lists())  # dictionary of lists
-
-        # pull out order_by and order
-        order_by = filters.pop("order_by", None)
-        order = filters.pop("order", None)
-
-        # Ordering by JSON field taken from
-        # https://stackoverflow.com/questions/36641759/django-1-9-jsonfield-order-by
-        # Jan 2, 2018
-
-        if order_by:
-            if order:
-                pass
-                # TODO: Figure out what can be done for ordering...
-
-        else:
-            qs = qs.order_by("-id")  # default to descending id order
-
-        for exp_filter in filters:
-            try:
-                if any(filters[exp_filter]):
-                    qs = self.FILTERS[exp_filter](qs, filters[exp_filter])
-            except KeyError:
-                pass
-                # do nothing if not a filter
-
-        return qs
+    ORDER_FIELDS = (
+        "create_timestamp",
+        "project__name",
+        "friendly_name",
+        "user"
+    )
 
 
-class ProjectFilterMixin(CompanyObjectsMixin):
+class ProjectFilterMixin(BaseFilterMixin):
     """
     filter mixin for filtering projects.
     """
 
     # a dictionary of existing filters
     FILTERS = {
+        "name": lambda qs, x: qs.filter(name=x),
+        "start": lambda qs, x: qs.filter(start_date__gte=x),
+        "end": lambda qs, x: qs.filter(end_date__lte=x),
+        "description": lambda qs, x: qs.filter(description__icontains=x)
     }
 
-    def get_queryset(self):
-        qs = super().get_queryset()
-        # apply filters here.
-        return qs
+    ORDER_FIELDS = (
+        "name",
+        "start_date",
+        "end_date"
+    )

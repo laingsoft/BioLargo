@@ -238,7 +238,8 @@ def project_page(request, p_id):
 
     context = {
         "experiments": experiments,
-        "project": project
+        "project": project,
+        "user_count": experiments.values_list("user").distinct("user").count()
     }
 
     return render(request, "app/view_project.html", context)
