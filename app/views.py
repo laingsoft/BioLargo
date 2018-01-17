@@ -15,7 +15,7 @@ import csv
 from .forms import FileUpload, ExperimentForm, ExperimentDataForm, ProjectForm
 from io import StringIO
 from django.views.generic import ListView
-from .mixins import CompanyObjectsMixin, ExpFilterMixin
+from .mixins import CompanyObjectsMixin, ExpFilterMixin, ProjectFilterMixin
 import datetime
 
 
@@ -195,7 +195,7 @@ def analysis_page(request):
     return render(request, "app/analysis.html", {"usr":get_user(request), "tags":all_tags, "groups":all_groups})
 
 
-class ProjectListView(CompanyObjectsMixin, ListView):
+class ProjectListView(ProjectFilterMixin, CompanyObjectsMixin, ListView):
     model = Project
     template_name = 'app/project_list.html'
 
