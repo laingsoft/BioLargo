@@ -13,7 +13,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.views import View
-from app.mixins import ExpFilterMixin
+from app.mixins import ExpFilterMixin, ProjectFilterMixin, BaseFilterMixin, UserFilterMixin
 from django.contrib.auth.models import Group
 
 # Create your views here.
@@ -41,7 +41,7 @@ class Dashboard(ManagerTestMixin, View):
         return render(request, 'management/dashboard.html', {"users": users})
 
 
-class ProjectListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
+class ProjectListView(ManagerTestMixin, ProjectFilterMixin, CompanyObjectsMixin, ListView):
     """
     Shows a list of projects. Allows a user (with permissions) to search for a
     project, add a project, edit or delete.
@@ -222,13 +222,22 @@ class SettingsUpdateView(UpdateView):
             return self.form_invalid(form, settings)
 
 
-class TemplateListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
+class TemplateListView(ManagerTestMixin, BaseFilterMixin, CompanyObjectsMixin, ListView):
     """
     Class based view for displaying a list of templates.
     """
     model = Template
     template_name = "management/template_list.html"
     paginate_by = 20
+
+    FILTERS = {
+        "name": lambda x: ("name__icontains", x[0])
+    }
+
+    ORDER_FIELDS = (
+        "name",
+    )
+
 
 
 class TemplateCreateView(ManagerTestMixin, CompanyObjectCreateMixin, CompanyObjectsMixin, CreateView):
@@ -260,13 +269,22 @@ class TemplateDeleteView(ManagerTestMixin, CompanyObjectsMixin, DeleteView):
     success_url = "/management/templates"
 
 
-class FieldListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
+class FieldListView(ManagerTestMixin, BaseFilterMixin, CompanyObjectsMixin, ListView):
     """
     Displays a list of fields.
     """
     model = Fields
     paginate_by = 20
     template_name = "management/fields_list.html"
+    FILTERS = {
+        "name": lambda x: ("name__icontains", x[0]),
+        "data_type" : lambda x: ("data_type", x[0])
+    }
+
+    ORDER_FIELDS = (
+        "name",
+        "data_type"
+    )
 
 
 class FieldCreateView(ManagerTestMixin, CompanyObjectCreateMixin, CompanyObjectsMixin, CreateView):
@@ -298,7 +316,7 @@ class FieldDeleteView(ManagerTestMixin, CompanyObjectsMixin, DeleteView):
     success_url = "/management/fields"
 
 
-class UserListview(ManagerTestMixin, CompanyObjectsMixin, ListView):
+class UserListview(ManagerTestMixin, UserFilterMixin, CompanyObjectsMixin, ListView):
     """
     displays a list of users. Users can be found by first name, last name
     and email.
@@ -316,7 +334,7 @@ class UserUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
     success_url = "/management/users"
 
 
-class UserGroupListView(ListView):
+class UserGroupListView(BaseFilterMixin, ListView):
     """
     Displays a list of user groups.
     """
@@ -324,9 +342,19 @@ class UserGroupListView(ListView):
     template_name = "management/groups_list.html"
     paginate_by = 20
 
+    FILTERS = {
+        "name": lambda x: ("name__icontains", x[0]),
+        "description": lambda x: ("extra__description__icontains", x[0]),
+    }
+
+    ORDER_FIELDS = (
+        "name",
+    )
+
     def get_queryset(self):
         """
-        Gets queryset of groups for specified company
+        Gets queryset of groups for specified company. Slightly different field
+        so it doesn't use the CompanyObjectsMixin.
         """
         qs = super().get_queryset()
         qs = qs.filter(extra__company=self.request.user.company)

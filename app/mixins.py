@@ -7,14 +7,24 @@ from functools import reduce
 
 def load_val(x):
     """
-    used for loading search values sent as JSON. If values is not JSON (in
-    case of search, usually), it returns the value as is.
+    Error handling for loading fields sent as JSON. If values is not JSON
+    (in case of search, usually), it returns the value as is.
     """
     try:
         val = loads(x)
     except ValueError:
         return x
     return val
+
+
+def to_bool(x):
+    """
+    Converts a string to a bool value. Case insensitive.
+    """
+    if x.lower() == "false":
+        return False
+    else:
+        return True
 
 
 class CompanyObjectsMixin:
@@ -24,9 +34,10 @@ class CompanyObjectsMixin:
     def get_queryset(self):
         """
         method to set queryset for retrieving objects for user's company only.
+        orders qs with descending id.
         """
         qs = super().get_queryset()
-        qs = qs.filter(company=self.request.user.company)
+        qs = qs.filter(company=self.request.user.company).order_by("-pk")
         return qs
 
 
@@ -40,7 +51,7 @@ class CompanyObjectCreateMixin:
         return redirect(self.get_success_url())
 
 
-class BaseFilterMixin(CompanyObjectsMixin):
+class BaseFilterMixin:
     """
     Base Filter Mixin for query sets defining the get_queryset method.
     Must have the following variables defined:
@@ -54,15 +65,15 @@ class BaseFilterMixin(CompanyObjectsMixin):
         overrides django.views.generic.list.MultipleObjectMixin.get_queryset
         """
 
-        qs = super().get_queryset()  # get company specific queryset
+        qs = super().get_queryset()
 
         filters = dict(self.request.GET.lists())  # dictionary of lists
 
         Q_objects = []
 
         # Search will check all fields (OR them together), excluding time and
-        # date fields (format problems). Search takes precedence. Will ignore
-        # any additional filters given.
+        # date fields (format problems). Search takes precedence; filters will
+        # be ignored.
         if "search" in filters and filters["search"][0].strip():
             for key, f in self.FILTERS.items():
                 if "time" not in key and "date" not in key:
@@ -82,7 +93,6 @@ class BaseFilterMixin(CompanyObjectsMixin):
             if Q_objects:
                 qs = qs.filter(reduce(operator.and_, Q_objects)).distinct("pk")
 
-
         # order queryset
         order_by = self.request.GET.get("order_by", None)
         order = self.request.GET.get("order", "asc")
@@ -92,8 +102,6 @@ class BaseFilterMixin(CompanyObjectsMixin):
                 qs = qs.order_by("-" + order_by)
             else:
                 qs = qs.order_by(order_by)
-        else:
-            qs = qs.order_by("-id")  # default to descending id order
 
         return qs
 
@@ -154,10 +162,12 @@ class UserFilterMixin(BaseFilterMixin):
         "first": lambda x: ("first_name__icontains", x[0]),
         "last": lambda x: ("last_name__icontains", x[0]),
         "email": lambda x: ("email__icontains", x[0]),
+        "is_active": lambda x: ("is_active", x[0])
     }
 
     ORDER_FIELDS = (
         "first_name",
         "last_name",
         "email",
+        "is_active"
         )

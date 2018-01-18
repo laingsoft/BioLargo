@@ -128,7 +128,7 @@ def upload_success(request, exp_id):
     return render(request, 'app/upload_success.html', {'exp_id': exp_id})
 
 
-class ExperimentListView(ExpFilterMixin, ListView):
+class ExperimentListView(ExpFilterMixin, CompanyObjectsMixin, ListView):
     """
     View for Experiment list
     """
