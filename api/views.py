@@ -93,8 +93,8 @@ def get_user(request):
     user = request.user
     return Response({"email" : user.email,
                     "first_name" :user.first_name,
-                    "last_name" : user.last_name,
-                    "company" : user.company})
+                    "last_name" : user.last_name, 
+                    "company" : user.company.id})
 
 #This generates a new Token for the user when an old token is passed in. This is used instead of
 #   the default refresh_jwt_token since that was not working.
@@ -157,19 +157,17 @@ class groups(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = groupSerializer
 
-#Retrieves the list of projects from the same company the user is part of.
+
 class projects(APIView):
-    
+    #Retrieves the list of projects from the same company the user is part of.
     def get(self, request, *args, **kwargs):
-        # queryset = Project.objects.all()
         user_company = request.user.company
         serializer = projectSerializer
         project_list = Project.objects.filter(company = user_company)
         return Response(serializer(project_list, many=True).data)
-    
+    #Post a new Project 
     def post(self, request, *args, **kwargs):
         user_company = request.user.company
-        
         serializer = projectSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
