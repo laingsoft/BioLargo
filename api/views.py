@@ -173,3 +173,12 @@ class projects(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id):
+        company = request.user.company
+        data = Project.objects.filter(id = id, company = company)
+        if not data.exists():
+            raise Http404("Project not found")
+        result = data.delete()
+        return JsonResponse({"result": result[0]>0})
+
