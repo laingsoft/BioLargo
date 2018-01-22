@@ -10,7 +10,7 @@ class commentSerializer(serializers.HyperlinkedModelSerializer):
 class userSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'first_name','last_name']
+        fields = ['email', 'first_name','last_name', 'company']
 
 class experimentDataSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,3 +31,8 @@ class tagsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tag
         fields = ['name']
+
+class projectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = '__all__'

@@ -4,11 +4,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
 import json
 from app.models import *
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework_jwt.settings import api_settings
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
-from .serializers import commentSerializer, tagsSerializer, experimentSerializer, userSerializer, groupSerializer
+from .serializers import projectSerializer, commentSerializer, tagsSerializer, experimentSerializer, userSerializer, groupSerializer
 from django.core.serializers import serialize
 from django.http import Http404
 from rest_framework.response import Response
@@ -93,7 +93,8 @@ def get_user(request):
     user = request.user
     return Response({"email" : user.email,
                     "first_name" :user.first_name,
-                    "last_name" : user.last_name})
+                    "last_name" : user.last_name, 
+                    "company" : user.company.id})
 
 #This generates a new Token for the user when an old token is passed in. This is used instead of
 #   the default refresh_jwt_token since that was not working.
@@ -104,9 +105,6 @@ def get_new_token(request):
     payload = jwt_payload_handler(request.user)
     token = jwt_encode_handler(payload)
     return Response(token)
-
-
-
 
 
 #This will delete an experiment assuming that the company is correct
@@ -157,5 +155,21 @@ class experiments(viewsets.ModelViewSet):
 
 class groups(viewsets.ModelViewSet):
     queryset = Group.objects.all()
-
     serializer_class = groupSerializer
+
+
+class projects(APIView):
+    #Retrieves the list of projects from the same company the user is part of.
+    def get(self, request, *args, **kwargs):
+        user_company = request.user.company
+        serializer = projectSerializer
+        project_list = Project.objects.filter(company = user_company)
+        return Response(serializer(project_list, many=True).data)
+    #Post a new Project 
+    def post(self, request, *args, **kwargs):
+        user_company = request.user.company
+        serializer = projectSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
