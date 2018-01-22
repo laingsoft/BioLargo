@@ -180,3 +180,27 @@ class projects(APIView):
         result = data.delete()
         return JsonResponse({"result": result[0]>0})
 
+class experiments(APIView):
+    #Retrieves the list of projects from the same company the user is part of.
+    def get(self, request, *args, **kwargs):
+        user_company = request.user.company
+        serializer = experimentSerializer
+        project_list = Experiment.objects.filter(company = user_company)
+        return Response(serializer(project_list, many=True).data)
+    #Post a new Project 
+    def post(self, request, *args, **kwargs):
+        user_company = request.user.company
+        serializer = experimentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id):
+        company = request.user.company
+        data = Experiment.objects.filter(id = id, company = company)
+        if not data.exists():
+            raise Http404("Project not found")
+        result = data.delete()
+        return JsonResponse({"result": result[0]>0})
+

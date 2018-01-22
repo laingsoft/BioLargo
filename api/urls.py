@@ -11,7 +11,9 @@ router.register(r'groups', views.groups, 'group')
 
 
 urlpatterns = [
-    url(r'^projects/(?P<id>[0-9]+)$', views.projects.as_view(), name="delete_proejct"),
+    url(r'^experiments/(?P<id>[0-9]+)$', views.experiments.as_view(), name="delete_experiment"),
+    url(r'^experiments/$', views.experiments.as_view(), name="experiments"),
+    url(r'^projects/(?P<id>[0-9]+)$', views.projects.as_view(), name="delete_project"),
     url(r'^projects/$', views.projects.as_view(), name="projects"),
     url(r'^getUser', views.get_user),
     url(r'^getToken', obtain_jwt_token),
