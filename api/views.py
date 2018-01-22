@@ -91,10 +91,8 @@ def get_csv(request, exp_id):
 @api_view(['GET'])
 def get_user(request):
     user = request.user
-    return Response({"email" : user.email,
-                    "first_name" :user.first_name,
-                    "last_name" : user.last_name, 
-                    "company" : user.company.id})
+    serializer = userSerializer
+    return Response(serializer(user).data)
 
 #This generates a new Token for the user when an old token is passed in. This is used instead of
 #   the default refresh_jwt_token since that was not working.
