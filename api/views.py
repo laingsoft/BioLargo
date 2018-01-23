@@ -143,9 +143,12 @@ class resttest(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = commentSerializer
 
-class tags(viewsets.ModelViewSet):
-    queryset = Tag.objects.all()
-    serializer_class = tagsSerializer
+class tags(APIView):
+    def get(self, request):
+        company = request.user.company
+        queryset = Tag.objects.filter(company = company)
+        serializer = tagsSerializer
+        return Response(serializer(queryset, many=True).data)
 
 class experiments(viewsets.ModelViewSet):
     queryset = Experiment.objects.all()

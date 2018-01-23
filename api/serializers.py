@@ -28,10 +28,10 @@ class groupSerializer(serializers.HyperlinkedModelSerializer):
         model = Group
         fields = ['name']
 
-class tagsSerializer(serializers.HyperlinkedModelSerializer):
+class tagsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ['name']
+        fields = '__all__'
 
 class projectSerializer(serializers.ModelSerializer):
     class Meta:
