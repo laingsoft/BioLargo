@@ -298,7 +298,7 @@ def watch_experiment(request):
         return JsonResponse({'success': False})
 
 
-class WatchList(ListView):
+class WatchecExperimentListView(ListView):
     """
     for test purposes.
     TODO: implement properly in accounts.

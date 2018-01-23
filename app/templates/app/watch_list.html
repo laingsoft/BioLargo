@@ -5,19 +5,24 @@
 <div class="row">
     <div class="col card">
         <div class="card-body">
+            <h1 class="card-title">Watched Experiments</h1>
             <div class="card-block">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col">Type</th>
-                            <th scope="col">ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Project</th>
+                            <th scope="col">Uploader</th>
+                            <th scope="col">Date</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for object in object_list %}
                         <tr>
-                            <td>{{object.obj_type}}</td>
-                            <td>{{object.obj_id}}</td>
+                            <td>{{object.experiment.friendly_name}}</td>
+                            <td>{{object.experiment.project}}</td>
+                            <td>{{object.experiment.user}}</td>
+                            <td>{{object.experiment.create_timestamp}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

@@ -17,5 +17,5 @@ urlpatterns = [
     url(r'^projects/create/$', views.create_project, name="create_project"),
     url(r'^create_tag/$', views.create_tag, name="create_tag"),
     url(r'^watch/$', views.watch_experiment, name="watch"),
-    url(r'^watchlist', views.WatchList.as_view())
+    url(r'^watchlist', views.WatchedExperimentListView.as_view())
     ]
