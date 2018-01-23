@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from .parsers import Parser, JsonParser
 from .models import Experiment, ExperimentData, Template, Fields, Comment
-from .models import Project, Tag, Watched
+from .models import Project, Tag, WatchedExperiment
 from io import TextIOWrapper
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user, get_user_model
@@ -163,8 +163,8 @@ class ExperimentDetailView(CompanyObjectsMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['metadata'] = self.object.metadata
-        context['watched'] = Watched.objects.filter(user=self.request.user, obj_type='E', obj_id=self.object.pk).exists()
         context['comments'] = Comment.objects.filter(experiment=self.object)
+        context['watched'] = WatchedExperiment.objects.filter(experiment=self.object, user=self.request.user).exists()
 
         return context
 
@@ -276,29 +276,22 @@ def create_tag(request):
 
 
 @login_required
-def watch(request):
+def watch_experiment(request):
     """
     View for watching Experiments, Users and Projects.
     """
-    OBJ = {
-        'E': Experiment,
-        'P': Project,
-        'U': get_user_model(),
-    }
 
     if request.method == "POST":
         pk = request.POST.get("pk")
-        obj = request.POST.get("type")
 
-        if obj in OBJ and OBJ[obj].objects.filter(pk=pk).exists():
-            obj = Watched.objects.get_or_create(
-                obj_type=obj,
-                obj_id=pk,
-                user=request.user
+        if Experiment.objects.filter(pk=pk).exists():
+            watched = WatchedExperiment.objects.get_or_create(
+                user=request.user,
+                experiment_id=pk
             )
 
-            if not obj[1]:
-                obj[0].delete()
+            if not watched[1]:
+                watched[0].delete()
 
             return JsonResponse({'success': True})
 
@@ -310,7 +303,7 @@ class WatchList(ListView):
     for test purposes.
     TODO: implement properly in accounts.
     """
-    model = Watched
+    model = WatchedExperiment
     template_name = "app/watch_list.html"
 
     def get_queryset(self):

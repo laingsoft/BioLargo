@@ -40,7 +40,7 @@ $.ajaxSetup({
 var button = $("#watch")
 
 button.click(function() {
-    $.post("/app/watch/", { type: 'E', pk: id }, function(r) {
+    $.post("/app/watch/", {pk: id }, function(r) {
         if (r.success) {
             button.toggleClass("disabled");
             button.toggleText("Watch", "Unwatch")

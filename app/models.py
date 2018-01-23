@@ -135,20 +135,17 @@ class Comment(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
 
-class Watched(models.Model):
+class WatchedExperiment(models.Model):
     """
     watched experiments model
     """
-    OBJ_TYPES = (
-        ("U", "user"),
-        ("P", "project"),
-        ("E", "experiment")
-    )
-
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    obj_type = models.CharField(max_length=1, choices=OBJ_TYPES)
-    obj_id = models.IntegerField()  # an object id
-    obj_name = models.CharField(max_length=255)  # name to reduce lookups
+    experiment = models.ForeignKey(Experiment)
+
+
+class WatchedProjects(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    project = models.ForeignKey(Project)
 
 
 class Notifications(models.Model):
