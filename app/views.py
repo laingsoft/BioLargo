@@ -4,17 +4,17 @@ from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from .parsers import Parser, JsonParser
 from .models import Experiment, ExperimentData, Template, Fields, Comment
-from .models import Project, Tag
+from .models import Project, Tag, Watched
 from io import TextIOWrapper
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user
+from django.contrib.auth import get_user, get_user_model
 from django.db.models import Count
 from django.db.models.functions import TruncDay
 import json
 import csv
 from .forms import FileUpload, ExperimentForm, ExperimentDataForm, ProjectForm
 from io import StringIO
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from .mixins import CompanyObjectsMixin, ExpFilterMixin, ProjectFilterMixin
 import datetime
 
@@ -135,19 +135,38 @@ class ExperimentListView(ExpFilterMixin, CompanyObjectsMixin, ListView):
     model = Experiment
     template_name = 'app/experiments_page.html'
 
-@login_required
-def experiment(request, exp_id):
-    company = request.user.company
-    user = get_user(request)
+# @login_required
+# def experiment(request, exp_id):
+#     company = request.user.company
+#     user = get_user(request)
 
-    this_experiment = get_object_or_404(Experiment, company=company,
-        id=exp_id)
+#     this_experiment = get_object_or_404(Experiment, company=company,
+#         id=exp_id)
 
-    metadata = json.dumps(this_experiment.metadata)
+#     metadata = json.dumps(this_experiment.metadata)
 
-    comments = Comment.objects.filter(experiment = this_experiment).order_by('id')
-    return render(request,"app/experiment.html", {"this_experiment": this_experiment, "usr": user, "metadata": metadata, "comments": comments})
 
+#     context = {
+#         "this_experiment": this_experiment,
+#         "usr": user,
+#         "metadata": metadata,
+#         "comments": comments = Comment.objects.filter(experiment = this_experiment).order_by('id'),
+#         "watched": Watched.objects.filter(user=request.user, obj_type='E', obj_id=exp_id).exists(),
+#     }
+
+#     return render(request,"app/experiment.html", context)
+
+class ExperimentDetailView(CompanyObjectsMixin, DetailView):
+    model = Experiment
+    template_name = "app/experiment.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['metadata'] = self.object.metadata
+        context['watched'] = Watched.objects.filter(user=self.request.user, obj_type='E', obj_id=self.object.pk).exists()
+        context['comments'] = Comment.objects.filter(experiment=self.object)
+
+        return context
 
 @login_required
 def experiment_json(request, exp_id):
@@ -254,3 +273,46 @@ def create_tag(request):
         return HttpResponse(status=201)
 
     raise Http404
+
+
+@login_required
+def watch(request):
+    """
+    View for watching Experiments, Users and Projects.
+    """
+    OBJ = {
+        'E': Experiment,
+        'P': Project,
+        'U': get_user_model(),
+    }
+
+    if request.method == "POST":
+        pk = request.POST.get("pk")
+        obj = request.POST.get("type")
+
+        if obj in OBJ and OBJ[obj].objects.filter(pk=pk).exists():
+            obj = Watched.objects.get_or_create(
+                obj_type=obj,
+                obj_id=pk,
+                user=request.user
+            )
+
+            if not obj[1]:
+                obj[0].delete()
+
+            return JsonResponse({'success': True})
+
+        return JsonResponse({'success': False})
+
+
+class WatchList(ListView):
+    """
+    for test purposes.
+    TODO: implement properly in accounts.
+    """
+    model = Watched
+    template_name = "app/watch_list.html"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(user=self.request.user)

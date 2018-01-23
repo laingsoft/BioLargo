@@ -68,3 +68,5 @@ class ProjectForm(forms.ModelForm):
             'end': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
         }
+
+

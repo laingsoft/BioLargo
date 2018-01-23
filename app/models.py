@@ -133,3 +133,27 @@ class Comment(models.Model):
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     content = models.CharField(max_length=255)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+
+class Watched(models.Model):
+    """
+    watched experiments model
+    """
+    OBJ_TYPES = (
+        ("U", "user"),
+        ("P", "project"),
+        ("E", "experiment")
+    )
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    obj_type = models.CharField(max_length=1, choices=OBJ_TYPES)
+    obj_id = models.IntegerField()  # an object id
+    obj_name = models.CharField(max_length=255)  # name to reduce lookups
+
+
+class Notifications(models.Model):
+    """
+    Models used to store notifications for watched experiments.
+    """
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
