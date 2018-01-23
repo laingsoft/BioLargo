@@ -161,10 +161,18 @@ class groups(viewsets.ModelViewSet):
 
 class projects(APIView):
     #Retrieves the list of projects from the same company the user is part of.
-    def get(self, request, *args, **kwargs):
+    # def get(self, request, *args, **kwargs):
+    #     user_company = request.user.company
+    #     serializer = projectSerializer
+    #     project_list = Project.objects.filter(company = user_company)
+    #     return Response(serializer(project_list, many=True).data)
+    def get(self, request, id = None):
         user_company = request.user.company
         serializer = projectSerializer
-        project_list = Project.objects.filter(company = user_company)
+        if(id == None):
+            project_list = Project.objects.filter(company = user_company)
+        else:
+            project_list = Project.objects.filter(id = id, company = user_company)
         return Response(serializer(project_list, many=True).data)
     #Post a new Project 
     def post(self, request, *args, **kwargs):
@@ -182,6 +190,7 @@ class projects(APIView):
             raise Http404("Project not found")
         result = data.delete()
         return JsonResponse({"result": result[0]>0})
+
 
 class experiments(APIView):
     #Retrieves the list of projects from the same company the user is part of.
@@ -206,4 +215,3 @@ class experiments(APIView):
             raise Http404("Project not found")
         result = data.delete()
         return JsonResponse({"result": result[0]>0})
-
