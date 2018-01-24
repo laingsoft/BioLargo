@@ -27,6 +27,7 @@ class Project(models.Model):
     start = models.DateField()
     end = models.DateField(null=True, blank=True)
     description = models.TextField(blank=True, null=True)
+    followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followed_project")
 
     def __str__(self):
         return self.name
@@ -61,6 +62,7 @@ class Experiment(models.Model):
     tags = models.ManyToManyField(Tag)
     metadata = JSONField(default='')
     friendly_name = models.CharField(max_length=255)
+    followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followed_experiments")
 
 
 class ExperimentData(models.Model):
@@ -135,22 +137,21 @@ class Comment(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
 
-class WatchedExperiment(models.Model):
-    """
-    watched experiments model
-    """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    experiment = models.ForeignKey(Experiment)
-
-
-class WatchedProjects(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    project = models.ForeignKey(Project)
-
-
 class Notifications(models.Model):
     """
-    Models used to store notifications for watched experiments.
+    Models used to store notifications for watched experiments. Stores what is
+    displayed to reduce the number of lookups to display notifications.
     """
 
+    ACTION_CHOICES = (
+        ("EXP", "Watched Experiment Updated"),
+        ("PRJ", "Experiment added to watched project"),
+        ("COM", "Comment added to watched experiment"),
+    )
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    from_usr = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="from_usr")
+    action = models.CharField(max_length=3, choices=ACTION_CHOICES)
+    title = models.CharField(max_length=255)
+    content = models.CharField(max_length=255)
+    datetime = models.DateTimeField(auto_now_add=True)

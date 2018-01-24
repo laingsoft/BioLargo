@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from .parsers import Parser, JsonParser
 from .models import Experiment, ExperimentData, Template, Fields, Comment
-from .models import Project, Tag, WatchedExperiment
+from .models import Project, Tag
 from io import TextIOWrapper
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user, get_user_model
@@ -135,26 +135,6 @@ class ExperimentListView(ExpFilterMixin, CompanyObjectsMixin, ListView):
     model = Experiment
     template_name = 'app/experiments_page.html'
 
-# @login_required
-# def experiment(request, exp_id):
-#     company = request.user.company
-#     user = get_user(request)
-
-#     this_experiment = get_object_or_404(Experiment, company=company,
-#         id=exp_id)
-
-#     metadata = json.dumps(this_experiment.metadata)
-
-
-#     context = {
-#         "this_experiment": this_experiment,
-#         "usr": user,
-#         "metadata": metadata,
-#         "comments": comments = Comment.objects.filter(experiment = this_experiment).order_by('id'),
-#         "watched": Watched.objects.filter(user=request.user, obj_type='E', obj_id=exp_id).exists(),
-#     }
-
-#     return render(request,"app/experiment.html", context)
 
 class ExperimentDetailView(CompanyObjectsMixin, DetailView):
     model = Experiment
@@ -164,7 +144,7 @@ class ExperimentDetailView(CompanyObjectsMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['metadata'] = self.object.metadata
         context['comments'] = Comment.objects.filter(experiment=self.object)
-        context['watched'] = WatchedExperiment.objects.filter(experiment=self.object, user=self.request.user).exists()
+        context['watched'] = self.object.followers.filter(pk=self.request.user.pk).exists()
 
         return context
 
@@ -276,22 +256,28 @@ def create_tag(request):
 
 
 @login_required
-def watch_experiment(request):
+def watch(request):
     """
-    View for watching Experiments, Users and Projects.
+    View for watching Experiments, Users and Projects. All in one function
+    because... It's literally the same thing with different models.
     """
+    OBJ = {
+        'EXP': Experiment,
+        'PRJ': Project
+        }
 
     if request.method == "POST":
         pk = request.POST.get("pk")
+        t = request.POST.get("type")
 
-        if Experiment.objects.filter(pk=pk).exists():
-            watched = WatchedExperiment.objects.get_or_create(
-                user=request.user,
-                experiment_id=pk
-            )
+        if OBJ[t].objects.filter(pk=pk).exists():
+            obj = OBJ[t].objects.get(pk=pk)
 
-            if not watched[1]:
-                watched[0].delete()
+            if obj.followers.filter(pk=request.user.pk).exists():
+                obj.followers.remove(request.user)
+
+            else:
+                obj.followers.add(request.user)
 
             return JsonResponse({'success': True})
 
@@ -300,12 +286,12 @@ def watch_experiment(request):
 
 class WatchecExperimentListView(ListView):
     """
-    for test purposes.
-    TODO: implement properly in accounts.
+    List of watched experiments.
+    TODO: make less ugly
     """
-    model = WatchedExperiment
+    model = Experiment
     template_name = "app/watch_list.html"
 
-    def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.filter(user=self.request.user)
+    # def get_queryset(self):
+    #     qs = super().get_queryset()
+    #     return qs.filter(user=self.request.user).values("followed_experiment")
