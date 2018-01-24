@@ -222,27 +222,16 @@ def create_project(request):
     return render(request, 'app/create_project.html', context)
 
 
-def project_page(request, p_id):
-    """
-    View for displaying the details of a project.
-    """
-    company = request.user.company
+class ProjectDetailView(CompanyObjectsMixin, DetailView):
+    model = Project
+    template_name = "app/view_project.html"
 
-    try:
-        project = Project.objects.get(company=company, id=p_id)
-    except Project.DoesNotExist:
-        raise Http404("Project not found")
-
-    experiments = Experiment.objects.filter(company=company, project=p_id)
-
-    context = {
-        "experiments": experiments,
-        "project": project,
-        "user_count": experiments.values_list("user").distinct("user").count()
-    }
-
-    return render(request, "app/view_project.html", context)
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['experiments'] = self.object.experiment_set.all()
+        context['user_count'] = context['experiments'].distinct("user").count()
+        context['watched'] = self.object.followers.filter(pk=self.request.user.pk).exists()
+        return context
 
 @login_required
 def create_tag(request):
@@ -258,8 +247,7 @@ def create_tag(request):
 @login_required
 def watch(request):
     """
-    View for watching Experiments, Users and Projects. All in one function
-    because... It's literally the same thing with different models.
+    View for watching Experiments and Projects
     """
     OBJ = {
         'EXP': Experiment,
@@ -284,14 +272,21 @@ def watch(request):
         return JsonResponse({'success': False})
 
 
-class WatchecExperimentListView(ListView):
+class WatchedExperimentListView(ListView):
     """
     List of watched experiments.
     TODO: make less ugly
     """
     model = Experiment
-    template_name = "app/watch_list.html"
+    template_name = "app/experiments_page.html"
 
-    # def get_queryset(self):
-    #     qs = super().get_queryset()
-    #     return qs.filter(user=self.request.user).values("followed_experiment")
+    def get_queryset(self):
+        return self.request.user.followed_experiments.all()
+
+
+class WatchedProjectsListView(ListView):
+    model = Project
+    template_name = "app/project_list.html"
+
+    def get_queryset(self):
+        return self.request.user.followed_project.all()
