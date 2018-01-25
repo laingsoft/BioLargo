@@ -1,12 +1,23 @@
-from .models import Notification
+from .models import Notification, Comment
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
-def notify_users(sender, instance, **kwargs):
+@receiver(post_save, sender=Comment)
+def comment_save_reciever(sender, instance, **kwargs):
     """
     reciever that notifies all users watching an experiment or a project on
-    an update.
+    a new comment
     """
-    users = instance.followers.all()
-    if users.exists():
-        notification = Notification.create()
-        notification.recipients.add(*list(users))
+
+    recipients = instance.experiment.followers.all()
+    if recipients.exists():
+        notification = Notification.objects.create(
+            subject=instance.user,
+            predicate="COM",
+            object_type="EXP",
+            object_pk=instance.experiment.pk,
+            content=instance.content[:255]
+            )
+
+        notification.recipients.add(*list(recipients))

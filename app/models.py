@@ -138,6 +138,17 @@ class Comment(models.Model):
 
 
 class Notification(models.Model):
+    """
+    Model for notifications.
+    Notifications are in format
+    <Subject> <Prediate> <Object>
+    Subject: user who performed action
+    Predicate: what the action was
+    Object: the watched object
+
+    content is extra information, such as a link to the experiment uploaded or
+    the comment contents.
+    """
     PREDICATES = (
         ("COM", "commented on"),
         ("PRJ", "uploaded a new experiment to"),

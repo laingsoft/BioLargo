@@ -12,6 +12,7 @@ from .serializers import projectSerializer, commentSerializer, tagsSerializer, e
 from django.core.serializers import serialize
 from django.http import Http404
 from rest_framework.response import Response
+from django.db import IntegrityError
 
 def requestTest(request):
     print(request.body)
@@ -119,15 +120,23 @@ def experimentrm(request, exp_id):
 
 @login_required
 def comment(request):
-    print(request.body)
-    print(60*"*")
     if request.method == 'POST':
         data = json.loads(request.body)
         content = data['content']
         experiment_id = data['exp_id']
-        newComment = Comment.objects.create(user = request.user, content = content, experiment = Experiment.objects.get(id=experiment_id))
-        newComment.save()
+        try:
+            Comment.objects.create(
+                user=request.user,
+                content=content,
+                experiment=Experiment.objects.get(id=experiment_id),
+                company=request.user.company,
+            )
+
+        except IntegrityError:
+            return JsonResponse({'Success':0})
+
         return JsonResponse({'Success':1})
+
     elif request.method == 'GET':
         if (request.body):
             data = json.loads(request.body)
@@ -136,7 +145,7 @@ def comment(request):
         else:
             comment = Comment.objects.all()
 
-        ret = {k: {'user':v.user.username, 'content':v.content, 'experiment':v.experiment.id} for k,v in enumerate(comment)}
+        ret = {k: {'user':v.user.email, 'content':v.content, 'experiment':v.experiment.id} for k,v in enumerate(comment)}
         return JsonResponse(ret)
 
 class resttest(viewsets.ModelViewSet):
@@ -169,7 +178,7 @@ class projects(APIView):
         else:
             project_list = Project.objects.filter(id = id, company = user_company)
         return Response(serializer(project_list, many=True).data)
-    #Post a new Project 
+    #Post a new Project
     def post(self, request, *args, **kwargs):
         user_company = request.user.company
         serializer = projectSerializer(data=request.data)
@@ -194,7 +203,7 @@ class experiments(APIView):
         serializer = experimentSerializer
         project_list = Experiment.objects.filter(company = user_company)
         return Response(serializer(project_list, many=True).data)
-    #Post a new Project 
+    #Post a new Project
     def post(self, request, *args, **kwargs):
         user_company = request.user.company
         serializer = experimentSerializer(data=request.data)
