@@ -91,10 +91,8 @@ def get_csv(request, exp_id):
 @api_view(['GET'])
 def get_user(request):
     user = request.user
-    return Response({"email" : user.email,
-                    "first_name" :user.first_name,
-                    "last_name" : user.last_name, 
-                    "company" : user.company.id})
+    serializer = userSerializer
+    return Response(serializer(user).data)
 
 #This generates a new Token for the user when an old token is passed in. This is used instead of
 #   the default refresh_jwt_token since that was not working.
@@ -145,9 +143,12 @@ class resttest(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = commentSerializer
 
-class tags(viewsets.ModelViewSet):
-    queryset = Tag.objects.all()
-    serializer_class = tagsSerializer
+class tags(APIView):
+    def get(self, request):
+        company = request.user.company
+        queryset = Tag.objects.filter(company = company)
+        serializer = tagsSerializer
+        return Response(serializer(queryset, many=True).data)
 
 class experiments(viewsets.ModelViewSet):
     queryset = Experiment.objects.all()
@@ -160,10 +161,13 @@ class groups(viewsets.ModelViewSet):
 
 class projects(APIView):
     #Retrieves the list of projects from the same company the user is part of.
-    def get(self, request, *args, **kwargs):
+    def get(self, request, id = None):
         user_company = request.user.company
         serializer = projectSerializer
-        project_list = Project.objects.filter(company = user_company)
+        if(id == None):
+            project_list = Project.objects.filter(company = user_company)
+        else:
+            project_list = Project.objects.filter(id = id, company = user_company)
         return Response(serializer(project_list, many=True).data)
     #Post a new Project 
     def post(self, request, *args, **kwargs):
@@ -182,3 +186,27 @@ class projects(APIView):
         result = data.delete()
         return JsonResponse({"result": result[0]>0})
 
+
+class experiments(APIView):
+    #Retrieves the list of projects from the same company the user is part of.
+    def get(self, request, *args, **kwargs):
+        user_company = request.user.company
+        serializer = experimentSerializer
+        project_list = Experiment.objects.filter(company = user_company)
+        return Response(serializer(project_list, many=True).data)
+    #Post a new Project 
+    def post(self, request, *args, **kwargs):
+        user_company = request.user.company
+        serializer = experimentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id):
+        company = request.user.company
+        data = Experiment.objects.filter(id = id, company = company)
+        if not data.exists():
+            raise Http404("Project not found")
+        result = data.delete()
+        return JsonResponse({"result": result[0]>0})
