@@ -140,18 +140,19 @@ class Comment(models.Model):
 class Notification(models.Model):
     PREDICATES = (
         ("COM", "commented on"),
-        ("PROJ", "uploaded a new experimentto"),
+        ("PRJ", "uploaded a new experiment to"),
         ("UPL", "updated experiment")
     )
 
-    OBJECTS = (
-        ()
+    OBJECT_TYPES = (
+        ("EXP", "Experiment"),
+        ("PRJ", "Project"),
     )
 
     recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="notifications")
     subject = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="activity")
-    predicate = models.CharField(max_length=50, choices=PREDICATES)
-    object_type = models.CharField(max_length=50)
+    predicate = models.CharField(max_length=3, choices=PREDICATES)
+    object_type = models.CharField(max_length=3, choices=OBJECT_TYPES)
     object_pk = models.IntegerField()
     content = models.CharField(max_length=255)
     timestamp = models.DateTimeField(auto_now_add=True)
