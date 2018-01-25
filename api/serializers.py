@@ -36,6 +36,7 @@ class projectSerializer(serializers.ModelSerializer):
 class experimentSerializer(serializers.ModelSerializer):
     tags = tagsSerializer(many=True)
     project = projectSerializer()
+    user = userSerializer()
     class Meta:
         model = Experiment
         fields = '__all__'
