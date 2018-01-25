@@ -12,6 +12,7 @@ router.register(r'groups', views.groups, 'group')
 
 urlpatterns = [
     url(r'^tags/$', views.tags.as_view()),
+    url(r'^experiments_with_project_id/(?P<id>[0-9]+)$', views.getExperimentsWithProjectId, name="experiments_with_project_id"),
     url(r'^experiments/(?P<id>[0-9]+)$', views.experiments.as_view(), name="delete_experiment"),
     url(r'^experiments/$', views.experiments.as_view(), name="experiments"),
     url(r'^projects/(?P<id>[0-9]+)$', views.projects.as_view(), name="delete_project"),
