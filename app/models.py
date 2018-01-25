@@ -137,21 +137,21 @@ class Comment(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
 
-class Notifications(models.Model):
-    """
-    Models used to store notifications for watched experiments. Stores what is
-    displayed to reduce the number of lookups to display notifications.
-    """
-
-    ACTION_CHOICES = (
-        ("EXP", "Watched Experiment Updated"),
-        ("PRJ", "Experiment added to watched project"),
-        ("COM", "Comment added to watched experiment"),
+class Notification(models.Model):
+    PREDICATES = (
+        ("COM", "commented on"),
+        ("PROJ", "uploaded a new experimentto"),
+        ("UPL", "updated experiment")
     )
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    from_usr = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="from_usr")
-    action = models.CharField(max_length=3, choices=ACTION_CHOICES)
-    title = models.CharField(max_length=255)
+    OBJECTS = (
+        ()
+    )
+
+    recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="notifications")
+    subject = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="activity")
+    predicate = models.CharField(max_length=50, choices=PREDICATES)
+    object_type = models.CharField(max_length=50)
+    object_pk = models.IntegerField()
     content = models.CharField(max_length=255)
-    datetime = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
