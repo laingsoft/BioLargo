@@ -141,7 +141,7 @@ class Notification(models.Model):
     """
     Model for notifications.
     Notifications are in format
-    <Subject> <Prediate> <Object>
+    <Subject> <Predicate> <Object>
     Subject: user who performed action
     Predicate: what the action was
     Object: the watched object
@@ -152,12 +152,12 @@ class Notification(models.Model):
     PREDICATES = (
         ("COM", "commented on"),
         ("PRJ", "uploaded a new experiment to"),
-        ("UPL", "updated experiment")
+        ("UPD", "updated experiment")
     )
 
     OBJECT_TYPES = (
-        ("EXP", "Experiment"),
-        ("PRJ", "Project"),
+        ("EXP", "experiment"),
+        ("PRJ", "project"),
     )
 
     recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="notifications")
@@ -165,5 +165,5 @@ class Notification(models.Model):
     predicate = models.CharField(max_length=3, choices=PREDICATES)
     object_type = models.CharField(max_length=3, choices=OBJECT_TYPES)
     object_pk = models.IntegerField()
-    content = models.CharField(max_length=255)
+    content = models.CharField(max_length=255, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)

@@ -81,14 +81,27 @@
             </li>
         </ul>
         <ul class="nav navbar-nav ml-auto">
-<!--             <li class="nav-item d-md-down-none">
-                <a class="nav-link" href="#">
-                    <svg class="icon">
-                        <use xlink:href="#bell"></use>
-                    </svg>
-                    <span class="badge badge-pill badge-danger">5</span>
-                </a>
-            </li> -->
+            <li class="nav-item d-md-down-none">
+                <div class="dropdown">
+                    <a class="nav-link" href="#" id="notif-toggle" data-toggle="dropdown">
+                        <svg class="icon notif-icon">
+                            <use xlink:href="#bell"></use>
+                        </svg>
+                        <span class="badge badge-pill badge-danger">{{request.user.notifications.count}}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        {% for notification in request.user.notifications.all %}
+                        <li class="dropdown-item">
+                            {{ notification.subject.first_name }} {{ notification.subject.last_name }} {{notification.get_predicate_display }}
+                            {{ notification.get_object_type_display }}
+                        </li>
+                        {% empty %}
+                        <li class="dropdown-item">No new notifications</li>
+                        {% endfor %}
+                    </ul>
+
+                </div>
+            </li>
             <li class="nav-item dropdown pr-4">
                 <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     {{request.user.email | gravatar:40 }}
