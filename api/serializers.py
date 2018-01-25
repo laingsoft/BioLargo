@@ -18,11 +18,6 @@ class experimentDataSerializer(serializers.ModelSerializer):
         model = ExperimentData
         fields = ['experiment','experimentData']
         
-class experimentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Experiment
-        fields = '__all__'
-
 class groupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Group
@@ -36,4 +31,11 @@ class tagsSerializer(serializers.ModelSerializer):
 class projectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
+        fields = '__all__'
+
+class experimentSerializer(serializers.ModelSerializer):
+    tags = tagsSerializer(many=True)
+    project = projectSerializer()
+    class Meta:
+        model = Experiment
         fields = '__all__'

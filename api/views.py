@@ -161,11 +161,6 @@ class groups(viewsets.ModelViewSet):
 
 class projects(APIView):
     #Retrieves the list of projects from the same company the user is part of.
-    # def get(self, request, *args, **kwargs):
-    #     user_company = request.user.company
-    #     serializer = projectSerializer
-    #     project_list = Project.objects.filter(company = user_company)
-    #     return Response(serializer(project_list, many=True).data)
     def get(self, request, id = None):
         user_company = request.user.company
         serializer = projectSerializer

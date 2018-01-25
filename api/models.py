@@ -6,6 +6,8 @@ from rest_framework.authtoken.models import Token
 # Create your models here.
 
 
+from accounts.models import Company
+
 #This creates a Token for the user upon registration.
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):

@@ -5,7 +5,7 @@ from rest_framework.authtoken import views as authviews
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
 router = routers.DefaultRouter()
 router.register(r'comments', views.resttest, 'comment')
-router.register(r'tags',views.tags, 'tag')
+router.register(r'tags', views.tags, 'tag')
 router.register(r'experiment', views.experiments, 'experiment')
 router.register(r'groups', views.groups, 'group')
 
