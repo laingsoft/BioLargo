@@ -21,6 +21,31 @@
     <!-- Main styles for this application -->
     <link href="{% static 'app/style.css' %}" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'app/icons.css' %}">
+    <style type="text/css">
+        .notification-dropdown{
+            min-width: 250px;
+        }
+
+        /* Blockquote styling from https://css-tricks.com/snippets/css/simple-and-nice-blockquote-styling/*/
+
+        blockquote {
+            background: #f9f9f9;
+            border-left: 3px solid #ccc;
+            padding: 0.3em 10px;
+        }
+
+        blockquote:before {
+            color: #ccc;
+            font-size: 4em;
+            line-height: 0.1em;
+            margin-right: 0.25em;
+            vertical-align: -0.4em;
+        }
+        blockquote p {
+            display: inline;
+        }
+
+    </style>
 
     <!-- Styles required by this views -->
     {% block css_extra %}{% endblock %}
@@ -89,19 +114,14 @@
                         </svg>
                         <span class="badge badge-pill badge-danger">{{request.user.notifications.count}}</span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                        {% for notification in request.user.notifications.all %}
-                        <li class="dropdown-item">
-                            <div class="media">
-                                <b>{{ notification.subject.first_name }}{{ notification.subject.last_name }}</b>&nbsp {{notification.get_predicate_display }}
-                            {{ notification.get_object_type_display }}
-
-                            </div>
-                        </li>
-                        {% empty %}
-                        <li class="dropdown-item">No new notifications</li>
-                        {% endfor %}
-                    </ul>
+                    <div class="dropdown-menu dropdown-menu-right notification-dropdown">
+                        <div class="dropdown-header"><b>Notifications</b></div>
+                        <ul class="list-group">
+                            {% with dropdown=True %}
+                            {% include 'app/watched_list.html'%}
+                            {% endwith %}
+                        </ul>
+                    </div>
 
                 </div>
             </li>

@@ -1,25 +1,30 @@
-{% for notification in request.user.notifications.all %}
+{% load accounts_tags %}
+{% for n in request.user.notifications.all %}
 <li class="list-group-item">
     <div class="media">
-        {{ notification }}
+        <img class="mr-3" src="{{ notification.subject.email | gravatar_url:40 }}">
+        <div class="media-body">
+            <a href="/accounts/user/{{ n.subject.id }}/">
+                <b>{{ n.subject.get_full_name | title }}</b>
+            </a>
+            {{ n.get_predicate_display }}
+            <a href="/app/{{ n.get_object_type_display }}/{{ n.object_pk }}/">
+                <b>{{ n.object_name | title }}</b>
+            </a>
+
+            {% if n.content and not dropdown %}
+            <div class="commentcontent">
+                <blockquote>
+                    <p>
+                    {{ n.content | safe }}
+                </p>
+                </blockquote>
+            </div>
+            {% endif %}
+            <div class="float-right"><small>{{ n.timestamp }}</small></div>
+        </div>
     </div>
 </li>
 {% empty %}
 No new notifications
 {% endfor %}
-
-
-<!-- <li class="list-group-item">
-    <div class="media">
-        <img src="https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
-        <div class="media-body">
-            <h5 class="mt-0">Steve</h5>
-            <div class="commentContent">
-                <p><b>Commented: </b>Why do you see a drop off in efficiency between 30 minutes and 6 minutes? </p>
-            </div>
-        </div>
-        <div class="d-flex justify-content-end">
-            <small><i>On: </i><b>Experiment 5</b></small>
-        </div>
-    </div>
-</li> -->
