@@ -27,6 +27,7 @@ class Project(models.Model):
     start = models.DateField()
     end = models.DateField(null=True, blank=True)
     description = models.TextField(blank=True, null=True)
+    followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followed_project")
 
     def __str__(self):
         return self.name
@@ -61,6 +62,7 @@ class Experiment(models.Model):
     tags = models.ManyToManyField(Tag)
     metadata = JSONField(default='')
     friendly_name = models.CharField(max_length=255)
+    followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followed_experiments")
 
 
 class ExperimentData(models.Model):
@@ -132,4 +134,39 @@ class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     content = models.CharField(max_length=255)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+
+class Notification(models.Model):
+    """
+    Model for notifications.
+    Notifications are in format
+    <Subject> <Predicate> <Object>
+    Subject: user who performed action
+    Predicate: what the action was
+    Object: the watched object
+
+    content is extra information, such as a link to the experiment uploaded or
+    the comment contents.
+
+    object_name is either Experiment.friendly_name or Project.name
+    """
+    PREDICATES = (
+        ("COM", "commented on"),
+        ("PRJ", "uploaded a new experiment to"),
+        ("UPD", "updated experiment")
+    )
+
+    OBJECT_TYPES = (
+        ("EXP", "experiment"),
+        ("PRJ", "project"),
+    )
+
+    recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="notifications")
+    subject = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="activity")
+    predicate = models.CharField(max_length=3, choices=PREDICATES)
+    object_type = models.CharField(max_length=3, choices=OBJECT_TYPES)
+    object_pk = models.IntegerField()
+    object_name = models.CharField(max_length=255, blank=True)
+    content = models.CharField(max_length=255, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)

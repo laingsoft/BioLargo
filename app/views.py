@@ -7,14 +7,14 @@ from .models import Experiment, ExperimentData, Template, Fields, Comment
 from .models import Project, Tag
 from io import TextIOWrapper
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user
+from django.contrib.auth import get_user, get_user_model
 from django.db.models import Count
 from django.db.models.functions import TruncDay
 import json
 import csv
 from .forms import FileUpload, ExperimentForm, ExperimentDataForm, ProjectForm
 from io import StringIO
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from .mixins import CompanyObjectsMixin, ExpFilterMixin, ProjectFilterMixin
 import datetime
 
@@ -135,19 +135,18 @@ class ExperimentListView(ExpFilterMixin, CompanyObjectsMixin, ListView):
     model = Experiment
     template_name = 'app/experiments_page.html'
 
-@login_required
-def experiment(request, exp_id):
-    company = request.user.company
-    user = get_user(request)
 
-    this_experiment = get_object_or_404(Experiment, company=company,
-        id=exp_id)
+class ExperimentDetailView(CompanyObjectsMixin, DetailView):
+    model = Experiment
+    template_name = "app/experiment.html"
 
-    metadata = json.dumps(this_experiment.metadata)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['metadata'] = self.object.metadata
+        context['comments'] = Comment.objects.filter(experiment=self.object)
+        context['watched'] = self.object.followers.filter(pk=self.request.user.pk).exists()
 
-    comments = Comment.objects.filter(experiment = this_experiment).order_by('id')
-    return render(request,"app/experiment.html", {"this_experiment": this_experiment, "usr": user, "metadata": metadata, "comments": comments})
-
+        return context
 
 @login_required
 def experiment_json(request, exp_id):
@@ -223,27 +222,16 @@ def create_project(request):
     return render(request, 'app/create_project.html', context)
 
 
-def project_page(request, p_id):
-    """
-    View for displaying the details of a project.
-    """
-    company = request.user.company
+class ProjectDetailView(CompanyObjectsMixin, DetailView):
+    model = Project
+    template_name = "app/view_project.html"
 
-    try:
-        project = Project.objects.get(company=company, id=p_id)
-    except Project.DoesNotExist:
-        raise Http404("Project not found")
-
-    experiments = Experiment.objects.filter(company=company, project=p_id)
-
-    context = {
-        "experiments": experiments,
-        "project": project,
-        "user_count": experiments.values_list("user").distinct("user").count()
-    }
-
-    return render(request, "app/view_project.html", context)
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['experiments'] = self.object.experiment_set.all()
+        context['user_count'] = context['experiments'].distinct("user").count()
+        context['watched'] = self.object.followers.filter(pk=self.request.user.pk).exists()
+        return context
 
 @login_required
 def create_tag(request):
@@ -254,3 +242,51 @@ def create_tag(request):
         return HttpResponse(status=201)
 
     raise Http404
+
+
+@login_required
+def watch(request):
+    """
+    View for watching Experiments and Projects
+    """
+    OBJ = {
+        'EXP': Experiment,
+        'PRJ': Project
+        }
+
+    if request.method == "POST":
+        pk = request.POST.get("pk")
+        t = request.POST.get("type")
+
+        if OBJ[t].objects.filter(pk=pk).exists():
+            obj = OBJ[t].objects.get(pk=pk)
+
+            if obj.followers.filter(pk=request.user.pk).exists():
+                obj.followers.remove(request.user)
+
+            else:
+                obj.followers.add(request.user)
+
+            return JsonResponse({'success': True})
+
+        return JsonResponse({'success': False})
+
+
+class WatchedExperimentListView(ListView):
+    """
+    List of watched experiments.
+    TODO: make less ugly
+    """
+    model = Experiment
+    template_name = "app/experiments_page.html"
+
+    def get_queryset(self):
+        return self.request.user.followed_experiments.all()
+
+
+class WatchedProjectsListView(ListView):
+    model = Project
+    template_name = "app/project_list.html"
+
+    def get_queryset(self):
+        return self.request.user.followed_project.all()

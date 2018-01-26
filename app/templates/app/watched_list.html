@@ -1,0 +1,30 @@
+{% load accounts_tags %}
+{% for n in request.user.notifications.all %}
+<li class="list-group-item">
+    <div class="media">
+        <img class="mr-3" src="{{ notification.subject.email | gravatar_url:40 }}">
+        <div class="media-body">
+            <a href="/accounts/user/{{ n.subject.id }}/">
+                <b>{{ n.subject.get_full_name | title }}</b>
+            </a>
+            {{ n.get_predicate_display }}
+            <a href="/app/{{ n.get_object_type_display }}/{{ n.object_pk }}/">
+                <b>{{ n.object_name | title }}</b>
+            </a>
+
+            {% if n.content and not dropdown %}
+            <div class="commentcontent">
+                <blockquote>
+                    <p>
+                    {{ n.content | safe }}
+                </p>
+                </blockquote>
+            </div>
+            {% endif %}
+            <div class="float-right"><small>{{ n.timestamp }}</small></div>
+        </div>
+    </div>
+</li>
+{% empty %}
+No new notifications
+{% endfor %}

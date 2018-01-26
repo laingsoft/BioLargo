@@ -21,6 +21,31 @@
     <!-- Main styles for this application -->
     <link href="{% static 'app/style.css' %}" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'app/icons.css' %}">
+    <style type="text/css">
+        .notification-dropdown{
+            min-width: 250px;
+        }
+
+        /* Blockquote styling from https://css-tricks.com/snippets/css/simple-and-nice-blockquote-styling/*/
+
+        blockquote {
+            background: #f9f9f9;
+            border-left: 3px solid #ccc;
+            padding: 0.3em 10px;
+        }
+
+        blockquote:before {
+            color: #ccc;
+            font-size: 4em;
+            line-height: 0.1em;
+            margin-right: 0.25em;
+            vertical-align: -0.4em;
+        }
+        blockquote p {
+            display: inline;
+        }
+
+    </style>
 
     <!-- Styles required by this views -->
     {% block css_extra %}{% endblock %}
@@ -81,14 +106,25 @@
             </li>
         </ul>
         <ul class="nav navbar-nav ml-auto">
-<!--             <li class="nav-item d-md-down-none">
-                <a class="nav-link" href="#">
-                    <svg class="icon">
-                        <use xlink:href="#bell"></use>
-                    </svg>
-                    <span class="badge badge-pill badge-danger">5</span>
-                </a>
-            </li> -->
+            <li class="nav-item d-md-down-none">
+                <div class="dropdown">
+                    <a class="nav-link" href="#" id="notif-toggle" data-toggle="dropdown">
+                        <svg class="icon notif-icon">
+                            <use xlink:href="#bell"></use>
+                        </svg>
+                        <span class="badge badge-pill badge-danger">{{request.user.notifications.count}}</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right notification-dropdown">
+                        <div class="dropdown-header"><b>Notifications</b></div>
+                        <ul class="list-group">
+                            {% with dropdown=True %}
+                            {% include 'app/watched_list.html'%}
+                            {% endwith %}
+                        </ul>
+                    </div>
+
+                </div>
+            </li>
             <li class="nav-item dropdown pr-4">
                 <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     {{request.user.email | gravatar:40 }}
