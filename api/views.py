@@ -168,6 +168,15 @@ class groups(viewsets.ModelViewSet):
     serializer_class = groupSerializer
 
 
+
+@api_view(['GET'])
+def getExperimentsWithProjectId(request, id):
+    experiments = Experiment.objects.filter(project = id)
+    serializer = experimentSerializer
+    return Response(serializer(experiments, many = True).data)
+
+
+
 class projects(APIView):
     #Retrieves the list of projects from the same company the user is part of.
     def get(self, request, id = None):
@@ -176,7 +185,7 @@ class projects(APIView):
         if(id == None):
             project_list = Project.objects.filter(company = user_company)
         else:
-            project_list = Project.objects.filter(id = id, company = user_company)
+            project_list = Project.objects.filter(project.id == id)
         return Response(serializer(project_list, many=True).data)
     #Post a new Project
     def post(self, request, *args, **kwargs):
@@ -198,11 +207,15 @@ class projects(APIView):
 
 class experiments(APIView):
     #Retrieves the list of projects from the same company the user is part of.
-    def get(self, request, *args, **kwargs):
+    def get(self, request, id = None):
         user_company = request.user.company
         serializer = experimentSerializer
-        project_list = Experiment.objects.filter(company = user_company)
-        return Response(serializer(project_list, many=True).data)
+
+        if(id == None):
+            experiment_list = Experiment.objects.filter(company = user_company)
+        else:
+            experiment_list = Experiment.objects.filter(project.id == id)
+        return Response(serializer(experiment_list, many=True).data)
     #Post a new Project
     def post(self, request, *args, **kwargs):
         user_company = request.user.company
@@ -219,3 +232,5 @@ class experiments(APIView):
             raise Http404("Project not found")
         result = data.delete()
         return JsonResponse({"result": result[0]>0})
+
+
