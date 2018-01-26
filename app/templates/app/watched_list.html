@@ -1,5 +1,5 @@
 {% load accounts_tags %}
-{% for n in request.user.notifications.all %}
+{% for n in notifications %}
 <li class="list-group-item">
     <div class="media">
         <img class="mr-3" src="{{ notification.subject.email | gravatar_url:40 }}">

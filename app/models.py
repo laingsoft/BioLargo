@@ -119,6 +119,11 @@ class Comment(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
 
+class UnreadNotificationManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(read=False)
+
+
 class Notification(models.Model):
     """
     Model for notifications.
@@ -152,3 +157,6 @@ class Notification(models.Model):
     object_name = models.CharField(max_length=255, blank=True)
     content = models.CharField(max_length=255, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
+
+    unread = UnreadNotificationManager()

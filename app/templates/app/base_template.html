@@ -1,4 +1,7 @@
 {% load accounts_tags %} {% load static %}
+{% load notifications_tags %}
+{% unread_notifications request.user as notifications %}
+
 <!--
  * CoreUI - Open Source Bootstrap Admin Template
  * @version v1.0.6
@@ -118,7 +121,7 @@
                         <div class="dropdown-header"><b>Notifications</b></div>
                         <ul class="list-group">
                             {% with dropdown=True %}
-                            {% include 'app/watched_list.html'%}
+                            {% include 'app/watched_list.html' %}
                             {% endwith %}
                         </ul>
                     </div>
