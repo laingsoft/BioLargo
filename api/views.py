@@ -168,12 +168,19 @@ class groups(viewsets.ModelViewSet):
     serializer_class = groupSerializer
 
 
-
+#This will get all the epxeriments that are part of the project whose ID is passed in
 @api_view(['GET'])
 def getExperimentsWithProjectId(request, id):
     experiments = Experiment.objects.filter(project = id)
     serializer = experimentSerializer
     return Response(serializer(experiments, many = True).data)
+
+#This gets the comments from the project whose ID is passed in. 
+@api_view(['GET'])
+def get_exp_comments(request, id):
+    comments = Comment.objects.filter(experiment = id)
+    serializer = commentSerializer
+    return Response(commentSerializer(comments, many = True).data)
 
 
 

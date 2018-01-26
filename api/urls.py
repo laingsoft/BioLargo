@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^experimentlist', views.get_experiments_id, name="get_multiple_experiments"),
     url(r'^fields',views.fields_autocomplete, name="fields_autocomplete"),
     url(r'^template', views.templates, name="template"),
-    url(r'^comment', views.comment, name="comment"),
+    url(r'^comment/', views.comment, name="comment"),
+    url(r'^comments/(?P<id>[0-9]+)$', views.get_exp_comments),
     url(r'^testreq', views.requestTest, name="reqtest"),
 ]
