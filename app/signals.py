@@ -17,7 +17,8 @@ def comment_save_reciever(sender, instance, **kwargs):
             predicate="COM",
             object_type="EXP",
             object_pk=instance.experiment.pk,
-            content=instance.content[:255]
+            content=instance.content[:255],
+            object_name=instance.experiment.friendly_name,
             )
 
         notification.recipients.add(*list(recipients))
@@ -37,6 +38,7 @@ def experiment_update_reciever(sender, instance, created, **kwargs):
                 predicate="EXP",
                 object_type="UPD",
                 object_pk=instance.pk,
+                object_name=instance.friendly_name,
                 )
             notification.recipients.add(*list(recipients))
 
@@ -57,6 +59,7 @@ def experiment_upload_reciever(sender, instance, created, **kwargs):
                 predicate="PRJ",
                 object_type="PRJ",
                 object_pk=instance.project.pk,
+                object_name=instance.project.name,
                 content="<a href='/app/experiment/{0}'>{1}</a>".format(
                     instance.pk,
                     instance.friendly_name

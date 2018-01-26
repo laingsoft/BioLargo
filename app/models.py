@@ -148,6 +148,8 @@ class Notification(models.Model):
 
     content is extra information, such as a link to the experiment uploaded or
     the comment contents.
+
+    object_name is either Experiment.friendly_name or Project.name
     """
     PREDICATES = (
         ("COM", "commented on"),
@@ -165,5 +167,6 @@ class Notification(models.Model):
     predicate = models.CharField(max_length=3, choices=PREDICATES)
     object_type = models.CharField(max_length=3, choices=OBJECT_TYPES)
     object_pk = models.IntegerField()
+    object_name = models.CharField(max_length=255, blank=True)
     content = models.CharField(max_length=255, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)

@@ -1,0 +1,25 @@
+{% for notification in request.user.notifications.all %}
+<li class="list-group-item">
+    <div class="media">
+        {{ notification }}
+    </div>
+</li>
+{% empty %}
+No new notifications
+{% endfor %}
+
+
+<!-- <li class="list-group-item">
+    <div class="media">
+        <img src="https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
+        <div class="media-body">
+            <h5 class="mt-0">Steve</h5>
+            <div class="commentContent">
+                <p><b>Commented: </b>Why do you see a drop off in efficiency between 30 minutes and 6 minutes? </p>
+            </div>
+        </div>
+        <div class="d-flex justify-content-end">
+            <small><i>On: </i><b>Experiment 5</b></small>
+        </div>
+    </div>
+</li> -->
