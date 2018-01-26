@@ -4,7 +4,8 @@ from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from .parsers import Parser, JsonParser
 from .models import Experiment, ExperimentData, Template, Fields, Comment
-from .models import Project, Tag
+from .models import Tag
+from project_management.models import Project
 from io import TextIOWrapper
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user, get_user_model

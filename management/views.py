@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from accounts.models import User
 from .forms import SettingsForm, ExperimentForm, UserChangeForm, GroupForm
 from .models import Settings
-from app.models import Template, Fields, Project, Experiment, ExperimentData
+from app.models import Template, Fields, Experiment, ExperimentData
 from accounts.models import Company
+from project_management.models import Project
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from app.mixins import CompanyObjectCreateMixin, CompanyObjectsMixin
 from json import loads

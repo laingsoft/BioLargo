@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['192.168.1.9', '0.0.0.0', 'localhost', 'pasteur.io','208.75.74.
 # Application definition
 
 INSTALLED_APPS = [
+    'project_management.apps.ProjectManagementConfig',
     'SOP.apps.SopConfig',
     'frontpage.apps.FrontpageConfig',
     'accounts.apps.AccountsConfig',
@@ -167,7 +168,7 @@ LOGIN_REDIRECT_URL = '/app'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-import datetime 
+import datetime
 
 JWT_AUTH = {
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(datetime.MAXYEAR),
