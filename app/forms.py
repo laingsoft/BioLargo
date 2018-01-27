@@ -61,7 +61,7 @@ class ProjectForm(forms.ModelForm):
     """
     class Meta:
         model = Project
-        exclude = ('company', )
+        exclude = ('company', 'followers' )
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'start': forms.TextInput(attrs={'class': 'form-control'}),

@@ -149,7 +149,7 @@ class Notification(models.Model):
         ("PRJ", "project"),
     )
 
-    recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="notifications")
+    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications")
     subject = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="activity")
     predicate = models.CharField(max_length=3, choices=PREDICATES)
     object_type = models.CharField(max_length=3, choices=OBJECT_TYPES)
@@ -159,4 +159,7 @@ class Notification(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)
 
+    objects = models.Manager()
     unread = UnreadNotificationManager()
+
+
