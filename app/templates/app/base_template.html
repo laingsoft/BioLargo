@@ -115,7 +115,7 @@
                         <svg class="icon notif-icon">
                             <use xlink:href="#bell"></use>
                         </svg>
-                        <span class="badge badge-pill badge-danger">{{notifications.count}}</span>
+                        <span id="notif-count" class="badge badge-pill badge-danger">{{notifications.count}}</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right notification-dropdown">
                         <div class="dropdown-header"><b>Notifications</b></div>
@@ -252,6 +252,24 @@
     <script src="{% static 'app/js/app.js' %}"></script>
     <script src="{% static 'app/js/base.js' %}"></script>
     <!-- Plugins and scripts required by this views -->
+    <script type="text/javascript">
+
+        $(".notif_dismiss").click(function(){
+            id = $(this).data("id");
+            notif_divs = $(".notif"+String(id)).parent()
+            $(".notif"+String(id)).remove();
+            $("#notif-count").text($("#notif-count").text() - 1);
+
+            if (notif_divs[0].childElementCount == 0){
+                empty = document.createElement("li");
+                empty.className = "list-group-item";
+                text = document.createTextNode("No notifications");
+                empty.appendChild(text);
+
+                $(notif_divs).append(empty);
+            }
+        })
+    </script>
 
     <!-- Custom scripts required by this view -->
     {% block script_extra %} {% endblock %}

@@ -1,6 +1,6 @@
 {% load accounts_tags %}
 {% for n in notifications %}
-<li class="list-group-item">
+<li class="list-group-item notif{{n.id}}">
     <div class="media">
         <img class="mr-3" src="{{ notification.subject.email | gravatar_url:40 }}">
         <div class="media-body">
@@ -23,6 +23,10 @@
             {% endif %}
             <div class="float-right"><small>{{ n.timestamp }}</small></div>
         </div>
+        <button type="button" class="close notif_dismiss
+        " aria-label="Close" data-id="{{n.id}}">
+          <span aria-hidden="true">&times;</span>
+        </button>
     </div>
 </li>
 {% empty %}
