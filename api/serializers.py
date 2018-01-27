@@ -2,10 +2,10 @@ from app.models import *
 from accounts.models import User
 from rest_framework import serializers
 
-class commentSerializer(serializers.HyperlinkedModelSerializer):
+class commentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['content']
+        fields = ['experiment', 'content', 'user']
 
 class userSerializer(serializers.ModelSerializer):
     class Meta:
