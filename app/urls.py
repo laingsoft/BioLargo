@@ -19,4 +19,5 @@ urlpatterns = [
     url(r'^watch/$', views.watch, name="watch"),
     url(r'^experiments/watched', views.WatchedExperimentListView.as_view()),
     url(r'^projects/watched', views.WatchedProjectsListView.as_view()),
+    url(r'^notif_read/$', views.notif_read),
     ]

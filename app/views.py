@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from .parsers import Parser, JsonParser
 from .models import Experiment, ExperimentData, Template, Fields, Comment
-from .models import Tag
+from .models import Tag, Notification
 from project_management.models import Project
 from io import TextIOWrapper
 from django.contrib.auth.decorators import login_required
@@ -291,3 +291,12 @@ class WatchedProjectsListView(ListView):
 
     def get_queryset(self):
         return self.request.user.followed_project.all()
+
+
+def notif_read(request):
+    if request.method == "POST":
+        pk = int(request.POST["pk"])
+        n = Notification.unread.get(pk=pk, recipient=request.user)
+        n.read = True
+        n.save()
+        return JsonResponse({'success': True})
