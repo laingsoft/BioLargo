@@ -8,7 +8,7 @@ from rest_framework import viewsets, status
 from rest_framework_jwt.settings import api_settings
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
-from .serializers import projectSerializer, commentSerializer, tagsSerializer, experimentSerializer, userSerializer, groupSerializer
+from .serializers import experimentDataSerializer, projectSerializer, commentSerializer, tagsSerializer, experimentSerializer, userSerializer, groupSerializer
 from django.core.serializers import serialize
 from django.http import Http404
 from rest_framework.response import Response
@@ -18,7 +18,7 @@ def requestTest(request):
     print(request.body)
     return JsonResponse({"test":True})
 
-def index():
+def index(request):
     pass
 
 @login_required
@@ -73,21 +73,6 @@ def groups_list(request):
         result = [str(i) for i in Group.objects.all()]
         return JsonResponse({'data' : [{'key':str(item), 'value':str(item)} for item in result]})
 
-
-def get_experimentbyid(request, exp_id):
-    data = ExperimentData.objects.filter(experiment=exp_id)
-    newval = {}
-    newval = {k: v.experimentData for k,v in enumerate(data)}
-    return JsonResponse(newval)
-
-def get_experiments_id(request):
-    data = Experiment.objects.all()
-    data = {k: v.id for k,v in enumerate(data)}
-    return JsonResponse(data)
-
-def get_csv(request, exp_id):
-    pass
-
 #This will return the user's information so that it can be used to customize the client's applicaiton
 @api_view(['GET'])
 def get_user(request):
@@ -104,19 +89,6 @@ def get_new_token(request):
     payload = jwt_payload_handler(request.user)
     token = jwt_encode_handler(payload)
     return Response(token)
-
-
-#This will delete an experiment assuming that the company is correct
-#It requires an Experiment ID to be passed into it.
-@login_required
-def experimentrm(request, exp_id):
-    company = request.user.company
-    data = Experiment.objects.filter(id = exp_id, company = company)
-    if not data.exists():
-        raise Http404("Experiment does not exist.")
-    result = data.delete()
-    print("The result is", result)
-    return JsonResponse({"result": result[0]>0})
 
 @login_required
 def comment(request):
@@ -159,15 +131,6 @@ class tags(APIView):
         serializer = tagsSerializer
         return Response(serializer(queryset, many=True).data)
 
-class experiments(viewsets.ModelViewSet):
-    queryset = Experiment.objects.all()
-    serializer_class = experimentSerializer
-
-class groups(viewsets.ModelViewSet):
-    queryset = Group.objects.all()
-    serializer_class = groupSerializer
-
-
 #This will get all the epxeriments that are part of the project whose ID is passed in
 @api_view(['GET'])
 def getExperimentsWithProjectId(request, id):
@@ -175,13 +138,18 @@ def getExperimentsWithProjectId(request, id):
     serializer = experimentSerializer
     return Response(serializer(experiments, many = True).data)
 
-#This gets the comments from the project whose ID is passed in. 
+#This gets the comments from the experiment whose ID is passed in. 
 @api_view(['GET'])
 def get_exp_comments(request, id):
     comments = Comment.objects.filter(experiment = id)
-    serializer = commentSerializer
     return Response(commentSerializer(comments, many = True).data)
 
+#Get the Data from the Experiment Data model according to the experiment id passed in
+@api_view(['GET'])
+def getExperimentData(request, id):
+    serializer = experimentDataSerializer
+    experiment_data = ExperimentData.objects.filter(experiment = id)
+    return Response(serializer(experiment_data, many=True).data)
 
 
 class projects(APIView):
@@ -192,7 +160,7 @@ class projects(APIView):
         if(id == None):
             project_list = Project.objects.filter(company = user_company)
         else:
-            project_list = Project.objects.filter(project.id == id)
+            project_list = Project.objects.filter(id = id)
         return Response(serializer(project_list, many=True).data)
     #Post a new Project
     def post(self, request, *args, **kwargs):
@@ -213,7 +181,7 @@ class projects(APIView):
 
 
 class experiments(APIView):
-    #Retrieves the list of projects from the same company the user is part of.
+    #Retrieves the list of experiments from the same company the user is part of.
     def get(self, request, id = None):
         user_company = request.user.company
         serializer = experimentSerializer
@@ -221,7 +189,7 @@ class experiments(APIView):
         if(id == None):
             experiment_list = Experiment.objects.filter(company = user_company)
         else:
-            experiment_list = Experiment.objects.filter(project.id == id)
+            experiment_list = Experiment.objects.filter(id = id)
         return Response(serializer(experiment_list, many=True).data)
     #Post a new Project
     def post(self, request, *args, **kwargs):
@@ -236,7 +204,7 @@ class experiments(APIView):
         company = request.user.company
         data = Experiment.objects.filter(id = id, company = company)
         if not data.exists():
-            raise Http404("Project not found")
+            raise Http404("Experiment not found")
         result = data.delete()
         return JsonResponse({"result": result[0]>0})
 

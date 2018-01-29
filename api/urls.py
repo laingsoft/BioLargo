@@ -7,11 +7,11 @@ router = routers.DefaultRouter()
 router.register(r'comments', views.resttest, 'comment')
 router.register(r'tags', views.tags, 'tag')
 router.register(r'experiment', views.experiments, 'experiment')
-router.register(r'groups', views.groups, 'group')
 
 
 urlpatterns = [
     url(r'^tags/$', views.tags.as_view()),
+    url(r'^experiment_data/(?P<id>[0-9]+)$', views.getExperimentData),
     url(r'^experiments_with_project_id/(?P<id>[0-9]+)$', views.getExperimentsWithProjectId, name="experiments_with_project_id"),
     url(r'^experiments/(?P<id>[0-9]+)$', views.experiments.as_view(), name="delete_experiment"),
     url(r'^experiments/$', views.experiments.as_view(), name="experiments"),
@@ -23,9 +23,6 @@ urlpatterns = [
     url(r'^verifyToken', verify_jwt_token),
     url(r'^', include(router.urls)),
     url(r'^$', views.index, name='index'),
-    url(r'^remove/(?P<exp_id>[0-9]+)', views.experimentrm, name="remove_experiment"),
-    url(r'^experiment/csv/(?P<exp_id>[0-9]+)', views.get_csv, name='get_csv'),
-    url(r'^experimentlist', views.get_experiments_id, name="get_multiple_experiments"),
     url(r'^fields',views.fields_autocomplete, name="fields_autocomplete"),
     url(r'^template', views.templates, name="template"),
     url(r'^comment/', views.comment, name="comment"),

@@ -13,7 +13,7 @@ class Project(models.Model):
     start = models.DateField()
     end = models.DateField(null=True, blank=True)
     description = models.TextField(blank=True, null=True)
-    followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followed_project")
+    followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followed_project", blank=True, null=True)
 
     def __str__(self):
         return self.name
