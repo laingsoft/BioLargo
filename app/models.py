@@ -7,17 +7,6 @@ from project_management.models import Project
 # Create your models here.
 
 
-class Group(models.Model):
-    """
-    Depricated. Used to store experiment group. Has been replaced by Project.
-    Will remove this class once refactor is fully done.
-    """
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.name
-
-
 class Tag(models.Model):
     """
     Stores tags for experiments. Stores tag name only.

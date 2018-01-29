@@ -7,7 +7,6 @@ router = routers.DefaultRouter()
 router.register(r'comments', views.resttest, 'comment')
 router.register(r'tags', views.tags, 'tag')
 router.register(r'experiment', views.experiments, 'experiment')
-router.register(r'groups', views.groups, 'group')
 
 
 urlpatterns = [

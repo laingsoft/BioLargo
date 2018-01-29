@@ -1,5 +1,5 @@
 from channels.handler import AsgiHandler
-from app.models import Tag, Group, Experiment, ExperimentData
+from app.models import Tag, Experiment, ExperimentData
 import json
 from django.db.models.functions import TruncDay
 from django.db.models import Count
@@ -13,20 +13,20 @@ def getcols(data, channel):
         print(data[tag])
         tags.append(data[tag]['id']) if data[tag]['table'] == 'tag' else groups.append(data[tag]['id'])
 
-    
+
 #For the love of god please clean up this absolute mess of a function.
     tagset = ExperimentData.objects.filter(experiment__tags__name__in = tags)
     headers = []
     [headers.append(v.experimentData) for k,v in enumerate(tagset)]
-    
+
     headset = set()
-    [{headset.add(header) for header in v} for k,v in enumerate(headers)] #lol nice runtime performance here 
+    [{headset.add(header) for header in v} for k,v in enumerate(headers)] #lol nice runtime performance here
     print(headset)
-    
+
     channel.reply_channel.send({
         "text":json.dumps({'action':'putcols', 'data':list(headset)}),
     })
-        
+
 
 def getdata(data, channel):
     print(data)
@@ -38,7 +38,7 @@ def getdata(data, channel):
     xcols = []
     for xcol in data['xcols']:
         xcols.append(xcol['col'])
-        
+
     ycols = []
     for ycol in data['ycols']:
         ycols.append(ycol['col'])
@@ -59,13 +59,13 @@ def getdata(data, channel):
     for i in ycols:
         for y in query:
             retval[y.id]['y_ax'].append({i: y.experimentData[i]})
-            
+
     retval = {'action':'putdata', 'data':retval}
     channel.reply_channel.send({
         "text":json.dumps(retval),
     })
-    
-        
+
+
 
 ANALYTICS_OBJECTS = {"getcols": getcols, "getdata":getdata}
 
@@ -93,7 +93,7 @@ def getUploadsPerUser(data, channel):
     channel.reply_channel.send({
         "text":json.dumps(retval)
         })
-    
+
 
 def getUserStats(data, channel):
     '''
@@ -117,11 +117,11 @@ def getUserStats(data, channel):
 
 
 INDEX_OBJECTS = {"getUserStats": getUserStats, "getUploadsPerUser":getUploadsPerUser}
-                                
+
 @channel_session_user
 def ws_index_page(consumable):
     '''
-    Serves as the dispacher for the websocket for the index page. 
+    Serves as the dispacher for the websocket for the index page.
     '''
     data = json.loads(consumable.content['text'])
     INDEX_OBJECTS[data['action']](data['data'], consumable)
@@ -129,9 +129,9 @@ def ws_index_page(consumable):
 @channel_session_user_from_http
 def ws_index_connect(consumable):
     '''
-    Handles the incoming connection for the websocket. 
+    Handles the incoming connection for the websocket.
     It's not really necessary, but we need to be able to get the user object
-    Because of how channels optimises the data sent of the wire, if we don't 
-    grab the user object at connection, we never get it. 
+    Because of how channels optimises the data sent of the wire, if we don't
+    grab the user object at connection, we never get it.
     '''
     consumable.reply_channel.send({'accept':True})

@@ -1,6 +1,5 @@
 from django.db import models
 from accounts.models import Company
-from app.models import Experiment
 from django.conf import settings
 
 
@@ -39,5 +38,5 @@ class Task(models.Model):
         related_name="tasks"
         )
     complete = models.BooleanField(default=False)
-    related_experiment = models.ForeignKey(Experiment, null=True)
+    related_experiment = models.ForeignKey('app.Experiment', null=True)
     due_date = models.DateField(null=True)

@@ -8,11 +8,12 @@ from rest_framework import viewsets, status
 from rest_framework_jwt.settings import api_settings
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
-from .serializers import projectSerializer, commentSerializer, tagsSerializer, experimentSerializer, userSerializer, groupSerializer
+from .serializers import projectSerializer, commentSerializer, tagsSerializer, experimentSerializer, userSerializer
 from django.core.serializers import serialize
 from django.http import Http404
 from rest_framework.response import Response
 from django.db import IntegrityError
+from project_management.models import Project
 
 def requestTest(request):
     print(request.body)
@@ -64,13 +65,6 @@ def fields_autocomplete(request):
     if request.method == "GET":
         q = request.GET.get("q")
         result = Fields.objects.all().filter(name__icontains = q)
-        return JsonResponse({'data' : [{'key':str(item), 'value':str(item)} for item in result]})
-
-# autocomplete results for groups
-@login_required
-def groups_list(request):
-    if request.method == "GET":
-        result = [str(i) for i in Group.objects.all()]
         return JsonResponse({'data' : [{'key':str(item), 'value':str(item)} for item in result]})
 
 
@@ -163,10 +157,6 @@ class experiments(viewsets.ModelViewSet):
     queryset = Experiment.objects.all()
     serializer_class = experimentSerializer
 
-class groups(viewsets.ModelViewSet):
-    queryset = Group.objects.all()
-    serializer_class = groupSerializer
-
 
 #This will get all the epxeriments that are part of the project whose ID is passed in
 @api_view(['GET'])
@@ -175,7 +165,7 @@ def getExperimentsWithProjectId(request, id):
     serializer = experimentSerializer
     return Response(serializer(experiments, many = True).data)
 
-#This gets the comments from the project whose ID is passed in. 
+#This gets the comments from the project whose ID is passed in.
 @api_view(['GET'])
 def get_exp_comments(request, id):
     comments = Comment.objects.filter(experiment = id)
