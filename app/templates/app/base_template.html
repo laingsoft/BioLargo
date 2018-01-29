@@ -15,7 +15,6 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
     <meta name="keyword" content="">
@@ -252,24 +251,6 @@
     <script src="{% static 'app/js/app.js' %}"></script>
     <script src="{% static 'app/js/base.js' %}"></script>
     <!-- Plugins and scripts required by this views -->
-    <script type="text/javascript">
-
-        $(".notif_dismiss").click(function(){
-            id = $(this).data("id");
-            notif_divs = $(".notif"+String(id)).parent()
-            $(".notif"+String(id)).remove();
-            $("#notif-count").text($("#notif-count").text() - 1);
-
-            if (notif_divs[0].childElementCount == 0){
-                empty = document.createElement("li");
-                empty.className = "list-group-item";
-                text = document.createTextNode("No notifications");
-                empty.appendChild(text);
-
-                $(notif_divs).append(empty);
-            }
-        })
-    </script>
 
     <!-- Custom scripts required by this view -->
     {% block script_extra %} {% endblock %}
