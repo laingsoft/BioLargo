@@ -3,10 +3,6 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.Dashboard.as_view()),
-    url(r'^projects/$', views.ProjectListView.as_view()),
-    url(r'^projects/edit/(?P<pk>\d+)/$', views.ProjectUpdateView.as_view()),
-    url(r'^projects/create/$', views.ProjectCreateView.as_view()),
-    url(r'^projects/delete/(?P<pk>\d+)/$', views.ProjectDeleteView.as_view()),
     url(r'^settings', views.SettingsUpdateView.as_view()),
     url(r'^templates/$', views.TemplateListView.as_view()),
     url(r'^templates/create/$', views.TemplateCreateView.as_view()),

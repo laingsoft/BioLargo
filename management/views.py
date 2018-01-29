@@ -4,31 +4,17 @@ from .forms import SettingsForm, ExperimentForm, UserChangeForm, GroupForm
 from .models import Settings
 from app.models import Template, Fields, Experiment, ExperimentData
 from accounts.models import Company
-from project_management.models import Project
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from app.mixins import CompanyObjectCreateMixin, CompanyObjectsMixin
 from json import loads
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.utils import Error
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.views import View
-from app.mixins import ExpFilterMixin, ProjectFilterMixin, BaseFilterMixin, UserFilterMixin
+from app.mixins import ExpFilterMixin, BaseFilterMixin, UserFilterMixin
 from django.contrib.auth.models import Group
-
-# Create your views here.
-
-
-class ManagerTestMixin(UserPassesTestMixin):
-    """
-    mixin used to limit access to managers and admin only. To check for
-    class based permissions, add test_func method to view with condition.
-    """
-    login_url = "/management/login"
-
-    def test_func(self):
-        return self.request.user.is_authenticated and (self.request.user.is_manager or self.request.user.is_admin)
+from .mixins import ManagerTestMixin
 
 
 class Dashboard(ManagerTestMixin, View):
@@ -40,45 +26,6 @@ class Dashboard(ManagerTestMixin, View):
     def get(self, request):
         users = User.objects.filter(company=request.user.company)
         return render(request, 'management/dashboard.html', {"users": users})
-
-
-class ProjectListView(ManagerTestMixin, ProjectFilterMixin, CompanyObjectsMixin, ListView):
-    """
-    Shows a list of projects. Allows a user (with permissions) to search for a
-    project, add a project, edit or delete.
-    """
-    model = Project
-    template_name = "management/projects.html"
-    paginate_by = 20
-
-
-class ProjectCreateView(ManagerTestMixin, CompanyObjectCreateMixin, CompanyObjectsMixin, CreateView):
-    """
-    View for creating templates.
-    """
-    model = Project
-    fields = ('name', 'start', 'end', 'description')
-    template_name = "management/project_update.html"
-    success_url = "/management/projects"
-
-
-class ProjectUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
-    """
-    View used for updaing an existing project.
-    """
-    model = Project
-    fields = ("name", "start", "end", "description")
-    template_name = "management/project_update.html"
-    success_url = "/management/projects"
-
-
-class ProjectDeleteView(ManagerTestMixin, CompanyObjectsMixin, DeleteView):
-    """
-    View for deleting template.
-    """
-    model = Project
-    template_name = "management/template_confirm_delete.html"
-    success_url = "/management/projects"
 
 
 class ExperimentListView(ManagerTestMixin, ExpFilterMixin, CompanyObjectsMixin, ListView):
