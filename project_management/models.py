@@ -25,6 +25,22 @@ class Project(models.Model):
         unique_together = (("company", "name"))
 
 
+class CompletedTaskManager(models.Manager):
+    """
+    manager for getting completed tasks.
+    """
+    def get_queryset(self):
+        return super().get_queryset().filter(complete=True)
+
+
+class IncompleteTaskManager(models.Manager):
+    """
+    manager for getting incomplete tasks.
+    """
+    def get_queryset(self):
+        return super().get_queryset().filter(complete=False)
+
+
 class Task(models.Model):
     """
     Model for tasks in a project.
@@ -35,8 +51,18 @@ class Task(models.Model):
     description = models.CharField(max_length=255)
     assigned = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name="tasks"
+        related_name="tasks",
+        null=True
         )
     complete = models.BooleanField(default=False)
     related_experiment = models.ForeignKey('app.Experiment', null=True)
-    due_date = models.DateField(null=True)
+    due_date = models.DateField(null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    objects = models.Manager()
+    completed = CompletedTaskManager()
+    incomplete = IncompleteTaskManager()
+
+    class Meta:
+        ordering = ['timestamp']
+        unique_together = (('project', 'name'))

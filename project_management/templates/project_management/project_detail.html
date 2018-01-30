@@ -1,0 +1,124 @@
+{% extends 'management/base_template.html'%}
+
+{% block css_extra %}
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/css/pikaday.css">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.css">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.bootstrap3.min.css">
+<style type="text/css">
+    .task-list{
+        list-style: none;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">
+    <a href="/management">Manage</a>
+</li>
+<li class="breadcrumb-item">
+    <a href="/management/projects">Projects</a>
+</li>
+<li class="breadcrumb-item active">{{ object.name }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col card">
+        <div class="card-body">
+            <h1>{{ object.name }}</h1>
+            <small>{{ object.start }} - {{ object.end }}</small>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col card">
+        <div class="card-body">
+            <h2>Tasks</h2>
+            <ul class="task-list" id="incomplete">
+                {% for item in object.tasks.all %}
+                <li class="task-item" data-id="{{ item.id }}">{{ item.name }}</li>
+                {% empty %}
+                <li>This project has no tasks</li>
+                {% endfor %}
+                <li>
+                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#new-task-modal">
+                        Add Task
+                    </button>
+                </li>
+            </ul>
+            <ul class="completed task-list">
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col card">
+        <div class="card-body">
+            {% with data=object.experiment_set.all %}
+            {% include 'app/experiment_table.html' %}
+            {% endwith %}
+        </div>
+    </div>
+</div>
+
+<div class="modal" role="dialog" id="new-task-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">New Task</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/management/projects/tasks/{{object.id}}/" method="POST" class="form" id="new_task">
+            <div class="modal-body">
+                <div class="form-group">
+                    {% csrf_token %}
+                    {{ task_form }}
+                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" id="save-task">Submit</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script_extra %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/pikaday.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
+<script type="text/javascript">
+    new Pikaday({
+        field: $('#{{ task_form.due_date.auto_id }}')[0]
+    });
+
+    $('#{{ task_form.assigned.auto_id }}').selectize();
+    $('#new_task').submit(function(e){
+        var form = $(this);
+
+        $.post(form.attr('action'), form.serialize(), function(){
+            $.get(form.attr('action'), function(tasks){
+                var incomplete = $('#incomplete');
+                incomplete.empty();
+                ids = Object.keys(tasks)
+                for(i = 0 ; i < ids.length; i++){
+                    tasks[ids[i]]
+                }
+            });
+
+            form.trigger("reset");
+            $('#new-task-modal').modal('toggle');
+        }).fail(function(){
+            console.log("Error");
+        });
+
+        e.preventDefault();
+        return false;
+    });
+
+
+</script>
+{% endblock %}
