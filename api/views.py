@@ -8,7 +8,7 @@ from rest_framework import viewsets, status
 from rest_framework_jwt.settings import api_settings
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
-from .serializers import experimentDataSerializer, projectSerializer, commentSerializer, tagsSerializer, experimentSerializer, userSerializer, groupSerializer
+from .serializers import experimentDataSerializer, projectSerializer, commentSerializer, tagsSerializer, experimentSerializer, userSerializer, groupSerializer, simpleExperimentSerializer
 from django.core.serializers import serialize
 from django.http import Http404
 from rest_framework.response import Response
@@ -185,7 +185,6 @@ class experiments(APIView):
     def get(self, request, id = None):
         user_company = request.user.company
         serializer = experimentSerializer
-
         if(id == None):
             experiment_list = Experiment.objects.filter(company = user_company)
         else:
@@ -194,7 +193,7 @@ class experiments(APIView):
     #Post a new Project
     def post(self, request, *args, **kwargs):
         user_company = request.user.company
-        serializer = experimentSerializer(data=request.data)
+        serializer = simpleExperimentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
