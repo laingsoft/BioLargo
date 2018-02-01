@@ -3,7 +3,10 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
 import json
+from io import TextIOWrapper
 from app.models import *
+from app.parsers import CsvParser, Parser
+from rest_framework.parsers import FileUploadParser
 from rest_framework import viewsets, status
 from rest_framework_jwt.settings import api_settings
 from rest_framework.decorators import api_view
@@ -124,13 +127,6 @@ class resttest(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = commentSerializer
 
-class tags(APIView):
-    def get(self, request):
-        company = request.user.company
-        queryset = Tag.objects.filter(company = company)
-        serializer = tagsSerializer
-        return Response(serializer(queryset, many=True).data)
-
 #This will get all the epxeriments that are part of the project whose ID is passed in
 @api_view(['GET'])
 def getExperimentsWithProjectId(request, id):
@@ -151,6 +147,19 @@ def getExperimentData(request, id):
     experiment_data = ExperimentData.objects.filter(experiment = id)
     return Response(serializer(experiment_data, many=True).data)
 
+class tags(APIView):
+    def get(self, request):
+        company = request.user.company
+        queryset = Tag.objects.filter(company = company)
+        serializer = tagsSerializer
+        return Response(serializer(queryset, many=True).data)
+    def post(self, request, *args, **kwargs):
+        user_company = request.user.company
+        serializer = tagsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class projects(APIView):
     #Retrieves the list of projects from the same company the user is part of.
@@ -179,7 +188,7 @@ class projects(APIView):
         result = data.delete()
         return JsonResponse({"result": result[0]>0})
 
-
+        
 class experiments(APIView):
     #Retrieves the list of experiments from the same company the user is part of.
     def get(self, request, id = None):
@@ -190,14 +199,19 @@ class experiments(APIView):
         else:
             experiment_list = Experiment.objects.filter(id = id)
         return Response(serializer(experiment_list, many=True).data)
-    #Post a new Project
+    #Post a new Experiment - This method uses the simplifiedExperimentSerializer which requires less data to create a new experiment.
     def post(self, request, *args, **kwargs):
+        experiment = simpleExperimentSerializer(data=request.data);
         user_company = request.user.company
-        serializer = simpleExperimentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        file_obj = request.FILES['file']
+        # parser = CsvParser(file_obj)
+        parser = Parser(buffer=TextIOWrapper(
+                    file_obj), encoding=request.encoding)
+        return Response(file_obj)
+        # parser = Parser()
+        # parser.create_object(experiment)
+        # parser.get_parser().create_object(experiment)
+        # return Response(serializer.data, status=status.HTTP_201_BAD_REQUEST)
 
     def delete(self, request, id):
         company = request.user.company
@@ -206,5 +220,10 @@ class experiments(APIView):
             raise Http404("Experiment not found")
         result = data.delete()
         return JsonResponse({"result": result[0]>0})
+
+
+
+
+
 
 

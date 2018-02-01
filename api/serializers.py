@@ -42,8 +42,9 @@ class experimentSerializer(serializers.ModelSerializer):
         model = Experiment
         fields = '__all__'
 
-class simpleExperimentSerializer(serialzer.ModelSerializer):
+class simpleExperimentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Experiment
         fields = '__all__'
+
 
