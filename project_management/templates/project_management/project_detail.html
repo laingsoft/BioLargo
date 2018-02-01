@@ -1,4 +1,5 @@
 {% extends 'management/base_template.html'%}
+{% load static %}
 
 {% block css_extra %}
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/css/pikaday.css">
@@ -8,6 +9,22 @@
     .task-list{
         list-style: none;
     }
+
+    .task-item {
+        display: block;
+        border-bottom: 1px solid #ddd;
+        height: 3rem;
+     }
+
+    .task-item > input {
+        margin-right: 0.5em;
+    }
+
+    .task-item:hover {
+        background: #f6f6f6;
+        cursor: pointer;
+    }
+
 </style>
 {% endblock %}
 
@@ -34,18 +51,18 @@
     <div class="col card">
         <div class="card-body">
             <h2>Tasks</h2>
-            <ul class="task-list" id="incomplete">
+            <ul class="list-group task-list" id="incomplete">
                 {% for item in object.tasks.all %}
-                <li class="task-item" data-id="{{ item.id }}">{{ item.name }}</li>
+                <li class="list-group-item task-item" id="{{ item.id }}">
+                    <input type="checkbox">{{ item.name }}</li>
                 {% empty %}
                 <li>This project has no tasks</li>
                 {% endfor %}
-                <li>
-                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#new-task-modal">
-                        Add Task
-                    </button>
-                </li>
             </ul>
+            <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#task-modal">
+                Add Task
+            </button>
+
             <ul class="completed task-list">
             </ul>
         </div>
@@ -61,64 +78,23 @@
     </div>
 </div>
 
-<div class="modal" role="dialog" id="new-task-modal">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">New Task</h4>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form action="/management/projects/tasks/{{object.id}}/" method="POST" class="form" id="new_task">
-            <div class="modal-body">
-                <div class="form-group">
-                    {% csrf_token %}
-                    {{ task_form }}
-                </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                <button class="btn btn-primary" id="save-task">Submit</button>
-            </div>
-            </form>
-        </div>
-    </div>
-</div>
+
 {% endblock %}
 
 {% block script_extra %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/pikaday.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone.js"></script>
+
+<script src="{% static 'js/tasklist.js' %}"></script>
 <script type="text/javascript">
-    new Pikaday({
-        field: $('#{{ task_form.due_date.auto_id }}')[0]
-    });
+new Pikaday({
+    field: $('#{{ task_form.due_date.auto_id }}')[0]
+});
 
-    $('#{{ task_form.assigned.auto_id }}').selectize();
-    $('#new_task').submit(function(e){
-        var form = $(this);
-
-        $.post(form.attr('action'), form.serialize(), function(){
-            $.get(form.attr('action'), function(tasks){
-                var incomplete = $('#incomplete');
-                incomplete.empty();
-                ids = Object.keys(tasks)
-                for(i = 0 ; i < ids.length; i++){
-                    tasks[ids[i]]
-                }
-            });
-
-            form.trigger("reset");
-            $('#new-task-modal').modal('toggle');
-        }).fail(function(){
-            console.log("Error");
-        });
-
-        e.preventDefault();
-        return false;
-    });
-
-
+$('#{{ task_form.assigned.auto_id }}').selectize();
 </script>
 {% endblock %}

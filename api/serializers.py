@@ -1,6 +1,7 @@
 from app.models import *
 from accounts.models import User
 from rest_framework import serializers
+from project_management.models import Task
 
 class commentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,3 +37,9 @@ class experimentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Experiment
         fields = '__all__'
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        exclude = ('company',)
