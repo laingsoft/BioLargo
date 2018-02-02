@@ -44,7 +44,7 @@ class Experiment(models.Model):
     tags = models.ManyToManyField(Tag)
     metadata = JSONField(default='')
     friendly_name = models.CharField(max_length=255)
-    followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followed_experiments")
+    followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followed_experiments", null = True, blank = True)
 
 
 class ExperimentData(models.Model):
