@@ -10,6 +10,7 @@ router.register(r'experiment', views.experiments, 'experiment')
 
 
 urlpatterns = [
+    url(r'^overview_count/$', views.getOverviewCount),
     url(r'^tags/$', views.tags.as_view()),
     url(r'^experiment_data/(?P<id>[0-9]+)$', views.getExperimentData),
     url(r'^experiments_with_project_id/(?P<id>[0-9]+)$', views.getExperimentsWithProjectId, name="experiments_with_project_id"),

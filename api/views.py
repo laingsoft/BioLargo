@@ -5,6 +5,7 @@ from django.contrib.auth import get_user
 import json
 from io import TextIOWrapper
 from app.models import *
+from accounts.models import User
 from app.parsers import CsvParser, Parser
 from rest_framework.parsers import FileUploadParser
 from rest_framework import viewsets, status
@@ -85,7 +86,7 @@ def get_user(request):
 
 #This generates a new Token for the user when an old token is passed in. This is used instead of
 #   the default refresh_jwt_token since that was not working.
-@api_view(['POST'])
+@api_view(['GET'])
 def get_new_token(request):
     jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
     jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -147,6 +148,17 @@ def getExperimentData(request, id):
     experiment_data = ExperimentData.objects.filter(experiment = id)
     return Response(serializer(experiment_data, many=True).data)
 
+@api_view(['GET'])
+def getOverviewCount(request):
+    user_company = request.user.company
+    experiment_count = Experiment.objects.filter(company = user_company).count()
+    user_count = User.objects.filter(company = user_company).count() 
+    project_count = Project.objects.filter(company = user_company).count()
+    return JsonResponse({"experiments" : experiment_count, 
+                        "projects" : project_count,
+                        "users" : user_count})
+
+
 class tags(APIView):
     def get(self, request):
         company = request.user.company
@@ -201,17 +213,20 @@ class experiments(APIView):
         return Response(serializer(experiment_list, many=True).data)
     #Post a new Experiment - This method uses the simplifiedExperimentSerializer which requires less data to create a new experiment.
     def post(self, request, *args, **kwargs):
-        experiment = simpleExperimentSerializer(data=request.data);
-        user_company = request.user.company
+        #Serialize the data from the experiment
+        serializer = simpleExperimentSerializer(data=request.data)
+        #Put the request's user and company information into the serializer
+        serializer.user = request.user
+        serializer.company = request.user.company
+        #Get the file object that was passed in and parse it with the file parser
         file_obj = request.FILES['file']
-        # parser = CsvParser(file_obj)
-        parser = Parser(buffer=TextIOWrapper(
-                    file_obj), encoding=request.encoding)
-        return Response(file_obj)
-        # parser = Parser()
-        # parser.create_object(experiment)
-        # parser.get_parser().create_object(experiment)
-        # return Response(serializer.data, status=status.HTTP_201_BAD_REQUEST)
+        parser = Parser(buffer=TextIOWrapper(file_obj), encoding=request.encoding)
+        #If the serializer is valid, save it into an experiment Object and send that object into the parser to create the finished experiment.
+        if serializer.is_valid():
+            experiment = serializer.save()
+            parser.get_parser().create_objects(experiment)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
         company = request.user.company
