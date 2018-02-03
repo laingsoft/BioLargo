@@ -3,10 +3,11 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
 import json
+import datetime
 from io import TextIOWrapper
 from app.models import *
 from accounts.models import User
-from app.parsers import CsvParser, Parser
+from app.parsers import Parser
 from rest_framework.parsers import FileUploadParser
 from rest_framework import viewsets, status
 from rest_framework_jwt.settings import api_settings
@@ -154,9 +155,24 @@ def getOverviewCount(request):
     experiment_count = Experiment.objects.filter(company = user_company).count()
     user_count = User.objects.filter(company = user_company).count() 
     project_count = Project.objects.filter(company = user_company).count()
+
+    #############
+    currentDate = datetime.date.today()
+    delta = datetime.timedelta(days=1)
+
+    minusOne = currentDate - delta
+    dayOne = Experiment.objects.filter(create_timestamp__range=[minusOne, currentDate]).count()
+    minusTwo = minusOne - delta
+    dayTwo = Experiment.objects.filter(create_timestamp__range=[minusTwo, minusOne]).count()
+    minusThree = minusTwo - delta
+    dayThree = Experiment.objects.filter(create_timestamp__range=[minusThree, minusTwo]).count()
     return JsonResponse({"experiments" : experiment_count, 
                         "projects" : project_count,
-                        "users" : user_count})
+                        "users" : user_count, 
+                        "first" : dayOne,
+                        "second" : dayTwo, 
+                        "third" : dayThree})
+
 
 
 class tags(APIView):
