@@ -5,8 +5,6 @@ var $ = window.$;
 var tasks;
 var taskDetail;
 
-
-
 var TaskModel = Backbone.Model.extend({
     urlRoot: '/management/projects/' + p_id + '/tasks',
     defaults: {
@@ -102,15 +100,22 @@ var TaskDetailView = Backbone.View.extend({
         $('#taskForm :input').each(function(){
             self.model.set(this.name, this.value);
         });
-        this.model.save();
+
+        this.model.save(null, {success: function(model, response){
+            self.model.set('id', response.data.id);
+        }});
+
         this.$el.modal('hide');
         tasks.add(this.model);
         this.destroy();
     },
     deleteTask: function(){
-        this.model.destroy();
-        this.$el.modal('hide');
-        this.destroy();
+        var conf = confirm('Are you sure you want to delete task?');
+        if (conf){
+            this.model.destroy();
+            this.$el.modal('hide');
+            this.destroy();
+        }
     }
 
 });
@@ -131,5 +136,3 @@ $(document).ready(function(){
 
 
 });
-
-
