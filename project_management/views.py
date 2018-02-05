@@ -130,7 +130,7 @@ class TaskView(View):
         updates task. Uses TaskForm to update.
         """
         params = json.loads(request.body)
-        task = get_object_or_404(Task, id=params.get('id'), project_id=kwargs.get('project'), company=request.user.company)
+        task = get_object_or_404(Task, id=kwargs.get('task_id'), project_id=kwargs.get('project'), company=request.user.company)
 
         form = TaskForm(params, instance=task, company=request.user.company)
 
@@ -151,8 +151,8 @@ class TaskView(View):
         """
         deletes Task.
         """
-        params = json.loads(request.body)
-        task = get_object_or_404(Task, id=params.get('id'), project_id=kwargs.get('project'), company=request.user.company)
+        print(request)
+        task = get_object_or_404(Task, id=kwargs.get('task_id'), project_id=kwargs.get('project'), company=request.user.company)
 
         try:
             task.delete()
