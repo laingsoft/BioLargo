@@ -8,6 +8,7 @@ var taskDetail;
 
 
 var TaskModel = Backbone.Model.extend({
+    urlRoot: '/management/projects/' + p_id + '/tasks',
     defaults: {
         id: null,
         name: null,
@@ -34,6 +35,8 @@ var TaskView = Backbone.View.extend({
         'click': 'clickAction',
     },
     initialize: function(){
+        this.listenTo(this.model, 'remove', this.deleteView);
+        this.listenTo(this.model, 'change', this.render);
         this.render();
     },
     render: function(){
@@ -42,6 +45,11 @@ var TaskView = Backbone.View.extend({
     },
     clickAction: function(){
         taskDetail = new TaskDetailView({model: this.model});
+    },
+    deleteView: function(){
+        this.undelegateEvents();
+        this.$el.removeData().unbind();
+        this.remove();
     }
 });
 
@@ -49,8 +57,7 @@ var TaskView = Backbone.View.extend({
 var TaskListView = Backbone.View.extend({
     el: '#task-list',
     initialize: function(){
-        this.listenTo(this.collection, 'sync', this.viewSync);
-        this.listenTo(this.collection, 'change', this.viewSync);
+        this.listenTo(this.collection, 'sync, add', this.viewSync);
         this.render();
     },
     render: function(){
@@ -73,7 +80,8 @@ var TaskDetailView = Backbone.View.extend({
     el: '#taskModal',
     template: _.template($('#modalTemplate').html()),
     events: {
-        'click #save-btn': 'saveTask'
+        'click #save-btn': 'saveTask',
+        'click #delete-btn': 'deleteTask'
     },
     initialize: function(){
         this.render();
@@ -95,6 +103,12 @@ var TaskDetailView = Backbone.View.extend({
             self.model.set(this.name, this.value);
         });
         this.model.save();
+        this.$el.modal('hide');
+        tasks.add(this.model);
+        this.destroy();
+    },
+    deleteTask: function(){
+        this.model.destroy();
         this.$el.modal('hide');
         this.destroy();
     }
