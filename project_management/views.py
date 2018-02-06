@@ -39,7 +39,6 @@ class ProjectUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
     """
     model = Project
     fields = ("name", "start", "end", "description")
-    template_name = "management/project_update.html"
     success_url = "/management/projects"
 
 
@@ -50,15 +49,6 @@ class ProjectDeleteView(ManagerTestMixin, CompanyObjectsMixin, DeleteView):
     model = Project
     template_name = "management/template_confirm_delete.html"
     success_url = "/management/projects"
-
-
-class ProjectDetailView(CompanyObjectsMixin, DetailView):
-    model = Project
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['task_form'] = TaskForm(company=self.request.user.company)
-        return context
 
 
 class TaskView(View):
@@ -136,3 +126,4 @@ class TaskView(View):
             return HttpResponse(status=500)
 
         return HttpResponse(status=200)
+

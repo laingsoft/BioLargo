@@ -28,9 +28,11 @@ var TaskCollection = Backbone.Collection.extend({
 
 var TaskView = Backbone.View.extend({
     tagName: 'li',
-    className: 'list-group-item task-item',
+    className: 'list-group-item',
+    template: _.template($('#taskTemplate').html()),
     events: {
         'click': 'clickAction',
+        'click :checkbox': 'check'
     },
     initialize: function(){
         this.listenTo(this.model, 'remove', this.deleteView);
@@ -38,7 +40,7 @@ var TaskView = Backbone.View.extend({
         this.render();
     },
     render: function(){
-        this.$el.html(this.model.get('name'));
+        this.$el.html(this.template(this.model.toJSON()));
         return this;
     },
     clickAction: function(){
@@ -48,6 +50,9 @@ var TaskView = Backbone.View.extend({
         this.undelegateEvents();
         this.$el.removeData().unbind();
         this.remove();
+    },
+    check: function(e){
+        e.stopPropagation();
     }
 });
 
@@ -88,6 +93,7 @@ var TaskDetailView = Backbone.View.extend({
         this.$el.empty();
         this.$el.html(this.template(this.model.toJSON()));
         this.$el.modal('show');
+        // $('#taskAssign').selectize();
         return this;
     },
     destroy: function(){
@@ -133,5 +139,4 @@ $(document).ready(function(){
         taskDetail.destroy();
     });
 
-    $('#taskAssign').selectize();
 });

@@ -7,17 +7,51 @@
 
 {% block content %}
 <div class="row">
-    <div class="card col">
-        <div class="card-body">
-            <h1 class="card-title">My Tasks</h1>
-            <div class="card-block">
-                <ul class="list-group">
-                    {% for task in objects %}
-                    <li class="list-group-item">{{task.name}}</li>
-                    {% empty %}
-                    <li class="list-group-item">You are not assigned to any tasks</li>
-                    {% endfor %}
+    <div class="col">
+        <h1 class="card-title">My Tasks</h1>
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li  class="nav-item" >
+                        <a class="nav-link active" href="#todo" data-toggle="tab">Todo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#completed" data-toggle="tab">Completed</a>
+                    </li>
                 </ul>
+            </div>
+            <div class="card-body">
+                <div class="card-block">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="todo">
+                            <ul class="list-group">
+                                {% for task in object_list %}
+                                <li class="list-group-item">{{ task.name}}</li>
+                                {% empty %}
+                                <li class="list-group-item">You are not assigned to any tasks</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="tab-pane" id="completed">
+                            <ul class="list-group">
+                                <li class="list-group-item">dfkjhdkgdfg</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>Calendar</h3>
+            </div>
+            <div class="card-body">
+                <div class="card-block"></div>
             </div>
         </div>
     </div>

@@ -35,39 +35,67 @@
 <li class="breadcrumb-item">
     <a href="/management/projects">Projects</a>
 </li>
-<li class="breadcrumb-item active">{{ object.name }}</li>
+<li class="breadcrumb-item active">{{ object }}</li>
 {% endblock %}
 
 {% block content %}
 <div class="row">
-    <div class="col card">
-        <div class="card-body">
-            <h1>{{ object.name }}</h1>
-            <small>{{ object.start }} - {{ object.end }}</small>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col card">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-sm-2"><h2>Tasks</h2></div>
-                <div class="col-md-10"><button id="addTask" class="float-right btn btn-sm btn-primary">Add Task</button></div>
-            </div>
+    <div class="col">
+        <h1>{{ object }}</h1>
+        <div class="card">
+            <div class="card-body">
 
-            <ul class="list-group task-list" id="task-list">
-            </ul>
-            <ul class="completed task-list" id="task-list">
-            </ul>
+            <small>{{ object.start }} - {{ object.end }}</small>
+            </div>
         </div>
     </div>
 </div>
 <div class="row">
-    <div class="col card">
-        <div class="card-body">
-            {% with data=object.experiment_set.all %}
-            {% include 'app/experiment_table.html' %}
-            {% endwith %}
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li  class="nav-item" >
+                        <a class="nav-link active" href="#todo" data-toggle="tab">Todo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#completed" data-toggle="tab">Completed</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="card-block">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="todo">
+                            <ul class="list-group" id="task-list">
+                            </ul>
+                            <button class="btn btn-block btn-secondary" id="addTask">New Task</button>
+
+                        </div>
+                        <div class="tab-pane" id="completed">
+                            <ul class="list-group">
+                                <li class="list-group-item">
+
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Experiments</h4>
+            </div>
+             <div class="card-body">
+                {% with data=object.experiment_set.all %}
+                {% include 'app/experiment_table.html' %}
+                {% endwith %}
+            </div>
         </div>
     </div>
 </div>
@@ -115,6 +143,19 @@
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
                 <button type="button" id="save-btn" class="btn btn-primary" onclick=''>Save</button>
             </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="taskTemplate">
+    <div class="media">
+        <input type="checkbox">
+        <div class="pl-3 media-body">
+            <div>
+                <b><%=name%></b> - <%=description%>
+                <small class="float-right text-muted"><% if (due_date){ %> Due on <%=due_date%><% } %></small>
+            </div>
+
         </div>
     </div>
 </script>
