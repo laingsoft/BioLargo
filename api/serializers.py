@@ -47,4 +47,15 @@ class simpleExperimentSerializer(serializers.ModelSerializer):
         model = Experiment
         fields = '__all__'
 
+#here, Fields referes to the model fields that the templates use
+class fieldSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Fields
+        fields = '__all__'
 
+class templateSerializer(serializers.ModelSerializer):
+    fields = fieldSerializer(many=True)
+    metadata = fieldSerializer(many=True)
+    class Meta:
+        model = Template
+        fields = '__all__'

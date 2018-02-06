@@ -4,16 +4,18 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
 import json
 import datetime
-from io import TextIOWrapper
+from io import TextIOWrapper, StringIO
 from app.models import *
 from accounts.models import User
-from app.parsers import Parser
+from app.parsers import Parser, JsonParser
+from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import FileUploadParser
 from rest_framework import viewsets, status
 from rest_framework_jwt.settings import api_settings
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
-from .serializers import experimentDataSerializer, projectSerializer, commentSerializer, tagsSerializer, experimentSerializer, userSerializer, groupSerializer, simpleExperimentSerializer
+from app.forms import ExperimentDataForm
+from .serializers import *
 from django.core.serializers import serialize
 from django.http import Http404
 from rest_framework.response import Response
@@ -25,43 +27,6 @@ def requestTest(request):
 
 def index(request):
     pass
-
-@login_required
-def templates(request):
-    if request.method == 'GET':
-        template_name = request.GET.get('template', '')
-
-        try:
-            fields = Template.objects.filter(name = template_name)[0].fields.all()
-            fields = [field.name for field in fields]
-        except IndexError:
-            fields = ['']
-
-
-    if request.method == "POST":
-        data = json.loads(request.body)
-        name = data['name']
-        fields = data['fields']
-
-        if name and fields:
-            # check if name already exists
-            if Template.objects.filter(name=name).exists():
-                return JsonResponse({'success': False, 'error': "Name already exists"})
-
-            template = Template(name = name)
-            template.save()
-
-            f = []
-            for field in fields:
-                f.append(Fields.objects.get_or_create(name=field)[0])
-
-                template.fields.add(*f)
-
-            return JsonResponse({'success' : True})
-
-    return JsonResponse({'fields' : fields})
-
-
 
 # autocomplete results for fields
 @login_required
@@ -235,15 +200,28 @@ class experiments(APIView):
         serializer.user = request.user
         serializer.company = request.user.company
         #Get the file object that was passed in and parse it with the file parser
-        file_obj = request.FILES['file']
-        parser = Parser(buffer=TextIOWrapper(file_obj), encoding=request.encoding)
-        #If the serializer is valid, save it into an experiment Object and send that object into the parser to create the finished experiment.
-        if serializer.is_valid():
-            experiment = serializer.save()
-            parser.get_parser().create_objects(experiment)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        #If there is a valid file, this will do a file upload
+        try:
+            file_obj = request.FILES['file']
+            parser = Parser(buffer=TextIOWrapper(file_obj), encoding=request.encoding)
+            #If the serializer is valid, save it into an experiment Object and send that object into the parser to create the finished experiment.
+            if serializer.is_valid():
+                experiment = serializer.save()
+                parser.get_parser().create_objects(experiment)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        #If no files were passed in, there will be a form upload. This takes care of that in the except block.
+        except:
+            if serializer.is_valid():
+                #Get the json data from the POST request and use that to populate the Experiment Data
+                json_data = json.loads(request.POST["experimentData"])
+                #Make the initial experiment with no data
+                experiment = serializer.save()
+                #iterate through each key of the Data and make a new ExperimentData for it.
+                for key in json_data["data"]:
+                    ExperimentData.objects.create(experiment=experiment, experimentData=json_data["data"], company=request.user.company)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def delete(self, request, id):
         company = request.user.company
         data = Experiment.objects.filter(id = id, company = company)
@@ -253,8 +231,35 @@ class experiments(APIView):
         return JsonResponse({"result": result[0]>0})
 
 
+class template(APIView):
+    def get(self, request, id = None):
+        user_company = request.user.company
+        serializer = templateSerializer
+        if(id == None):
+            template_list = Template.objects.filter(company = user_company)
+        else:
+            template_list = Template.objects.filter(id = id)
+        return Response(serializer(template_list, many=True).data)
 
+    #TODO - unknown response, have not used/tested
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        name = data['name']
+        fields = data['fields']
 
+        if name and fields:
+            # check if name already exists
+            if Template.objects.filter(name=name).exists():
+                return JsonResponse({'success': False, 'error': "Name already exists"})
 
+            template = Template(name = name)
+            template.save()
 
+            f = []
+            for field in fields:
+                f.append(Fields.objects.get_or_create(name=field)[0])
 
+                template.fields.add(*f)
+
+            return JsonResponse({'success' : True})
+    
