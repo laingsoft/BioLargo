@@ -1,0 +1,27 @@
+{% extends 'app/base_template.html' %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="/app">Home</a></li>
+<li class="breadcrumb-item active">Tasks</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="card col">
+        <div class="card-body">
+            <h1 class="card-title">My Tasks</h1>
+            <div class="card-block">
+                <ul class="list-group">
+                    {% for task in objects %}
+                    <li class="list-group-item">{{task.name}}</li>
+                    {% empty %}
+                    <li class="list-group-item">You are not assigned to any tasks</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

@@ -117,7 +117,6 @@ var TaskDetailView = Backbone.View.extend({
             this.destroy();
         }
     }
-
 });
 
 $(document).ready(function(){
@@ -134,5 +133,5 @@ $(document).ready(function(){
         taskDetail.destroy();
     });
 
-
+    $('#taskAssign').selectize();
 });

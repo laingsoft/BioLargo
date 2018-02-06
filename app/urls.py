@@ -14,10 +14,10 @@ urlpatterns = [
     url(r'^analysis', views.analysis_page, name='analysis_page'),
     url(r'^project/(?P<pk>[0-9]+)/$', views.ProjectDetailView.as_view(), name="project_page"),
     url(r'^projects/$', views.ProjectListView.as_view(), name="project_list"),
-    url(r'^projects/create/$', views.create_project, name="create_project"),
     url(r'^create_tag/$', views.create_tag, name="create_tag"),
     url(r'^watch/$', views.watch, name="watch"),
     url(r'^experiments/watched', views.WatchedExperimentListView.as_view()),
     url(r'^projects/watched', views.WatchedProjectsListView.as_view()),
     url(r'^notif_read/$', views.notif_read),
+    url(r'^tasks/$', views.TaskListView.as_view()),
     ]

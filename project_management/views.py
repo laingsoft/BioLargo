@@ -8,9 +8,9 @@ from .forms import TaskForm
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from api.serializers import TaskSerializer
-from django.http import QueryDict
 from django.db import Error
 import json
+from django.contrib.auth import get_user_model
 
 class ProjectListView(ManagerTestMixin, ProjectFilterMixin,
     CompanyObjectsMixin, ListView):
@@ -59,30 +59,6 @@ class ProjectDetailView(CompanyObjectsMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['task_form'] = TaskForm(company=self.request.user.company)
         return context
-
-
-def tasks(request, project):
-    """
-    on get gets a list of tasks related to project.
-    on post creates a new tasl
-    """
-    if not Project.objects.filter(id=project, company=request.user.company).exists():
-        return HttpResponse(status=400)
-
-    if request.method == 'POST':
-        form = TaskForm(request.POST, company=request.user.company)
-
-        if form.is_valid():
-            task = form.save(commit=False)
-            task.company = request.user.company
-            task.project_id = project
-            task.save()
-
-            return HttpResponse(status=201)
-        return HttpResponse(status=400)
-
-    if request.method == 'GET':
-        return JsonResponse({x.id: x.name for x in Task.incomplete.filter(project=project)})
 
 
 class TaskView(View):

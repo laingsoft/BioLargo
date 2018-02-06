@@ -18,6 +18,7 @@ from io import StringIO
 from django.views.generic import ListView, DetailView
 from .mixins import CompanyObjectsMixin, ExpFilterMixin, ProjectFilterMixin
 import datetime
+from project_management.models import Task
 
 
 @login_required
@@ -200,29 +201,6 @@ class ProjectListView(ProjectFilterMixin, CompanyObjectsMixin, ListView):
     template_name = 'app/project_list.html'
 
 
-def create_project(request):
-    """
-    View for creating new projects.
-    """
-    if request.method == "POST":
-        company = request.user.company
-        project_form = ProjectForm(request.POST)
-
-        if project_form.is_valid():
-            project = project_form.save(commit=False)
-            project.company = company
-            project.save()
-
-            return redirect("/app/projects")
-
-    if request.method == "GET":
-        project_form = ProjectForm()
-
-    context = {"form": project_form}
-
-    return render(request, 'app/create_project.html', context)
-
-
 class ProjectDetailView(CompanyObjectsMixin, DetailView):
     model = Project
     template_name = "app/view_project.html"
@@ -300,3 +278,13 @@ def notif_read(request):
         n.read = True
         n.save()
         return JsonResponse({'success': True})
+
+
+class TaskListView(ListView):
+    """
+    A view to display all tasks of a user.
+    """
+    model = Task
+
+    def get_queryset(self):
+        return self.request.user.tasks.all()
