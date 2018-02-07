@@ -12,3 +12,4 @@ def incomplete_tasks(user):
 @register.simple_tag
 def complete_tasks(user):
     return Task.complete.filter(assigned=user)
+

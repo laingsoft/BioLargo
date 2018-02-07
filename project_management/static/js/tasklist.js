@@ -147,6 +147,11 @@ var TaskDetailView = Backbone.View.extend({
     }
 });
 
+var TaskProgressView = Backbone.View.extend({
+    el: '#progress',
+
+});
+
 $(document).ready(function(){
     tasks = new TaskCollection();
     var tasklist = new TaskListView({collection: tasks});
@@ -159,6 +164,12 @@ $(document).ready(function(){
 
     $('#taskModal').on('hidden.bs.modal', function(e){
         taskDetail.destroy();
+    });
+
+    $('#calendar').fullCalendar({
+        dayClick: function(date) {
+            taskDetail = new TaskDetailView({model: new TaskModel({name: "New Task", due_date: date.format()})});
+        },
     });
 
 });

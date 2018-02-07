@@ -1,31 +1,13 @@
 {% extends 'management/base_template.html'%}
 {% load static %}
+{% load task_tags %}
+
 
 {% block css_extra %}
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/css/pikaday.css">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.css">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.bootstrap3.min.css">
-<style type="text/css">
-    .task-list{
-        list-style: none;
-    }
-
-    .task-item {
-        display: block;
-        border-bottom: 1px solid #ddd;
-        height: 3rem;
-     }
-
-    .task-item > input {
-        margin-right: 0.5em;
-    }
-
-    .task-item:hover {
-        background: #f6f6f6;
-        cursor: pointer;
-    }
-
-</style>
+<link rel="stylesheet" type="text/css" href=" https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.css">
 {% endblock %}
 
 {% block breadcrumb %}
@@ -39,9 +21,10 @@
 {% endblock %}
 
 {% block content %}
+    <h1>{{ object }}</h1>
+
 <div class="row">
-    <div class="col">
-        <h1>{{ object }}</h1>
+    <div class="col-md-5">
         <div class="card">
             <div class="card-body">
                 <div class="card-block">
@@ -73,23 +56,65 @@
                             <button type="reset" class="btn btn-secondary">Reset</button>
                             <button class="btn btn-primary">Save</button>
                         </div>
-
                     </form>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="row">
     <div class="col">
-        <div class="card">
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Experiments</h5>
+                       {{ object.experiment_set.count }}
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Progress</h5>
+                        <div class="progress progress-xs" id="progress">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Scientists</h5>
+                        <div class="progress progress-xs" id="">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Tags</h5>
+                        <div class="progress progress-xs" id="">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="card" id="">
             <div class="card-header">
                 <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                    <li  class="nav-item" >
-                        <a class="nav-link active" href="#todo" data-toggle="tab">Todo</a>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#todo" data-toggle="tab"><b>Todo</b></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#completed" data-toggle="tab">Completed</a>
+                        <a class="nav-link" href="#completed" data-toggle="tab"><b>Completed</b></a>
                     </li>
                 </ul>
             </div>
@@ -101,7 +126,6 @@
                         </li>
                     </ul>
                     <button class="btn btn-block btn-secondary" id="addTask">New Task</button>
-
                 </div>
                 <div class="tab-pane" id="completed">
                     <ul class="list-group" id="completed-list">
@@ -113,12 +137,25 @@
             </div>
         </div>
     </div>
-</div>
-<div class="row">
     <div class="col">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Experiments</h4>
+                <b>Calendar</b>
+            </div>
+            <div class="card-body">
+                <div class="card-block" id="calendar">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="card" id="experiments">
+            <div class="card-header">
+                <b class="card-title">Experiments</b>
             </div>
              <div class="card-body">
                 {% with data=object.experiment_set.all %}
@@ -136,9 +173,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/pikaday.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone.js"></script>
+<script src=" https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.js"></script>
 
 <script type="text/template" id="modalTemplate">
     <div class="modal-dialog">
