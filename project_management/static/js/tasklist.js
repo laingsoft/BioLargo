@@ -41,6 +41,11 @@ var TaskView = Backbone.View.extend({
     },
     render: function(){
         this.$el.html(this.template(this.model.toJSON()));
+        var self = this;
+        if (this.model.get('complete')) {
+            self.$('input:checkbox').attr('checked', true);
+        }
+
         return this;
     },
     clickAction: function(){
@@ -52,28 +57,45 @@ var TaskView = Backbone.View.extend({
         this.remove();
     },
     check: function(e){
+        this.model.set('complete', this.$('input:checkbox').is(':checked'));
+        this.model.save();
         e.stopPropagation();
     }
 });
 
 
 var TaskListView = Backbone.View.extend({
-    el: '#task-list',
+    el: '#task-lists',
     initialize: function(){
         this.listenTo(this.collection, 'sync, add', this.viewSync);
+        this.listenTo(this.collection, 'change:complete', this.viewSync);
         this.render();
     },
     render: function(){
         var self = this;
         this.collection.each(function(task){
-            self.$el.append(new TaskView({model: task}).el);
+            if (task.get('complete')){
+                self.$('#completed-list').append(new TaskView({model: task}).el);
+            }
+            else {
+                self.$('#todo-list').append(new TaskView({model: task}).el);
+            }
 
         });
+
+        if (this.$('#todo-list li').length == 0) {
+            self.$('#todo-list').append('<li class="list-group-item">No todo items found.</li>');
+        }
+
+        if (this.$('#completed-list li').length == 0) {
+            self.$('#completed-list').append('<li class="list-group-item">No completed items found.</li>');
+        }
 
         return this;
     },
     viewSync: function(){
-        this.$el.empty();
+        this.$('#todo-list').empty();
+        this.$('#completed-list').empty();
         this.render();
     },
 });

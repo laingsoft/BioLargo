@@ -69,9 +69,7 @@ class TaskView(View):
             )
 
         # serialize task
-        task_data = []
-        for task in tasks:
-            task_data.append(TaskSerializer(task).data)
+        task_data = TaskSerializer(tasks, many=True).data
 
         return JsonResponse({'data': task_data})
 
@@ -111,7 +109,7 @@ class TaskView(View):
         except Error:
             return HttpResponse(status=500)
 
-        return HttpResponse(status=200)
+        return JsonResponse({'data': TaskSerializer(task).data})
 
     def delete(self, request, **kwargs):
         """
@@ -125,5 +123,5 @@ class TaskView(View):
         except Error:
             return HttpResponse(status=500)
 
-        return HttpResponse(status=200)
+        return HttpResponse()
 
