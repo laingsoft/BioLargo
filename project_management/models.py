@@ -46,7 +46,7 @@ class Task(models.Model):
     Model for tasks in a project.
     """
     company = models.ForeignKey(Company)
-    project = models.ForeignKey(Project, related_name="tasks")
+    project = models.ForeignKey(Project, related_name="tasks", on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=255)
     assigned = models.ForeignKey(

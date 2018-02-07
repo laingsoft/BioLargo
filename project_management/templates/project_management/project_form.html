@@ -47,15 +47,33 @@
                 <div class="card-block">
                     <form method="POST">
                         {% csrf_token %}
-                        {% for field in form %}
                         <div class="form-group">
-                            <label for {{ field.auto_id }}>{{field.label}}</label>
-                            <input class="form-control" name="{{ field.name }}" value="{{ field.value }}">
+                            {{ form.name.errors}}
+                            <label for {{ form.name.auto_id }}>{{form.name.label}}</label>
+                            <input class="form-control" name="{{ form.name.name }}" value="{{ form.name.value }}">
                         </div>
-                        {% endfor %}
+                        <div class="form-row">
+                            <div class="form-group col">
+                                {{ form.start.errors}}
+                                <label for {{ form.start.auto_id }}>{{form.start.label}}</label>
+                                <input id="{{ form.start.auto_id }}" type="text" class="form-control" name="{{ form.start.name }}" value="{{ form.start.value|date:"Y-m-d" }}">
+                            </div>
+                            <div class="form-group col">
+                                {{ form.end.errors}}
+                                <label for {{ form.end.auto_id }}>{{form.end.label}}</label>
+                                <input id="{{ form.end.auto_id}}" type="text" class="form-control" name="{{ form.end.name }}" value="{{ form.end.value|date:"Y-m-d" }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {{ form.description.errors}}
+                            <label for {{ form.description.auto_id }}>{{form.description.label}}</label>
+                            <input class="form-control" name="{{ form.description.name }}" value="{{ form.description.value }}">
+                        </div>
+                        <div class="form-group float-right">
+                            <button type="reset" class="btn btn-secondary">Reset</button>
+                            <button class="btn btn-primary">Save</button>
+                        </div>
 
-                        <button type="reset" class="btn btn-secondary">Reset</button>
-                        <button class="btn btn-primary">Save</button>
                     </form>
                 </div>
             </div>
@@ -175,6 +193,8 @@
 
 <script type="text/javascript">
     var p_id = {{ object.id }};
+    start = new Pikaday({ field: $('#{{ form.start.auto_id }}')[0] });
+    end = new Pikaday({ field: $('#{{ form.end.auto_id }}')[0] });
 </script>
 <script src="{% static 'js/tasklist.js' %}"></script>
 
