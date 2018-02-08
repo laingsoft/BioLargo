@@ -1,6 +1,6 @@
 BioLargo Data storage and analysis  project.
 
-Built using Docker and Django. 
+Built using Docker and Django.
 
 To build and run, use:
    docker-compose up
@@ -24,10 +24,14 @@ To build and run, use:
 * Homepage: https://www.djangoproject.com/
 * Licence: [BSD](https://github.com/django/django/blob/master/LICENSE)
 
-### jsGrid
-* Homepage: http://js-grid.com/
-* Licence: [MIT](https://github.com/tabalinas/jsgrid/blob/master/LICENSE)
-
 ### OpenIconic
 * Homepage: https://useiconic.com/open
 * Licence [MIT](https://github.com/iconic/open-iconic/blob/master/ICON-LICENSE)
+
+### Backbone.js
+* Homepage: http://backbonejs.org/
+* Licence [MIT](https://github.com/jashkenas/backbone/blob/master/LICENSE)
+
+### FullCalendar
+* Homepage: https://fullcalendar.io/
+* Licence: [MIT](https://github.com/fullcalendar/fullcalendar/blob/master/LICENSE.txt)
