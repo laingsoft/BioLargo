@@ -5,6 +5,9 @@ var $ = window.$;
 var tasks;
 var taskDetail;
 
+/**
+* Backbone Model for tasks.
+*/
 var TaskModel = Backbone.Model.extend({
     urlRoot: '/management/projects/' + p_id + '/tasks',
     defaults: {
@@ -15,17 +18,44 @@ var TaskModel = Backbone.Model.extend({
         due_date: null,
         timestamp: null,
         complete: null
+    },
+    to_event: function(){
+        var e = {
+            id: this.get('id'),
+            title: this.get('name'),
+            start: this.get('due_date')
+        };
+        return e;
     }
 });
 
+/**
+* Backbone collection for tasks.
+*/
 var TaskCollection = Backbone.Collection.extend({
     url: '/management/projects/' + p_id + '/tasks',
     model: TaskModel,
+    initialize: function() {
+        _.bindAll(this, 'to_events');
+    },
     parse: function(data){
         return data.data;
+    },
+    to_events: function() {
+        var e = [];
+        this.each(function(task) {
+            if (task.get('due_date')){
+                e.push(task.to_event());
+            }
+        });
+        return {events: e};
     }
 });
 
+
+/**
+* View for individual tasks in the list
+*/
 var TaskView = Backbone.View.extend({
     tagName: 'li',
     className: 'list-group-item',
@@ -63,11 +93,14 @@ var TaskView = Backbone.View.extend({
     }
 });
 
-
+/**
+* View for rendering a list of tasks
+*/
 var TaskListView = Backbone.View.extend({
     el: '#task-lists',
     initialize: function(){
-        this.listenTo(this.collection, 'sync, add', this.viewSync);
+        this.listenTo(this.collection, 'reset, sync', this.viewSync);
+        this.listenTo(this.collection, 'add', this.addTask);
         this.listenTo(this.collection, 'change:complete', this.viewSync);
         this.render();
     },
@@ -98,9 +131,14 @@ var TaskListView = Backbone.View.extend({
         this.$('#completed-list').empty();
         this.render();
     },
+    addTask : function(model){
+        this.$('#todo-list').append(new TaskView({model: model}));
+    }
 });
 
-// View that displays changes content of a modal
+/**
+* View for the modal for updating and editing tasks
+*/
 var TaskDetailView = Backbone.View.extend({
     el: '#taskModal',
     template: _.template($('#modalTemplate').html()),
@@ -144,32 +182,39 @@ var TaskDetailView = Backbone.View.extend({
             this.$el.modal('hide');
             this.destroy();
         }
+    },
+});
+
+var CalendarView = Backbone.View.extend({
+    el: '#calendar',
+    initialize: function() {
+        this.listenTo(this.collection, 'reset', this.addAll);
+    },
+    render: function() {
+        this.$el.fullCalendar({
+            editable: true,
+        });
+    },
+    addAll: function() {
+        this.$el.fullCalendar('addEventSource', this.collection.to_events());
+        this.$el.fullCalendar('rerenderEvents');
     }
 });
 
-var TaskProgressView = Backbone.View.extend({
-    el: '#progress',
-
-});
 
 $(document).ready(function(){
     tasks = new TaskCollection();
-    var tasklist = new TaskListView({collection: tasks});
+    new TaskListView({collection: tasks});
+    new CalendarView({collection: tasks}).render();
 
-    tasks.fetch();
+    tasks.fetch({reset: true});
 
-    $('#addTask').click(function(e){
+    $('#addTask').click(function(){
         taskDetail = new TaskDetailView({model: new TaskModel({name: 'New Task'})});
     });
 
-    $('#taskModal').on('hidden.bs.modal', function(e){
+    $('#taskModal').on('hidden.bs.modal', function(){
         taskDetail.destroy();
-    });
-
-    $('#calendar').fullCalendar({
-        dayClick: function(date) {
-            taskDetail = new TaskDetailView({model: new TaskModel({name: "New Task", due_date: date.format()})});
-        },
     });
 
 });
