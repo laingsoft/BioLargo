@@ -48,7 +48,7 @@ var TaskCollection = Backbone.Collection.extend({
                 e.push(task.to_event());
             }
         });
-        return {events: e};
+        return e;
     }
 });
 
@@ -167,7 +167,7 @@ var TaskDetailView = Backbone.View.extend({
             self.model.set(this.name, this.value);
         });
 
-        this.model.save(null, {success: function(model, response){
+        this.model.save(null, {wait: true, success: function(model, response){
             self.model.set('id', response.data.id);
         }});
 
@@ -178,7 +178,7 @@ var TaskDetailView = Backbone.View.extend({
     deleteTask: function(){
         var conf = confirm('Are you sure you want to delete task?');
         if (conf){
-            this.model.destroy();
+            this.model.destroy({wait: true});
             this.$el.modal('hide');
             this.destroy();
         }
@@ -189,6 +189,7 @@ var CalendarView = Backbone.View.extend({
     el: '#calendar',
     initialize: function() {
         this.listenTo(this.collection, 'reset', this.addAll);
+        this.listenTo(this.collection, 'remove, add', this.rerender);
     },
     render: function() {
         this.$el.fullCalendar({
@@ -196,8 +197,16 @@ var CalendarView = Backbone.View.extend({
         });
     },
     addAll: function() {
-        this.$el.fullCalendar('addEventSource', this.collection.to_events());
+        var self = this;
+        this.$el.fullCalendar('addEventSource', function(start, end, timezone, callback) {
+            var events = self.collection.to_events();
+            callback(events);
+
+        });
         this.$el.fullCalendar('rerenderEvents');
+    },
+    rerender: function() {
+        this.$el.fullCalendar('refetchEvents');
     }
 });
 

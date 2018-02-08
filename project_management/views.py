@@ -123,5 +123,5 @@ class TaskView(View):
         except Error:
             return HttpResponse(status=500)
 
-        return HttpResponse()
+        return JsonResponse({'data': TaskSerializer(task).data})
 
