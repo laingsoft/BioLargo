@@ -218,8 +218,7 @@ class experiments(APIView):
                 #Make the initial experiment with no data
                 experiment = serializer.save()
                 #iterate through each key of the Data and make a new ExperimentData for it.
-                for key in json_data["data"]:
-                    ExperimentData.objects.create(experiment=experiment, experimentData=json_data["data"], company=request.user.company)
+                ExperimentData.objects.create(experiment=experiment, experimentData=json_data["data"], company=request.user.company)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def delete(self, request, id):
