@@ -82,8 +82,6 @@ var TaskView = Backbone.View.extend({
         taskDetail = new TaskDetailView({model: this.model});
     },
     deleteView: function(){
-        this.undelegateEvents();
-        this.$el.removeData().unbind();
         this.remove();
     },
     check: function(e){
@@ -180,7 +178,6 @@ var TaskDetailView = Backbone.View.extend({
         if (conf){
             this.model.destroy({wait: true});
             this.$el.modal('hide');
-            this.destroy();
         }
     },
 });
@@ -188,8 +185,10 @@ var TaskDetailView = Backbone.View.extend({
 var CalendarView = Backbone.View.extend({
     el: '#calendar',
     initialize: function() {
-        this.listenTo(this.collection, 'reset', this.addAll);
-        this.listenTo(this.collection, 'remove, add', this.rerender);
+        _.bindAll(this, 'addAll');
+        this.collection.once('reset', this.addAll);
+        this.listenTo(this.collection, 'add, change', this.rerender);
+        this.listenTo(this.collection, 'remove', this.rerender);
     },
     render: function() {
         this.$el.fullCalendar({
