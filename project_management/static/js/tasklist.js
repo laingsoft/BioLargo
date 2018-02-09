@@ -26,6 +26,19 @@ var TaskModel = Backbone.Model.extend({
             start: this.get('due_date')
         };
         return e;
+    },
+    validate: function(attrs) {
+        if (attrs.name.length < 1){
+            return 'Task name is required.';
+        }
+
+        if (attrs.description.length < 1){
+            return 'A description is required.';
+        }
+
+        if (new Date(attrs.due_date) < new Date()){
+            return 'Due date is in the past.';
+        }
     }
 });
 
@@ -65,8 +78,8 @@ var TaskView = Backbone.View.extend({
         'click :checkbox': 'check'
     },
     initialize: function(){
-        this.listenTo(this.model, 'remove', this.deleteView);
-        this.listenTo(this.model, 'change', this.render);
+        this.listenTo(this.model, 'remove', this.remove);
+        this.listenTo(this.model, 'sync', this.render);
         this.render();
     },
     render: function(){
@@ -79,10 +92,7 @@ var TaskView = Backbone.View.extend({
         return this;
     },
     clickAction: function(){
-        taskDetail = new TaskDetailView({model: this.model});
-    },
-    deleteView: function(){
-        this.remove();
+        taskDetail = new TaskModalView({model: this.model});
     },
     check: function(e){
         this.model.set('complete', this.$('input:checkbox').is(':checked'));
@@ -99,7 +109,7 @@ var TaskListView = Backbone.View.extend({
     initialize: function(){
         this.listenTo(this.collection, 'reset, sync', this.viewSync);
         this.listenTo(this.collection, 'add', this.addTask);
-        this.listenTo(this.collection, 'change:complete', this.viewSync);
+        this.listenTo(this.collection, 'change:complete, remove', this.viewSync);
         this.render();
     },
     render: function(){
@@ -114,11 +124,11 @@ var TaskListView = Backbone.View.extend({
 
         });
 
-        if (this.$('#todo-list li').length == 0) {
+        if (this.$('#todo-list li').length === 0) {
             self.$('#todo-list').append('<li class="list-group-item">No todo items found.</li>');
         }
 
-        if (this.$('#completed-list li').length == 0) {
+        if (this.$('#completed-list li').length ===  0) {
             self.$('#completed-list').append('<li class="list-group-item">No completed items found.</li>');
         }
 
@@ -137,7 +147,7 @@ var TaskListView = Backbone.View.extend({
 /**
 * View for the modal for updating and editing tasks
 */
-var TaskDetailView = Backbone.View.extend({
+var TaskModalView = Backbone.View.extend({
     el: '#taskModal',
     template: _.template($('#modalTemplate').html()),
     events: {
@@ -165,13 +175,21 @@ var TaskDetailView = Backbone.View.extend({
             self.model.set(this.name, this.value);
         });
 
-        this.model.save(null, {wait: true, success: function(model, response){
-            self.model.set('id', response.data.id);
-        }});
+        if (this.model.isValid()){
+            console.log("VALID");
+            this.model.save(null, {
+                wait: true,
+                success: function(model, response){
+                    self.model.set('id', response.data.id);
+                    tasks.add(self.model);
+                },
+                error: function(response) {
+                    console.log(response);
+                }
+            });
 
-        this.$el.modal('hide');
-        tasks.add(this.model);
-        this.destroy();
+            this.$el.modal('hide');
+        }
     },
     deleteTask: function(){
         var conf = confirm('Are you sure you want to delete task?');
@@ -186,13 +204,27 @@ var CalendarView = Backbone.View.extend({
     el: '#calendar',
     initialize: function() {
         _.bindAll(this, 'addAll');
-        this.collection.once('reset', this.addAll);
+        this.listenToOnce(this.collection, 'reset', this.addAll);
         this.listenTo(this.collection, 'add, change', this.rerender);
         this.listenTo(this.collection, 'remove', this.rerender);
     },
     render: function() {
+        var self = this;
+
         this.$el.fullCalendar({
             editable: true,
+            eventClick: function(calEvent) {
+                taskDetail = new TaskModalView({ model: self.collection.get(calEvent.id)});
+            },
+            dayClick: function(date) {
+                taskDetail = new TaskModalView({model: new TaskModel({name: 'New Task', due_date: date.format()})
+                });
+            },
+            eventDrop: function(calEvent) {
+                var task = self.collection.get(calEvent.id);
+                task.set('due_date', calEvent.start.format());
+                task.save();
+            }
         });
     },
     addAll: function() {
@@ -204,6 +236,7 @@ var CalendarView = Backbone.View.extend({
         });
         this.$el.fullCalendar('rerenderEvents');
     },
+
     rerender: function() {
         this.$el.fullCalendar('refetchEvents');
     }
@@ -218,7 +251,7 @@ $(document).ready(function(){
     tasks.fetch({reset: true});
 
     $('#addTask').click(function(){
-        taskDetail = new TaskDetailView({model: new TaskModel({name: 'New Task'})});
+        taskDetail = new TaskModalView({model: new TaskModel({name: 'New Task'})});
     });
 
     $('#taskModal').on('hidden.bs.modal', function(){
