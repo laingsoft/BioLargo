@@ -145,7 +145,8 @@ var TaskListView = Backbone.View.extend({
 });
 
 /**
-* View for the modal for updating and editing tasks
+* View for the modal for updating and editing tasks. Used for just details as
+* well
 */
 var TaskModalView = Backbone.View.extend({
     el: '#taskModal',
@@ -164,19 +165,27 @@ var TaskModalView = Backbone.View.extend({
         // $('#taskAssign').selectize();
         return this;
     },
+
+    // clears modal container and removes all listeners.
     destroy: function(){
         this.undelegateEvents();
         this.$el.removeData();
         this.$el.empty();
     },
+
+    //  called when save button is clicked.
+    //  validates data before saving to model and server.
+    //  state of edited objects should persist as long as it is valid.
     saveTask: function(){
         var self = this;
-        $('#taskForm :input').each(function(){
-            self.model.set(this.name, this.value);
+        var values = {};
+        $('#taskForm :input').each(function() {
+            values[this.name] = this.value;
         });
 
+        self.model.set(values, {validate: true});
+
         if (this.model.isValid()){
-            console.log("VALID");
             this.model.save(null, {
                 wait: true,
                 success: function(model, response){
@@ -191,6 +200,8 @@ var TaskModalView = Backbone.View.extend({
             this.$el.modal('hide');
         }
     },
+
+    // used to delete tasks. hide + deletes modal view afterwards.
     deleteTask: function(){
         var conf = confirm('Are you sure you want to delete task?');
         if (conf){
@@ -200,12 +211,16 @@ var TaskModalView = Backbone.View.extend({
     },
 });
 
+/*
+The view for the calendar. Works with some weirdness.
+**/
 var CalendarView = Backbone.View.extend({
     el: '#calendar',
     initialize: function() {
         _.bindAll(this, 'addAll');
         this.listenToOnce(this.collection, 'reset', this.addAll);
-        this.listenTo(this.collection, 'add, change', this.rerender);
+        this.listenTo(this.collection, 'add', this.rerender);
+        this.listenTo(this.collection, 'change', this.rerender);
         this.listenTo(this.collection, 'remove', this.rerender);
     },
     render: function() {
@@ -227,6 +242,8 @@ var CalendarView = Backbone.View.extend({
             }
         });
     },
+    //  method called when the first collection fetch is called. Used to
+    // populate the calendar events.
     addAll: function() {
         var self = this;
         this.$el.fullCalendar('addEventSource', function(start, end, timezone, callback) {
@@ -237,6 +254,8 @@ var CalendarView = Backbone.View.extend({
         this.$el.fullCalendar('rerenderEvents');
     },
 
+    // called on update, add, delete. Re-renders events after a change in the
+    // collection.
     rerender: function() {
         this.$el.fullCalendar('refetchEvents');
     }
