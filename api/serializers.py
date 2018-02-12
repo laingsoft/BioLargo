@@ -42,4 +42,4 @@ class experimentSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        exclude = ('company',)
+        exclude = ('company', 'timestamp')

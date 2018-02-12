@@ -8,4 +8,6 @@ urlpatterns = [
     url(r'^delete/(?P<pk>\d+)/$', views.ProjectDeleteView.as_view()),
     url(r'^(?P<project>\d+)/tasks/?$', views.TaskView.as_view()),
     url(r'^(?P<project>\d+)/tasks/(?P<task_id>\d+)/?$', views.TaskView.as_view()),
+    url(r'^find_user/$', views.find_user)
+
 ]

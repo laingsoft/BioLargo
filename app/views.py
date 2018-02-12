@@ -280,11 +280,4 @@ def notif_read(request):
         return JsonResponse({'success': True})
 
 
-class TaskListView(ListView):
-    """
-    A view to display all tasks of a user.
-    """
-    model = Task
 
-    def get_queryset(self):
-        return self.request.user.tasks.all()

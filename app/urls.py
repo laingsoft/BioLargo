@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from . import views
+from project_management.views import UserTaskListView, task_complete
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
@@ -19,5 +20,6 @@ urlpatterns = [
     url(r'^experiments/watched', views.WatchedExperimentListView.as_view()),
     url(r'^projects/watched', views.WatchedProjectsListView.as_view()),
     url(r'^notif_read/$', views.notif_read),
-    url(r'^tasks/$', views.TaskListView.as_view()),
+    url(r'^tasks/$', UserTaskListView.as_view()),
+    url(r'^task_complete/(?P<id>[0-9]+)/?$', task_complete)
     ]

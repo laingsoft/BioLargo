@@ -11,6 +11,7 @@ from api.serializers import TaskSerializer
 from django.db import Error
 import json
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
 class ProjectListView(ManagerTestMixin, ProjectFilterMixin,
     CompanyObjectsMixin, ListView):
@@ -51,9 +52,9 @@ class ProjectDeleteView(ManagerTestMixin, CompanyObjectsMixin, DeleteView):
     success_url = "/management/projects"
 
 
-class TaskView(View):
+class TaskView(ManagerTestMixin, View):
     """
-    View used for Task CRUD operations. Takes JSON data.
+    View used for Task CRUD operations. Takes JSON data. Management staff only.
     """
 
     def __init__(self, *args, **kwargs):
@@ -125,3 +126,38 @@ class TaskView(View):
 
         return JsonResponse({'data': TaskSerializer(task).data})
 
+
+def find_user(request):
+    if request.method == 'GET':
+        search = request.GET.get('q', '')
+        qs = get_user_model().objects.filter(
+            Q(first_name__icontains=search) |
+            Q(last_name__icontains=search) |
+            Q(email__icontains=search) &
+            Q(company=request.user.company)
+            ).values('id', 'first_name', 'last_name', 'email')
+
+
+        return JsonResponse({'users': list(qs)})
+
+
+def task_complete(request, id):
+    """
+    For non-management users to set task to complete and link an experiment to
+    task (optional).
+    """
+    if request.method == 'PUT':
+        data = json.loads(request.body)
+        complete = bool(data.get('complete', False))
+
+
+
+class UserTaskListView(ListView):
+    """
+    A view to display all tasks of a user.
+    """
+    model = Task
+    template_name = 'project_management/task_list.html'
+    def get_queryset(self):
+        return json.dumps(TaskSerializer(self.request.user.tasks.all(), many=True).data)
+        return self.request.user.tasks.all()
