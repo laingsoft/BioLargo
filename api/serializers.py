@@ -12,7 +12,7 @@ class commentSerializer(serializers.ModelSerializer):
     user = userSerializer()
     class Meta:
         model = Comment
-        fields = ['experiment', 'content', 'user']
+        fields = '__all__'
 
 class experimentDataSerializer(serializers.ModelSerializer):
     class Meta:
