@@ -146,16 +146,16 @@ def watch(request):
     object_id = request.POST['id']
     object_type = request.POST['type']
     print(request.data)
-    if ObjectTypes[object_type].objects.filter(id=id).exists():
-        obj = ObjectTypes[object_type].objects.get(id=id)
+    if ObjectTypes[object_type].objects.filter(id=object_id).exists():
+        obj = ObjectTypes[object_type].objects.get(id=object_id)
         #If the user is already following this particular object, then remove them from the list
         if obj.followers.filter(id=request.user.id).exists():
             obj.followers.remove(request.user)
-            return JsonResponse({'watched': True})
+            return JsonResponse({'watched': False})
         #Add the user to the list of followers
         else:
             obj.followers.add(request.user)
-            return JsonResponse({'watched': False})
+            return JsonResponse({'watched': True})
     return JsonResponse({'success': False})
 
 
