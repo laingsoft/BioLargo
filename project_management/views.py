@@ -144,12 +144,18 @@ def find_user(request):
 def task_complete(request, id):
     """
     For non-management users to set task to complete and link an experiment to
-    task (optional).
+    task (optional). Will return updated, serialized task (because backbone)
     """
     if request.method == 'PUT':
         data = json.loads(request.body)
         complete = bool(data.get('complete', False))
+        task = get_object_or_404(Task, assigned=request.user, id=id)
+        task.complete = complete
+        task.related_experiment_id = data.get('related_experiment', None)
 
+        task.save()
+
+        return JsonResponse(TaskSerializer(task).data)
 
 
 class UserTaskListView(ListView):

@@ -9,7 +9,7 @@ var taskDetail;
 * Backbone Model for tasks.
 */
 var TaskModel = Backbone.Model.extend({
-    urlRoot: '/management/projects/' + p_id + '/tasks',
+    urlRoot: '/app/task_complete/',
     defaults: {
         id: null,
         name: null,
