@@ -59,3 +59,8 @@ class templateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
         fields = '__all__'
+
+class notificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'

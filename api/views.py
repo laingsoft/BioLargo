@@ -79,12 +79,14 @@ def getExperimentData(request, id):
 
 @api_view(['GET'])
 def getOverviewCount(request):
+    #Get the counts for the amount of experiments, projects, and users for the particular company
     user_company = request.user.company
     experiment_count = Experiment.objects.filter(company = user_company).count()
-    user_count = User.objects.filter(company = user_company).count() 
     project_count = Project.objects.filter(company = user_company).count()
+    user_count = User.objects.filter(company = user_company).count() 
 
     #############
+    #Get the number of experiments that was created in the user's company for the past three days.
     currentDate = datetime.date.today()
     delta = datetime.timedelta(days=1)
 
@@ -94,12 +96,19 @@ def getOverviewCount(request):
     dayTwo = Experiment.objects.filter(create_timestamp__range=[minusTwo, minusOne]).count()
     minusThree = minusTwo - delta
     dayThree = Experiment.objects.filter(create_timestamp__range=[minusThree, minusTwo]).count()
+
+    #############
+    #Get all the unread notifications that the user should see.
+    notifications = notificationSerializer(Notification.objects.filter(read=False, 
+        recipient = request.user), many = True).data
+
     return JsonResponse({"experiments" : experiment_count, 
                         "projects" : project_count,
                         "users" : user_count, 
                         "first" : dayOne,
                         "second" : dayTwo, 
-                        "third" : dayThree})
+                        "third" : dayThree, 
+                        "notifications": notifications})
 
 #Will toggle a "Watch" on both experiments and/or projects
 #Requires an experiment/project id and a type as to differentiate between EXP or PRJ
