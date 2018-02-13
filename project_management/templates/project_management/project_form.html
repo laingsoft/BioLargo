@@ -75,6 +75,7 @@
         <div class="card">
             <div class="card-body">
                 <h5>Experiments</h5>
+                {{ object.experiment_set.all.count }}
             </div>
         </div>
     </div>
@@ -82,6 +83,7 @@
         <div class="card">
             <div class="card-body">
                 <h5>Progress</h5>
+                {% task_progress object %} %
             </div>
         </div>
     </div>
@@ -89,6 +91,7 @@
         <div class="card">
             <div class="card-body">
                 <h5>Scientists</h5>
+                {% count_scientists object %}
             </div>
         </div>
     </div>
@@ -96,6 +99,8 @@
         <div class="card">
             <div class="card-body">
                 <h5>Tags</h5>
+                {% get_tags object as tags %}
+                {{ tags.count }}
             </div>
         </div>
     </div>
