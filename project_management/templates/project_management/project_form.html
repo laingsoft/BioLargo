@@ -101,51 +101,7 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-5">
-        <div class="card" id="">
-            <div class="card-header">
-                <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#todo" data-toggle="tab"><b>Todo</b></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#completed" data-toggle="tab"><b>Completed</b></a>
-                    </li>
-                </ul>
-            </div>
-            <div class="card-body tab-content" id="task-lists">
-                <div class="tab-pane active" id="todo">
-                    <ul class="list-group" id="todo-list">
-                        <li class="list-group-item">
-                            No todo items found.
-                        </li>
-                    </ul>
-                    <button class="btn btn-block btn-secondary" id="addTask">New Task</button>
-                </div>
-                <div class="tab-pane" id="completed">
-                    <ul class="list-group" id="completed-list">
-                        <li class="list-group-item">
-                            No completed tasks.
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card">
-            <div class="card-header">
-                <b>Calendar</b>
-            </div>
-            <div class="card-body">
-                <div class="card-block" id="calendar">
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+{% include 'project_management/includes/task_list_include.html' %}
 
 <div class="row">
     <div class="col">
@@ -229,7 +185,6 @@
     start = new Pikaday({ field: $('#{{ form.start.auto_id }}')[0] });
     end = new Pikaday({ field: $('#{{ form.end.auto_id }}')[0] });
 </script>
-<script src="{% static 'js/tasklist.js' %}"></script>
-
+<script src="{% static 'js/management_tasklist.js' %}"></script>
 
 {% endblock %}
