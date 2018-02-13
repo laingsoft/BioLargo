@@ -4,7 +4,6 @@ from rest_framework import routers
 from rest_framework.authtoken import views as authviews
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
 router = routers.DefaultRouter()
-router.register(r'comments', views.resttest, 'comment')
 router.register(r'tags', views.tags, 'tag')
 router.register(r'experiment', views.experiments, 'experiment')
 
@@ -28,7 +27,6 @@ urlpatterns = [
     url(r'^fields',views.fields_autocomplete, name="fields_autocomplete"),
     url(r'^templates/(?P<id>[0-9]+)$', views.template.as_view(), name="template"),
     url(r'^templates/$', views.template.as_view(), name="templates"),
-    url(r'^comment/', views.comment, name="comment"),
-    url(r'^comments/(?P<id>[0-9]+)$', views.get_exp_comments),
-    url(r'^testreq', views.requestTest, name="reqtest"),
+    url(r'^comment/(?P<id>[0-9]+)$', views.comment.as_view()),
+    url(r'^comment/$', views.comment.as_view()),
 ]

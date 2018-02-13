@@ -60,39 +60,7 @@ def get_new_token(request):
     token = jwt_encode_handler(payload)
     return Response(token)
 
-@login_required
-def comment(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        content = data['content']
-        experiment_id = data['exp_id']
-        try:
-            Comment.objects.create(
-                user=request.user,
-                content=content,
-                experiment=Experiment.objects.get(id=experiment_id),
-                company=request.user.company,
-            )
 
-        except IntegrityError:
-            return JsonResponse({'Success':0})
-
-        return JsonResponse({'Success':1})
-
-    elif request.method == 'GET':
-        if (request.body):
-            data = json.loads(request.body)
-            get_id = data['exp_id']
-            comment = Comment.objects.filter(experiment = Experiment.objects.get(id = get_id))
-        else:
-            comment = Comment.objects.all()
-
-        ret = {k: {'user':v.user.email, 'content':v.content, 'experiment':v.experiment.id} for k,v in enumerate(comment)}
-        return JsonResponse(ret)
-
-class resttest(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
-    serializer_class = commentSerializer
 
 #This will get all the epxeriments that are part of the project whose ID is passed in
 @api_view(['GET'])
@@ -101,11 +69,6 @@ def getExperimentsWithProjectId(request, id):
     serializer = experimentSerializer
     return Response(serializer(experiments, many = True).data)
 
-#This gets the comments from the experiment whose ID is passed in. 
-@api_view(['GET'])
-def get_exp_comments(request, id):
-    comments = Comment.objects.filter(experiment = id)
-    return Response(commentSerializer(comments, many = True).data)
 
 #Get the Data from the Experiment Data model according to the experiment id passed in
 @api_view(['GET'])
@@ -166,7 +129,6 @@ class tags(APIView):
         serializer = tagsSerializer
         return Response(serializer(queryset, many=True).data)
     def post(self, request, *args, **kwargs):
-        user_company = request.user.company
         serializer = tagsSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -281,3 +243,31 @@ class template(APIView):
 
             return JsonResponse({'success' : True})
     
+#To post a new comment, the request body requires an experiment id (exp_id) 
+# and content
+class comment(APIView): 
+    def post(self, request): 
+        try:
+            Comment.objects.create(
+                user=request.user,
+                content=request.POST['content'],
+                experiment=Experiment.objects.get(id=request.POST['exp_id']),
+                company=request.user.company,
+            )
+        except IntegrityError:
+            return JsonResponse({'Success':0})
+        return JsonResponse({'Success':1})
+    #The get requires an id passed in through the URL to get comments
+    # for that particular experiment
+    def get(self, request, id):
+        comments = Comment.objects.filter(experiment = id)
+        return Response(commentSerializer(comments, many = True).data)
+    
+
+
+
+
+
+
+
+
