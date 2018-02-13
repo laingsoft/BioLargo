@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-5">
-        <div class="card" id="">
+        <div class="card">
             <div class="card-header">
                 <ul class="nav nav-tabs card-header-tabs" role="tablist">
                     <li class="nav-item">
@@ -9,6 +9,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#completed" data-toggle="tab"><b>Completed</b></a>
                     </li>
+                    {% if 'management' in request.path %}
+                        <div class="nav-link bg-primary ml-auto text-light" id="addTask">Add new task</div>
+                    {% endif %}
                 </ul>
             </div>
             <div class="card-body border-0 tab-content p-0" id="task-lists">
@@ -18,9 +21,6 @@
                             No todo items found.
                         </li>
                     </ul>
-                    {% if 'management' in request.path %}
-                        <button class="btn btn-block btn-primary" id="addTask">Add Task</button>
-                    {% endif %}
                   </div>
                 <div class="tab-pane p-0" id="completed">
                     <ul class="list-group" id="completed-list">

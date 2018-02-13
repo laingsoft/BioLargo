@@ -169,11 +169,10 @@
 
 <script type="text/template" id="taskTemplate">
     <div class="media">
-        <input type="checkbox">
-        <div class="media-body ml-3">
+        <div class="media-body">
             <div>
-                <b><%=name%></b> - <%=description%>
-                <small class="float-right text-muted"><% if (due_date){ %> Due on <%=due_date%><% } %></small>
+                <b><%=name%></b><small class="float-right text-muted"><% if (due_date){ %> Due on <%=due_date%><% } %></small>
+                <div><%=description%></div>
             </div>
 
         </div>
