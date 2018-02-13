@@ -248,7 +248,7 @@ class template(APIView):
 class comment(APIView): 
     def post(self, request): 
         try:
-            Comment.objects.create(
+            new_comment = Comment.objects.create(
                 user=request.user,
                 content=request.POST['content'],
                 experiment=Experiment.objects.get(id=request.POST['exp_id']),
@@ -256,7 +256,7 @@ class comment(APIView):
             )
         except IntegrityError:
             return JsonResponse({'Success':0})
-        return JsonResponse({'Success':1})
+        return JsonResponse(commentSerializer(new_comment).data)
     #The get requires an id passed in through the URL to get comments
     # for that particular experiment
     def get(self, request, id):
