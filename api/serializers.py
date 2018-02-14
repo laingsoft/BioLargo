@@ -40,6 +40,8 @@ class experimentSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    project = projectSerializer()
+    assigned = userSerializer()
     class Meta:
         model = Task
         exclude = ('company', 'timestamp')

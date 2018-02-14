@@ -27,7 +27,7 @@ def task_progress(project):
     """
     complete = Task.completed.filter(project=project).count()
     total = Task.objects.filter(project=project).count()
-    return complete/total * 100
+    return round(complete/total * 100, 2)
 
 
 @register.simple_tag

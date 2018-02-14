@@ -13,14 +13,15 @@ var taskDetail;
 var TaskModel = Backbone.Model.extend({
     urlRoot: '/app/task_complete/',
     defaults: {
-        id: null, // id from server
+        id: null,
         name: null,
         description: null,
-        assigned: null, // this is an objects. has attributes name, email, id
+        assigned: null,
         due_date: null,
         timestamp: null,
-        complete: null, // true or false
-        related_experiment: null, // object with attributes id and name
+        complete: null,
+        related_experiment: null,
+        project: null,
     },
     to_event: function(){
         var e = {

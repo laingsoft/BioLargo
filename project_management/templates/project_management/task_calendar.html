@@ -1,29 +1,44 @@
 {% extends 'management/base_template.html'%}
 {% load static %}
-{% load task_tags %}
 
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="/management">Manage</a></li>
+<li class="breadcrumb-item"><a href="/management/projects">Projects</a></li>
+<li class="breadcrumb-item active">Calendar</li>
+{% endblock %}
 
 {% block css_extra %}
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/css/pikaday.css">
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.css">
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.bootstrap3.min.css">
 <link rel="stylesheet" type="text/css" href=" https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.css">
 {% endblock %}
 
-{% block breadcrumb %}
-<li class="breadcrumb-item">
-    <a href="/management">Manage</a>
-</li>
-<li class="breadcrumb-item">
-    <a href="/management/projects">Projects</a>
-</li>
-<li class="breadcrumb-item active">{{ object }}</li>
-{% endblock %}
-
 {% block content %}
+    {% include 'project_management/includes/task_list_include.html' %}
 
-{% include 'project_management/includes/task_list_include.html' %}
-
+    <div class="modal fade" id="addRelated" tabindex="-1" role="dialog" aria-labelledby="addRelatedLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="addRelatedLabel">Add related experiment</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          </div>
+           <form class="form" id="related_form">
+              <div class="modal-body">
+                    <div class="form-group">
+                        <label for="relatedExperiment">
+                        Related Experiment
+                        </label>
+                        <input type="text" name="relatedExperiment" id="relatedExperiment" class="form-control">
+                    </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger mr-auto" onclick='' data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" id="skip" onclick='' data-dismiss="modal">Skip</button>
+                <button type="submit" class="btn btn-primary" onclick='' data-dismiss="modal" id="add">Add</button>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
 {% endblock %}
 
 {% block script_extra %}
@@ -36,35 +51,45 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="taskModalLabel"><%= name %></h4>
+                <h4 class="modal-title" id="taskModalLabel"><%= name %>
+                <% if (complete) { %>
+                    <span class="badge badge-success ml-3">Completed</span>
+                <% } %>
+                </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
-                <form id="taskForm">
-                    <div class="form-group">
-                        <label for="taskName">Task Name</label>
-                        <input id="taskName" required class="form-control" placeholder="Name" name="name" <%if (id) { %>value="<%= name %><% }%>">
-                    </div>
-                    <div class="form-group">
-                        <label for="taskDescription">Task Description</label>
-                        <input id="taskDescription" required class="form-control" placeholder="Description" name="description" value="<%= description %>">
-                    </div>
-                    <div class="form-group">
-                        <label for="taskAssign">Assign Task</label>
-                        <input id="taskAssign" class="form-control" placeholder="Assign" name="assigned" value="<%= assigned %>">
-                    </div>
-                    <div class="form-group">
-                        <label for="taskDue">Due date</label>
-                        <input id="taskDue" type="date" class="form-control" placeholder="Due" name="due_date" value="<%= due_date %>">
-                    </div>
-                </form>
+                <h5>Task Name</h5>
+                <p><%= name %></p>
+                <h5>Project</h5>
+                <p><a href="/management/projects/<%= project.id %>"><%= project.name %></a></p>
+                <h5>Description</h5>
+                <p><%= description %></p>
+                <h5>Assigned</h5>
+                <% if (assigned) { %>
+                <p><a href="/accounts/user/<%= assigned.id %>"><%= assigned.first_name %> <%= assigned.last_name %></a></p>
+                <% } else { %>
+                <p>No user assigned</p>
+                <% } %>
+                <h5>Due Date</h5>
+                <% if (due_date)  { %>
+                    <p><%= due_date %></p>
+                <% } else { %>
+                    <p>No due date set. </p>
+                <% } %>
+
+                <%if (complete && related_experiment) { %>
+                <h5>Related Experiment</h5>
+                <p><%= related_experiment %></p>
+
+                <% } %>
             </div>
             <div class="modal-footer">
-                <%if (id) { %>
-                <button type="button" class="btn btn-danger mr-auto" id="delete-btn">Delete</button>
+                <%if (!complete) { %>
+                <button type="button" class="btn btn-success mr-auto" id="complete-btn" data-dismiss="modal">Mark Complete</button>
                 <% }%>
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                <button type="button" id="save-btn" class="btn btn-primary" onclick=''>Save</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="close-btn">close</button>
+
             </div>
         </div>
     </div>
@@ -82,6 +107,8 @@
     </div>
 </script>
 
-<script src="{% static 'js/management_tasklist.js' %}"></script>
-
+<script type="text/javascript">
+    var tasks_array = {{ object_list | safe }};
+</script>
+<script src="{% static 'js/tasklist.js' %}"></script>
 {% endblock %}

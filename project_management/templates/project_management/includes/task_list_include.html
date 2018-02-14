@@ -9,7 +9,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#completed" data-toggle="tab"><b>Completed</b></a>
                     </li>
-                    {% if 'management' in request.path %}
+                    {% if 'management' in request.path and 'calendar' not in request.path  %}
                         <div class="nav-link bg-primary ml-auto text-light" id="addTask">Add new task</div>
                     {% endif %}
                 </ul>

@@ -12,6 +12,7 @@ from django.db import Error
 import json
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+import datetime
 
 class ProjectListView(ManagerTestMixin, ProjectFilterMixin,
     CompanyObjectsMixin, ListView):
@@ -166,4 +167,23 @@ class UserTaskListView(ListView):
     template_name = 'project_management/task_list.html'
     def get_queryset(self):
         return json.dumps(TaskSerializer(self.request.user.tasks.all(), many=True).data)
-        return self.request.user.tasks.all()
+
+
+class CalendarTaskView(ListView):
+    """
+    A view used for displaying all tasks from 1 one before current month.
+    """
+
+    model = Task
+    template_name = "project_management/task_calendar.html"
+
+    def get_queryset(self):
+        today = datetime.date.today()
+        last_month = today.month - 1 or 12  # if January, set to December.
+        year = today.year if last_month != 12 else today.year - 1
+
+        cutoff_date = datetime.date(year, last_month, 1)
+
+        qs = self.request.user.company.task_set.filter(due_date__gte = cutoff_date)
+
+        return json.dumps(TaskSerializer(qs, many=True).data)
