@@ -49,6 +49,14 @@ def get_user(request):
     user = request.user
     serializer = userSerializer
     return Response(serializer(user).data)
+@api_view(['GET'])
+def get_company_users(request):
+    company = request.user.company
+    serializer = userSerializer
+    users = User.objects.filter(company = company)
+    return Response(serializer(users, many=True).data)
+
+
 
 #This generates a new Token for the user when an old token is passed in. This is used instead of
 #   the default refresh_jwt_token since that was not working.
@@ -76,6 +84,17 @@ def getExperimentData(request, id):
     serializer = experimentDataSerializer
     experiment_data = ExperimentData.objects.filter(experiment = id)
     return Response(serializer(experiment_data, many=True).data)
+
+
+#Call this with a notification id in the URL to mark it as read
+@api_view(['GET'])
+def read_notification(request, id):
+    n = Notification.unread.get(id=id, recipient=request.user)
+    n.read = True
+    n.save()
+    return JsonResponse({'success': True})
+
+
 
 @api_view(['GET'])
 def getOverviewCount(request):
