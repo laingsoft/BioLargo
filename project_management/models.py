@@ -18,6 +18,7 @@ class Project(models.Model):
         related_name="followed_project"
         )
 
+
     def __str__(self):
         return self.name
 

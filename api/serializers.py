@@ -3,22 +3,22 @@ from accounts.models import User
 from rest_framework import serializers
 from project_management.models import Task
 
-class commentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = ['experiment', 'content', 'user']
-
 class userSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'company', 'first_name', 'last_name',
             'email', 'is_manager']
 
+class commentSerializer(serializers.ModelSerializer):
+    user = userSerializer()
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
 class experimentDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExperimentData
-        fields = ['experiment','experimentData']
-
+        fields = ['experimentData']
 
 class tagsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,6 +42,32 @@ class experimentSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     project = projectSerializer()
     assigned = userSerializer()
+
     class Meta:
         model = Task
         exclude = ('company', 'timestamp')
+
+
+class simpleExperimentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Experiment
+        fields = '__all__'
+
+#here, Fields referes to the model fields that the templates use
+class fieldSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Fields
+        fields = '__all__'
+
+class templateSerializer(serializers.ModelSerializer):
+    fields = fieldSerializer(many=True)
+    metadata = fieldSerializer(many=True)
+    class Meta:
+        model = Template
+        fields = '__all__'
+
+class notificationSerializer(serializers.ModelSerializer):
+    subject = userSerializer()
+    class Meta:
+        model = Notification
+        fields = '__all__'
