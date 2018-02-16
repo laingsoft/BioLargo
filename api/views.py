@@ -292,3 +292,10 @@ class comment(APIView):
     def get(self, request, id):
         comments = Comment.objects.filter(experiment = id)
         return Response(commentSerializer(comments, many = True).data)
+
+
+def analysis_page(request):
+    company = request.user.company
+    all_tags = Tag.objects.filter(company=company)
+    all_groups = Project.objects.filter(company=company)
+    return render(request, "test.html", {"usr":get_user(request), "tags":all_tags, "groups":all_groups})
