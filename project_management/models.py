@@ -15,7 +15,7 @@ class Project(models.Model):
     description = models.TextField(blank=True, null=True)
     followers = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
-        related_name="followed_project"
+        related_name="followed_project", blank = True
         )
 
 
