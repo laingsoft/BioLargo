@@ -1,0 +1,83 @@
+{% extends "management/base_template.html" %}
+{% load static %}
+
+{% block css_extra %}
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/css/pikaday.css">
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">
+    <a href="/management">Manage</a>
+</li>
+<li class="breadcrumb-item">
+    <a href="/management/projects">Projects</a>
+</li>
+<li class="breadcrumb-item active">
+    Create
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <div class="row pb-4">
+            <div class="col">
+                <h1>New Project</h1>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="card-block">
+                    {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                    <div class="alert alert-warning">
+                    {{ error }}
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            {% if form.name.errors %}
+                            <li
+                                {{ form.name.errors}}
+                            {% endif %}
+                            <label for {{ form.name.auto_id }}>{{form.name.label}}</label>
+                            <input class="form-control" name="{{ form.name.name }}" >
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col">
+                                {{ form.start.errors}}
+                                <label for {{ form.start.auto_id }}>{{form.start.label}}</label>
+                                <input id="{{ form.start.auto_id }}" type="text" class="form-control" name="{{ form.start.name }}">
+                            </div>
+                            <div class="form-group col">
+                                {{ form.end.errors}}
+                                <label for {{ form.end.auto_id }}>{{form.end.label}}</label>
+                                <input id="{{ form.end.auto_id}}" type="text" class="form-control" name="{{ form.end.name }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {{ form.description.errors}}
+                            <label for {{ form.description.auto_id }}>{{form.description.label}}</label>
+                            <input class="form-control" name="{{ form.description.name }}" >
+                        </div>
+                        <div class="form-group float-right">
+                            <button class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script_extra %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/pikaday.min.js"></script>
+<script type="text/javascript">
+    start = new Pikaday({ field: $('#{{ form.start.auto_id }}')[0] });
+    end = new Pikaday({ field: $('#{{ form.end.auto_id }}')[0] });
+</script>
+{% endblock %}

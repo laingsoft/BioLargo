@@ -4,7 +4,7 @@ from app.mixins import (CompanyObjectsMixin, CompanyObjectCreateMixin,
     ProjectFilterMixin)
 from management.mixins import ManagerTestMixin
 from .models import Project, Task
-from .forms import TaskForm
+from .forms import TaskForm, iCalUploadForm
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from api.serializers import TaskSerializer
@@ -14,6 +14,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 import datetime
 
+
 class ProjectListView(ManagerTestMixin, ProjectFilterMixin,
     CompanyObjectsMixin, ListView):
     """
@@ -21,7 +22,6 @@ class ProjectListView(ManagerTestMixin, ProjectFilterMixin,
     project, add a project, edit or delete.
     """
     model = Project
-    template_name = "management/projects.html"
     paginate_by = 20
 
 
@@ -31,7 +31,7 @@ class ProjectCreateView(ManagerTestMixin, CompanyObjectCreateMixin, CompanyObjec
     """
     model = Project
     fields = ('name', 'start', 'end', 'description')
-    template_name = "management/project_update.html"
+    template_name = "project_management/project_create.html"
     success_url = "/management/projects"
 
 

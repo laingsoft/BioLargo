@@ -1,4 +1,6 @@
 {% extends 'app/base_template.html' %}
+{% load task_tags %}
+
 {% load static %}
 {% block css_extra %}
 {% endblock %}
@@ -18,11 +20,17 @@
 
 {% block content %}
 <div class="row">
-    <div class="col">
+    <div class="col-sm-6 ">
         <div class="card">
             <div class="card-body">
-                <h1 class="card-title">{{object.name}}</h1>
-                {%include "app/watch_button.html"%}
+                <div class="row justify-content-between">
+                    <div class="col-9">
+                        <h1 class="card-title">{{object}}</h1>
+                    </div>
+                    <div class="col-3">
+                        {%include "app/watch_button.html"%}
+                    </div>
+                </div>
 
                 <div class="text-muted">{{object.start}} -
                     {% if object.end %}
@@ -32,25 +40,31 @@
                 <div>
                     {{ object.description }}
                 </div>
-                <div class="card-block">
-                    Some graphs and stats here.
-                </div>
             </div>
             <div class="card-footer">
                 <ul>
                     <li>
-                        <div class="text-muted">Total</div>
-                        <strong>{{ experiments|length }} Experiments</strong>
+                        <div class="text-muted">Total Experiments</div>
+                        <strong>{{ experiments|length }} </strong>
                     </li>
                     <li class="d-none d-md-table-cell">
                         <div class="text-muted">Participants</div>
-                        <strong>{{ user_count }} {% if user_count > 1 %} Scientists{% else %}Scientist{% endif %}</strong>
+                        <strong>{{ user_count }}</strong>
                     </li>
-                    <li>
-                        <div class="text-muted">Some stat</div>
-                        <strong>1 thing</strong>
+                    <li class="d-none d-md-table-cell">
+                        <div class="text-muted">Progress</div>
+                        <strong>{% task_progress object %} %</strong>
                     </li>
                 </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-block">
+                    some more stats here.
+                </div>
             </div>
         </div>
     </div>
@@ -62,7 +76,7 @@
             <div class="card-body">
                 <h2 class="card-title">Experiments</h2>
                 <div class="card-block">
-                    <table class="table table-hover">
+                    <table class="table table-responsive-sm table-hover">
                         <thead>
                             <tr>
                                 <th>Name</th>

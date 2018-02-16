@@ -21,3 +21,7 @@ class TaskForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['assigned'] = forms.ModelChoiceField(queryset=get_user_model().objects.filter(company=company), required=False)
 
+
+
+class iCalUploadForm(forms.Form):
+    file = forms.FileField()
