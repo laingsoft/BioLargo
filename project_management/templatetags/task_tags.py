@@ -27,6 +27,9 @@ def task_progress(project):
     """
     complete = Task.completed.filter(project=project).count()
     total = Task.objects.filter(project=project).count()
+    if total == 0:
+        return 0
+
     return round(complete/total * 100, 2)
 
 

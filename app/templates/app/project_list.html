@@ -20,34 +20,39 @@
 
 
 {% block content %}
-<div class="row justify-content-between">
-    <div class="col-sm-2"><h1 class="card-title">Projects</h1></div>
-    <div class="col-sm-2"><a class="btn btn-primary float-right" href="create">Create Project</a></div>
+<div class="row justify-content-between pb-4">
+    <div class="col-4">
+        <h1>Projects</h1>
+    </div>
 </div>
 <div class="row">
     <div class="col">
         <div class="card">
-            <div class="card-block">
-                <table id="project-table" class="table table-hover">
-                    <thead class="thead-default">
-                        <tr>
-                            <th>Project Name</th>
-                            <th>Start date</th>
-                            <th>End date</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for project in object_list %}
-                        <tr class="project-row" data-url='/app/project/{{project.id}}'>
-                            <td>{{project.name}}</td>
-                            <td>{{project.start}}</td>
-                            <td>{{project.end}}</td>
-                            <td>{{project.description}}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="card-body">
+                <div class="card-block">
+                    <table class="table table-hover table-responsive-md">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Start date</th>
+                                <th>End date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for project in  object_list %}
+                            <tr class="clickable" data-id="{{ project.id }}">
+                                <td>{{ project.name }}</td>
+                                <td>{{ project.description }}</td>
+                                <td>{{ project.start }}</td>
+                                <td>{{ project.end }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="9999" class="text-center">No Projects Found</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -56,8 +61,8 @@
 
 {% block script_extra %}
 <script type="text/javascript">
-    $(".project-row").click(function(){
-        window.location = $(this).data("url");
+    $(".clickable").click(function(){
+        window.location = $(this).data("id");
     });
 </script>
 {% endblock %}
