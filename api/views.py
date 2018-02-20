@@ -229,7 +229,8 @@ class experiments(APIView):
                 #Make the initial experiment with no data
                 experiment = serializer.save()
                 #iterate through each key of the Data and make a new ExperimentData for it.
-                ExperimentData.objects.create(experiment=experiment, experimentData=json_data["data"], company=request.user.company)
+                for i in json.loads(request.POST['experimentData']):
+                    ExperimentData.objects.create(experiment=experiment, experimentData=json.loads(request.POST['experimentData'])[i], company=request.user.company)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def delete(self, request, id):
@@ -293,9 +294,9 @@ class comment(APIView):
         comments = Comment.objects.filter(experiment = id)
         return Response(commentSerializer(comments, many = True).data)
 
-
+@api_view(['GET'])
 def analysis_page(request):
     company = request.user.company
     all_tags = Tag.objects.filter(company=company)
     all_groups = Project.objects.filter(company=company)
-    return render(request, "test.html", {"usr":get_user(request), "tags":all_tags, "groups":all_groups})
+    return render(request, "test.html", {"usr":request.user, "tags":all_tags, "groups":all_groups})
