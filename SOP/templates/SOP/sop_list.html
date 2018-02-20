@@ -1,0 +1,42 @@
+{% extends "management/base_template.html" %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">
+    <a href="/management">Manage</a>
+</li>
+<li class="breadcrumb-item active">
+    SOP
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <h1>SOPs</h1>
+        <div class="card">
+            <div class="card-body">
+                <div class="card-block">
+                    <table class="table table-resposive-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sop in object_list %}
+                            <tr>
+                                <td>{{sop.name}}</td>
+                                <td>{{sop.description}}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td class="text-center" colspan="999">No SOPs added.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

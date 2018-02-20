@@ -181,3 +181,5 @@ JWT_AUTH = {
     'JWT_PAYLOAD_HANDLER':
     'rest_framework_jwt.utils.jwt_payload_handler',
 }
+
+MEDIA_ROOT = '/uploads/'
