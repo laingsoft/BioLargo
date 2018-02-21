@@ -27,6 +27,7 @@ def register_user(request, linkHash):
             return render(request, 'registration/register.html',
                 {"form": user_form, "company": company})
         else:
+            
             raise Http404
 
     if request.method == "POST":
