@@ -158,3 +158,8 @@ body {
     width: 42rem;
   }
 }
+
+.headerLogo{
+    height: 3rem;
+    width: 4rem;
+}
