@@ -18,24 +18,35 @@
 {% block content %}
 <div class="row">
     <div class="col">
-        <form action="/app/experiments" method="GET">
-        <input type="text" name="name" placeholder="Name">
-        <input type="text" name="project_name" placeholder="Project">
-        <input type="text" name="metadata" placeholder="Metadata (JSON)">
-        <input type="text" name="fields" placeholder="Fields (JSON)">
-        <button>Filter</button>
-    </form>
+        <h1>Experiments</h1>
     </div>
+    <div class="col float-right">
+        <button class="btn btn-secondary aside-menu-toggler float-right">Filter</button>
+        <a class="btn btn-primary float-right" href="/app/upload">Upload</a>
+
+    </div>
+
 </div>
 <div class="row">
     <div class="col">
-        <div class="card"  id="experiments">
-            {% with data=object_list %}
-                {% include "app/experiment_table.html" %}
-            {% endwith %}
+        <div class="card" id="experiments">
+            <div class="card-body">
+                <div class="card-block">
+                    {% with data=object_list %}
+                        {% include "app/experiment_table.html" %}
+                    {% endwith %}
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block aside %}
+<aside class="aside-menu">
+    {% include 'includes/exp_filter.html' %}
+</aside>
 {% endblock %}
 
 {% block script_extra %}

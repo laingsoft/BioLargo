@@ -99,9 +99,9 @@ class BaseFilterMixin:
 
         if order_by in self.ORDER_FIELDS:
             if order == "desc":
-                qs = qs.order_by("-" + order_by)
+                qs = qs.order_by('id', "-" + order_by)
             else:
-                qs = qs.order_by(order_by)
+                qs = qs.order_by('id', order_by)
 
         return qs
 
@@ -129,7 +129,6 @@ class ExpFilterMixin(BaseFilterMixin):
         "create_timestamp",
         "project__name",
         "friendly_name",
-        "user"
     )
 
 
