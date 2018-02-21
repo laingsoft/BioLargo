@@ -9,6 +9,7 @@ router.register(r'experiment', views.experiments, 'experiment')
 
 
 urlpatterns = [
+    url(r'^task/(?P<id>[0-9]+)$', views.task.as_view()),
     url(r'^test/', views.analysis_page),
     url(r'^read_notification/(?P<id>[0-9]+)$', views.read_notification),
     url(r'^toggle_watch/$', views.watch),
