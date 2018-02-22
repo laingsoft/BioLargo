@@ -79,7 +79,7 @@ class BaseFilterMixin:
                 if "time" not in key and "date" not in key:
                     Q_objects.append(Q(f(filters["search"])))
 
-            qs = qs.filter(reduce(operator.or_, Q_objects)).distinct("pk")
+            qs = qs.filter(reduce(operator.or_, Q_objects))
 
         else:
             # Create filters as Q objects.
@@ -91,7 +91,7 @@ class BaseFilterMixin:
                     pass  # do nothing if not a filter.
 
             if Q_objects:
-                qs = qs.filter(reduce(operator.and_, Q_objects)).distinct("pk")
+                qs = qs.filter(reduce(operator.and_, Q_objects))
 
         # order queryset
         order_by = self.request.GET.get("order_by", None)
@@ -99,9 +99,9 @@ class BaseFilterMixin:
 
         if order_by in self.ORDER_FIELDS:
             if order == "desc":
-                qs = qs.order_by('id', "-" + order_by)
+                qs = qs.order_by("-" + order_by)
             else:
-                qs = qs.order_by('id', order_by)
+                qs = qs.order_by(order_by)
 
         return qs
 
