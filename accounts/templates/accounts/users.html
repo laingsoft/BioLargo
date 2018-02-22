@@ -1,76 +1,37 @@
-{% extends "app/base_template.html" %} 
-{% load accounts_tags %} 
-{% load static %} 
+{% extends "app/base_template.html" %}
+{% load accounts_tags %}
+{% load static %}
 
 {% block css_extra %}
-    <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/profile.css' %}">
-{% endblock %} 
+<!--     <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/profile.css' %}"> -->
+{% endblock %}
 
 {% block breadcrumb %}
+
+    <li class="breadcrumb-item"><a href="/app">Home</a></li>
     <li class="breadcrumb-item active">Users</li>
-{% endblock %} 
+{% endblock %}
 
 {% block content %}
 
-    <form class="pb-4">
-        <div class="form-row">
-        <div class="input-group col-sm-3">
-            <input type="text" name="keyword" id="keyword" placeholder="Search for users">
-            <div class="input-group-btn">
-                <button class="btn btn-secondary">Search</button>
+<div class="row">
+    <div class="col">
+        <div class="card-columns" >
+            {% for user in user_list %}
+            <div class="card" >
+                <div class="media">
+                    <img src="{{ user.email | gravatar_url:120 }}">
+                    <div class="media-body ml-3 mt-3 mr-3 ">
+                        <a href="/accounts/user/{{user.id}}"><h5>{{ user.get_full_name }}</h5></a>
 
-                <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown"></button>
-                <ul class="dropdown-menu">
-                    <li class="dropdown-item">By name</li>
-                    <li class="dropdown-item">By email</li>
-                    <li class="dropdown-item">By username</li>
-                </ul>
+                        <svg class="icon ml-0" viewBox="0 0 8 8"><use xlink:href="#envelope-closed"></use></svg><a href="mailto:{{user.email}}">{{ user.email }}</a>
 
-            </div>
-        </div>
-
-        <div class="input-group col-sm-2">
-            <label for="sortBy">Sort by: </label>
-            <select id="SortBy" name="sort" class="form-control">
-                <option>First Name</option>
-                <option>Last Name</option>
-                <option>Username</option>
-                <option>Email</option>
-            </select>
-        </div>
-        </div>
-    </form>
-
-    <div class="row">
-        {% for userdata in user_list %}
-            <div class="card col-md-2 p-4 profile-card">
-
-                <div class="mx-auto mb-2 mt-2 profile-img">{{userdata.email | gravatar:100 }}</div>
-                <span class="card-text mx-auto profile_username text-capitalize"><a href="/accounts/user/{{ userdata.id }}">{{ userdata.username }}</a></span>
-
-                <div class=" mx-auto user-info ">
-                    {% if userdata.first_name %}
-
-                    <div class="row">
-                        <div class="col">
-                            <img src="{% static 'accounts/svg/person.svg' %}">
-                            <span class="text-capitalize"><b>Name: </b>{{userdata.first_name}} {{userdata.last_name}}</span>
-                        </div>
+                        <p><small><b>Last login:</b> {{ user.last_login }}</small></p>
                     </div>
-                    {% endif %} 
-
-                    {% if userdata.email%}
-                    <div class="row">
-                        <div class="col">
-                            <img src="{% static 'accounts/svg/inbox.svg' %}">
-                            <span><b>Email: </b>
-                                <a href="mailto:{{ userdata.email }}">{{userdata.email}}</a>
-                            </span>
-                        </div>
-                    </div>
-                    {% endif %}
                 </div>
             </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
+</div>
 {% endblock %}
