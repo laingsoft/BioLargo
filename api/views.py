@@ -104,6 +104,35 @@ def mark_task_complete(request, id):
     return JsonResponse({'success' : True})
 
 
+@api_view(['GET'])
+def getProjectStats(request, id):
+    experiments = Experiment.objects.filter(project = id)
+    #Get the number of experiments that the project has associated
+    experiment_count = experiments.count()
+    #Get the number of people that have uploaded experiments for this project id   
+    tempList = []
+    for each in experiments:
+        if(each.user.id not in tempList):
+            tempList.append(each.user.id)
+    scientists = len(tempList)
+    #Get the progress from the ratio of tasks todo / tasks complete
+    tasks = Task.objects.filter(project = id)
+    todo_count = 0
+    for each in tasks:
+        if(each.complete == False):
+            todo_count += 1
+    if tasks.count() != 0:
+        progress = 100 * (1 - (todo_count / tasks.count()))
+    elif todo_count == 0:
+        progress = 100
+    else:
+        progress = 0
+
+
+    return JsonResponse({"experiment_count" : experiment_count, 
+                        "progress" : progress, 
+                        "scientists" : scientists})
+
 
 @api_view(['GET'])
 def getOverviewCount(request):
