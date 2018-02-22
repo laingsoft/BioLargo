@@ -4,7 +4,6 @@ from app.mixins import (CompanyObjectsMixin, CompanyObjectCreateMixin,
     ProjectFilterMixin)
 from management.mixins import ManagerTestMixin
 from .models import Project, Task
-from .forms import TaskForm, iCalUploadForm
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from api.serializers import TaskSerializer
@@ -187,3 +186,6 @@ class CalendarTaskView(ListView):
         qs = self.request.user.company.task_set.filter(due_date__gte = cutoff_date)
 
         return json.dumps(TaskSerializer(qs, many=True).data)
+
+
+

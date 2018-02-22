@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.models import Company
 from django.conf import settings
+from inventory.models import Item
 
 
 class Project(models.Model):

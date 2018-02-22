@@ -137,11 +137,12 @@
 
 
 {% block script_extra %}
-  <script src = "{% static '/app/js/experiment.js' %}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
 
+  <script src = "{% static '/app/js/experiment.js' %}"></script>
+
   <script type="text/javascript">
-    var type = 'EXP'
+    var type = 'EXP';
   </script>
   <script src='{% static "app/js/watch.js"%}'></script>
 
