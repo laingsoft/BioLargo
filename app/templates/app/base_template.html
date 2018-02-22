@@ -143,7 +143,7 @@
             <li class="nav-item dropdown pr-4">
                 <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     {{request.user.email | gravatar:40 }}
-                    {{request.user.email}}
+                    {{request.user.get_full_name}}
                  </a>
                 <div class="dropdown-menu dropdown-menu-right">
                     <div class="dropdown-header text-center">
@@ -161,11 +161,14 @@
                     <!-- <a class="dropdown-item" href="#"><i class="fa fa-file"></i> Projects<span class="badge badge-primary">42</span></a>
                     <div class="divider"></div> -->
                     <!-- <a class="dropdown-item" href="#"><i class="fa fa-shield"></i> Lock Account</a> -->
-                    <a class="dropdown-item" href="/accounts/logout"><svg class="icon" viewBox="0 0 8 8"><use xlink:href="#account-logout"></use></svg> Logout</a> {% if request.user.is_staff %}
+                    <a class="dropdown-item" href="/accounts/logout"><svg class="icon" viewBox="0 0 8 8"><use xlink:href="#account-logout"></use></svg> Logout</a>
+
+                    {% if request.user.is_manager %}
                     <div class="dropdown-header text-center">
-                        <strong>Administration</strong>
+                        <strong>Management</strong>
                     </div>
-                    <a class="dropdown-item" href="/admin"><svg class="icon" viewBox="0 0 8 8"><use xlink:href="#wrench"></use></svg>Admin panel</a> {% endif %}
+                    <a class="dropdown-item" href="/management"><svg class="icon" viewBox="0 0 8 8"><use xlink:href="#wrench"></use></svg>Management panel</a>
+                    {% endif %}
                 </div>
             </li>
         </ul>
@@ -250,6 +253,8 @@
             </div>
             <!-- /.conainer-fluid -->
         </main>
+        {% block aside %}
+        {% endblock %}
     </div>
 <!--     <footer class="app-footer">
     </footer> -->

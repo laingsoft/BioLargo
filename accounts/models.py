@@ -80,7 +80,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         '''
         Returns the first_name plus the last_name
         '''
-        return self.first_name + ' ' + self.last_name
+
+        name = self.first_name + ' ' + self.last_name or self.email
+        return name
 
     def get_short_name(self):
         '''

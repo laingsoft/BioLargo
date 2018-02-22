@@ -1,14 +1,22 @@
 {% extends "management/base_template.html" %}
 
-{% block content %}
+{% block breadcrumb %}
+{% endblock %}
 
+{% block content %}
 <div class = "card">
-  <form method="post">
-    {% csrf_token %}
-    {{ form }}
-    {{ settings}}
-    <input type="submit" value="Submit"/>
-  </form>
+    <div class="card-body">
+        <div class="card-block">
+            <form method="post">
+                <legend>Company Information</legend>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <legend>Settings</legend>
+            {{ settings.as_p }}
+            <input class="btn btn-primary" type="submit" value="Submit"/>
+          </form>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

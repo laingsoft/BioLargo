@@ -23,51 +23,51 @@
 {% block content %}
     <h1>{{ object }}</h1>
 
-<div class="row">
-    <div class="col-md-5">
-        <div class="card">
-            <div class="card-body">
-                <div class="card-block">
-                    <form method="POST">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            {{ form.name.errors}}
-                            <label for {{ form.name.auto_id }}>{{form.name.label}}</label>
-                            <input class="form-control" name="{{ form.name.name }}" value="{{ form.name.value }}">
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col">
-                                {{ form.start.errors}}
-                                <label for {{ form.start.auto_id }}>{{form.start.label}}</label>
-                                <input id="{{ form.start.auto_id }}" type="text" class="form-control" name="{{ form.start.name }}" value="{{ form.start.value|date:"Y-m-d" }}">
-                            </div>
-                            <div class="form-group col">
-                                {{ form.end.errors}}
-                                <label for {{ form.end.auto_id }}>{{form.end.label}}</label>
-                                <input id="{{ form.end.auto_id}}" type="text" class="form-control" name="{{ form.end.name }}" value="{{ form.end.value|date:"Y-m-d" }}">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            {{ form.description.errors}}
-                            <label for {{ form.description.auto_id }}>{{form.description.label}}</label>
-                            <input class="form-control" name="{{ form.description.name }}" value="{{ form.description.value }}">
-                        </div>
-                        <div class="form-group float-right">
-                            <button type="reset" class="btn btn-secondary">Reset</button>
-                            <button class="btn btn-primary">Save</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="row pb-4">
     <div class="col">
-        <div class="card">
-            <div class="card-body">
-                some other stats go here.
+    <div class="card-deck">
+    <div class="card">
+        <div class="card-body">
+            <div class="card-block">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        {{ form.name.errors}}
+                        <label for {{ form.name.auto_id }}>{{form.name.label}}</label>
+                        <input class="form-control" name="{{ form.name.name }}" value="{{ form.name.value }}">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col">
+                            {{ form.start.errors}}
+                            <label for {{ form.start.auto_id }}>{{form.start.label}}</label>
+                            <input id="{{ form.start.auto_id }}" type="text" class="form-control" name="{{ form.start.name }}" value="{{ form.start.value|date:" Y-m-d " }}">
+                        </div>
+                        <div class="form-group col">
+                            {{ form.end.errors}}
+                            <label for {{ form.end.auto_id }}>{{form.end.label}}</label>
+                            <input id="{{ form.end.auto_id}}" type="text" class="form-control" name="{{ form.end.name }}" value="{{ form.end.value|date:" Y-m-d " }}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form.description.errors}}
+                        <label for {{ form.description.auto_id }}>{{form.description.label}}</label>
+                        <input class="form-control" name="{{ form.description.name }}" value="{{ form.description.value }}">
+                    </div>
+                    <div class="form-group float-right">
+                        <button type="reset" class="btn btn-secondary">Reset</button>
+                        <button class="btn btn-primary">Save</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+    <div class="card">
+        <div class="card-body">
+            some other stats go here.
+        </div>
+    </div>
+</div>
+</div>
 </div>
 
 <div class="row">

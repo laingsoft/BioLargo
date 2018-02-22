@@ -12,6 +12,7 @@ import json
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 import datetime
+from .forms import TaskForm
 
 
 class ProjectListView(ManagerTestMixin, ProjectFilterMixin,
