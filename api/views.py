@@ -122,13 +122,20 @@ def getOverviewCount(request):
     notifications = notificationSerializer(Notification.objects.filter(read=False,
         recipient = request.user), many = True).data
 
+    #############
+    #Get the project ids for any projects that have tasks assigned to this user
+    tasks = Task.objects.filter(company=request.user.company, assigned = request.user)
+
+    task_data = TaskSerializer(tasks, many=True).data
+
     return JsonResponse({"experiments" : experiment_count,
                         "projects" : project_count,
                         "users" : user_count,
                         "first" : dayOne,
                         "second" : dayTwo,
                         "third" : dayThree,
-                        "notifications": notifications})
+                        "notifications": notifications, 
+                        "tasks": task_data})
 
 #Will toggle a "Watch" on both experiments and/or projects
 #Requires an experiment/project id and a type as to differentiate between EXP or PRJ
@@ -229,7 +236,8 @@ class experiments(APIView):
                 #Make the initial experiment with no data
                 experiment = serializer.save()
                 #iterate through each key of the Data and make a new ExperimentData for it.
-                ExperimentData.objects.create(experiment=experiment, experimentData=json_data["data"], company=request.user.company)
+                for i in json.loads(request.POST['experimentData']):
+                    ExperimentData.objects.create(experiment=experiment, experimentData=json.loads(request.POST['experimentData'])[i], company=request.user.company)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def delete(self, request, id):
@@ -292,3 +300,47 @@ class comment(APIView):
     def get(self, request, id):
         comments = Comment.objects.filter(experiment = id)
         return Response(commentSerializer(comments, many = True).data)
+
+class task(APIView):
+    def get(self, request, id):
+        """
+        Returns a list of all tasks of a project.
+        """
+        tasks = Task.objects.filter(
+            company=request.user.company,
+            project=id)
+
+        # serialize task
+        task_data = TaskSerializer(tasks, many=True).data
+
+        return Response(task_data)
+
+    def put(self, request, **kwargs):
+        """
+        updates task. Uses TaskForm to update.
+        """
+        params = json.loads(request.body)
+        task = get_object_or_404(Task, id=kwargs.get('task_id'), project_id=kwargs.get('project'), company=request.user.company)
+
+        form = TaskForm(params, instance=task, company=request.user.company)
+
+        if not form.is_valid():
+            return HttpResponse(status=400)
+
+        try:
+            task = form.save(commit=False)
+            task.complete = bool(params.get('complete', False))
+            task.save()
+
+        except Error:
+            return HttpResponse(status=500)
+
+        return JsonResponse({'data': TaskSerializer(task).data})
+
+
+@api_view(['GET'])
+def analysis_page(request):
+    company = request.user.company
+    all_tags = Tag.objects.filter(company=company)
+    all_groups = Project.objects.filter(company=company)
+    return render(request, "test.html", {"usr":request.user, "tags":all_tags, "groups":all_groups})
