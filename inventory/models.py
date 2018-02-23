@@ -17,4 +17,15 @@ class ItemField(models.Model):
 
     def __str__(self):
         return "{1} {0}".format(str(self.field_type),str(self.field_value))
-    
+
+
+class Equipment(models.Model):
+    manufacturer = models.CharField(max_length=255)
+    model = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+
+
+class Calibration(models.Model):
+    datetime = models.DateTimeField()
+    value = models.FloatField()
+    instrument = models.ForeignKey(Equipment)

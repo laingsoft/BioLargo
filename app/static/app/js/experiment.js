@@ -3,17 +3,17 @@ function makeMetadata(data){
     table = $("#metadata-table");
     row = $('<tr></tr>')
     $.each(data, function(key, obj){
-        
+
         $('<td></td>',{text:key}).appendTo(row);
     })
     row.appendTo(table);
     row = $('<tr></tr>')
     $.each(data, function(key, obj){
-        
+
         $('<td></td>',{text:obj}).appendTo(row);
     })
     row.appendTo(table);
-    
+
 
 }
 function getCookie(name) {
@@ -96,7 +96,7 @@ function makeChart(jsondata){
     var ctx = document.getElementById("removalChart");
     var removalChart = new Chart(ctx, {
         type: 'line',
-        
+
         data: {
             labels:time,
             datasets:[
@@ -106,7 +106,7 @@ function makeChart(jsondata){
                 }
             ]
         }
-        
+
     });
 }
 $.ajax({
@@ -126,13 +126,13 @@ function commentBuilder(commentObject){
         <div class = "media">
           <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
           <div class = "media-body">
-            <h5 class = "mt-0">`+commentObject["user"]+`</h5>
+            <h5 class = "mt-0">`+commentObject.user.first_name+`</h5>
             <div class="commentContent">
-              <p>`+commentObject["content"]+`</p>
+              <p>`+commentObject.content+`</p>
             </div>
           </div>
           <div class="d-flex justify-content-end">
-            <small>`+'Month - Day - Year'+`</small>
+            <small>`+ new Date(commentObject.timestamp) +`</small>
           </div>
         </div>
       </li>`;
@@ -142,15 +142,14 @@ function commentBuilder(commentObject){
 }
 function reloadComments(){
     //commentBuilder("Chuck", "1", "WHAT THE HELL DID YOU JUST SAY TO ME", "05-31-1995");
-    $("#commentList").empty();
     $.ajax({
         method: "GET",
-        url: "/api/comment/",
+        url: "/api/comment/"+id,
         dataType: 'json',
-        data: {'exp_id':id},
+        data: {},
         success: function(data) {
-            // console.log(data);
-            
+            $("#commentList").empty();
+            console.log('response')
             console.log(data);
             for (var key in data){
                 commentBuilder(data[key]);
@@ -171,7 +170,7 @@ $(document).ready(function(){
         TABS[newtab.id].show();
         $("#"+ oldtab.id).removeClass("active");
         $("#"+this.id).addClass("active");
-        
+
 
     });
 
@@ -188,12 +187,12 @@ $(document).ready(function(){
             url: "/api/comment/",
             dataType: 'json',
             method: 'POST',
-            data: JSON.stringify(data),
+            data: data,
             success: function(data) {
                 content.prop("disabled", false);
                 content.val('');
                 reloadComments()
-               
+
             }
         });
     });

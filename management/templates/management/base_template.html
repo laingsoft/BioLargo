@@ -92,7 +92,7 @@
             <li class="nav-item dropdown pr-4">
                 <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     {{request.user.email | gravatar:40 }}
-                    {{request.user.email}}
+                    {{request.user.get_full_name }}
                  </a>
                 <div class="dropdown-menu dropdown-menu-right">
                     <div class="dropdown-header text-center">
@@ -110,11 +110,9 @@
                     <!-- <a class="dropdown-item" href="#"><i class="fa fa-file"></i> Projects<span class="badge badge-primary">42</span></a>
                     <div class="divider"></div> -->
                     <!-- <a class="dropdown-item" href="#"><i class="fa fa-shield"></i> Lock Account</a> -->
-                    <a class="dropdown-item" href="/accounts/logout"><svg class="icon" viewBox="0 0 8 8"><use xlink:href="#account-logout"></use></svg> Logout</a> {% if request.user.is_staff %}
-                    <div class="dropdown-header text-center">
-                        <strong><a href="/management">Back to Pasteur</a></strong>
-                    </div>
-                    {% endif %}
+                    <a class="dropdown-item" href="/accounts/logout"><svg class="icon" viewBox="0 0 8 8"><use xlink:href="#account-logout"></use></svg> Logout</a>
+
+                    <a class="dropdown-item" href="/app"><svg class = "icon" viewBox="0 0 8 8"><use xlink:href="#arrow-left"></use></svg>Back to Pasteur.io</a>
                 </div>
             </li>
         </ul>
@@ -223,6 +221,8 @@
             </div>
             <!-- /.conainer-fluid -->
         </main>
+        {% block aside %}
+        {% endblock %}
     </div>
 <!--     <footer class="app-footer">
     </footer> -->
