@@ -1,0 +1,92 @@
+{% load static %}
+{% load accounts_tags %}
+{% load notifications_tags %}
+{% load task_tags %}
+{% unread_notifications request.user as notifications %}
+{% incomplete_tasks request.user as tasks %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name = "viewport" content = "width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="">
+    <title>{% block title %}Pasteur.io{% endblock %}</title>
+    <!-- Main styles for this application -->
+    <link href="{% static 'app/style.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'app/icons.css' %}">
+    <style type="text/css">
+        .notification-dropdown{
+            min-width: 250px;
+        }
+
+        /* Blockquote styling from https://css-tricks.com/snippets/css/simple-and-nice-blockquote-styling/*/
+
+        blockquote {
+            background: #f9f9f9;
+            border-left: 3px solid #ccc;
+            padding: 0.3em 10px;
+        }
+
+        blockquote:before {
+            color: #ccc;
+            font-size: 4em;
+            line-height: 0.1em;
+            margin-right: 0.25em;
+            vertical-align: -0.4em;
+        }
+        blockquote p {
+            display: inline;
+        }
+
+    </style>
+
+    <!-- Styles required by this views -->
+    {% block css_extra %}{% endblock %}
+</head>
+
+<body class="app header-fixed sidebar-fixed sidebar-minimized aside-menu-hidden aside-menu-fixed">
+    <img src="{% static 'common/svg/open-iconic.min.svg' %}" class="iconic-sprite" style="display:none;" />
+    <header class="app-header navbar">
+
+    </header>
+    <div class="app-body">
+        <div class="sidebar">
+            <nav class="sidebar-nav">
+            </nav>
+
+        </div>
+        <!-- Main content -->
+        <main class="main">
+            <div class="container-fluid">
+                <div class="animated fadeIn">
+                    {% block content %} {% endblock %}
+                </div>
+            </div>
+            <!-- /.conainer-fluid -->
+        </main>
+    </div>
+<!--     <footer class="app-footer">
+    </footer> -->
+    <!-- Bootstrap and necessary plugins -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+    <script src="{% static 'common/js/svg-injector.min.js' %}"></script>
+
+    <!-- CoreUI main scripts -->
+    <script src="{% static 'app/js/app.js' %}"></script>
+    <script src="{% static 'app/js/base.js' %}"></script>
+    <!-- Plugins and scripts required by this views -->
+
+    <!-- Custom scripts required by this view -->
+    {% block script_extra %} {% endblock %}
+</body>
+
+</html>

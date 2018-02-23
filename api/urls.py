@@ -9,8 +9,8 @@ router.register(r'experiment', views.experiments, 'experiment')
 
 
 urlpatterns = [
-    url(r'^task/(?P<id>[0-9]+)$', views.task.as_view()),
-    url(r'^test/', views.analysis_page),
+    url(r'^task/(?P<id>[0-9]+)$', views.mark_task_complete),
+    url(r'^analysis/', views.analysis_page),
     url(r'^read_notification/(?P<id>[0-9]+)$', views.read_notification),
     url(r'^toggle_watch/$', views.watch),
     url(r'^overview_count/$', views.getOverviewCount),
@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^experiments_with_project_id/(?P<id>[0-9]+)$', views.getExperimentsWithProjectId, name="experiments_with_project_id"),
     url(r'^experiments/(?P<id>[0-9]+)$', views.experiments.as_view(), name="delete_experiment"),
     url(r'^experiments/$', views.experiments.as_view(), name="experiments"),
+    url(r'^project_stats/(?P<id>[0-9]+)$', views.getProjectStats),
     url(r'^projects/(?P<id>[0-9]+)$', views.projects.as_view(), name="delete_project"),
     url(r'^projects/$', views.projects.as_view(), name="projects"),
     url(r'^get_company_users/$', views.get_company_users),

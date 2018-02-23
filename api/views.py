@@ -92,9 +92,46 @@ def getExperimentData(request, id):
 def read_notification(request, id):
     n = Notification.unread.get(id=id, recipient=request.user)
     n.read = True
-    n.save()
+    n.save()    
     return JsonResponse({'success': True})
 
+#Pass in a Task ID and it will be marked as complete 
+@api_view(['GET'])
+def mark_task_complete(request, id):
+    task = Task.objects.get(id=id)
+    task.complete = True
+    task.save()
+    return JsonResponse({'success' : True})
+
+
+@api_view(['GET'])
+def getProjectStats(request, id):
+    experiments = Experiment.objects.filter(project = id)
+    #Get the number of experiments that the project has associated
+    experiment_count = experiments.count()
+    #Get the number of people that have uploaded experiments for this project id   
+    tempList = []
+    for each in experiments:
+        if(each.user.id not in tempList):
+            tempList.append(each.user.id)
+    scientists = len(tempList)
+    #Get the progress from the ratio of tasks todo / tasks complete
+    tasks = Task.objects.filter(project = id)
+    todo_count = 0
+    for each in tasks:
+        if(each.complete == False):
+            todo_count += 1
+    if tasks.count() != 0:
+        progress = 100 * (1 - (todo_count / tasks.count()))
+    elif todo_count == 0:
+        progress = 100
+    else:
+        progress = 0
+
+
+    return JsonResponse({"experiment_count" : experiment_count, 
+                        "progress" : progress, 
+                        "scientists" : scientists})
 
 
 @api_view(['GET'])
@@ -300,42 +337,6 @@ class comment(APIView):
     def get(self, request, id):
         comments = Comment.objects.filter(experiment = id)
         return Response(commentSerializer(comments, many = True).data)
-
-class task(APIView):
-    def get(self, request, id):
-        """
-        Returns a list of all tasks of a project.
-        """
-        tasks = Task.objects.filter(
-            company=request.user.company,
-            project=id)
-
-        # serialize task
-        task_data = TaskSerializer(tasks, many=True).data
-
-        return Response(task_data)
-
-    def put(self, request, **kwargs):
-        """
-        updates task. Uses TaskForm to update.
-        """
-        params = json.loads(request.body)
-        task = get_object_or_404(Task, id=kwargs.get('task_id'), project_id=kwargs.get('project'), company=request.user.company)
-
-        form = TaskForm(params, instance=task, company=request.user.company)
-
-        if not form.is_valid():
-            return HttpResponse(status=400)
-
-        try:
-            task = form.save(commit=False)
-            task.complete = bool(params.get('complete', False))
-            task.save()
-
-        except Error:
-            return HttpResponse(status=500)
-
-        return JsonResponse({'data': TaskSerializer(task).data})
 
 
 @api_view(['GET'])
