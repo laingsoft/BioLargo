@@ -26,8 +26,8 @@ $("document").ready(function(){
         placeholder: 'Select a template',
         onChange: function(value){
             $.get('/app/get_template', {name: value}, function(result){
-                update_metadata(result.fields);
-                update_data_fields(result.metadata);
+                update_metadata(result.metadata);
+                update_data_fields(result.fields);
             });
         }
 });

@@ -103,7 +103,7 @@ class BaseFilterMixin:
             else:
                 qs = qs.order_by(order_by)
 
-        return qs
+        return qs.distinct()
 
 
 class ExpFilterMixin(BaseFilterMixin):
