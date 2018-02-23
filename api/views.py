@@ -45,11 +45,20 @@ def groups_list(request):
         return JsonResponse({'data' : [{'key':str(item), 'value':str(item)} for item in result]})
 
 #This will return the user's information so that it can be used to customize the client's applicaiton
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def get_user(request):
     user = request.user
-    serializer = userSerializer
-    return Response(serializer(user).data)
+    if(request.method == 'GET'):
+        serializer = userSerializer
+        return Response(serializer(user).data)
+    else:
+        request.user.first_name = request.data['first_name']
+        request.user.last_name = request.data['last_name']
+        request.user.email = request.data['email']
+        request.user.save()
+        return JsonResponse({"success":True})
+
+
 @api_view(['GET'])
 def get_company_users(request):
     company = request.user.company
@@ -221,20 +230,23 @@ class projects(APIView):
         return Response(serializer(project_list, many=True).data)
     #Post a new Project
     def post(self, request, *args, **kwargs):
-        user_company = request.user.company
-        serializer = projectSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if(request.user.is_manager):
+            user_company = request.user.company
+            serializer = projectSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
-        company = request.user.company
-        data = Project.objects.filter(id = id, company = company)
-        if not data.exists():
-            raise Http404("Project not found")
-        result = data.delete()
-        return JsonResponse({"result": result[0]>0})
+        if(request.user.is_manager):
+            company = request.user.company
+            data = Project.objects.filter(id = id, company = company)
+            if not data.exists():
+                raise Http404("Project not found")
+            result = data.delete()
+            return JsonResponse({"result": result[0]>0})
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class experiments(APIView):
@@ -279,7 +291,10 @@ class experiments(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def delete(self, request, id):
         company = request.user.company
-        data = Experiment.objects.filter(id = id, company = company)
+        if(request.user.is_manager):
+            data = Experiment.objects.filter(id = id, company = company)
+        else:
+            data = Experiment.objects.filter(user = request.user, id = id, company = company)
         if not data.exists():
             raise Http404("Experiment not found")
         result = data.delete()
