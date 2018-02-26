@@ -57,6 +57,7 @@ class Task(models.Model):
         null=True
         )
     complete = models.BooleanField(default=False)
+    in_progress = models.BooleanField(default=False)
     related_experiment = models.ForeignKey('app.Experiment', null=True)
     due_date = models.DateField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
