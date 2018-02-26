@@ -1,49 +1,57 @@
 <div class="row">
     <div class="col pb-4">
         <div class="card-group">
-        <div class="card">
-            <div class="card-header">
-                <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#todo" data-toggle="tab"><b>Todo</b></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#completed" data-toggle="tab"><b>Completed</b></a>
-                    </li>
-                    {% if 'management' in request.path and 'calendar' not in request.path  %}
-                        <div class="nav-link bg-primary ml-auto text-light" id="addTask">Add new task</div>
-                    {% endif %}
-                </ul>
-            </div>
-            <div class="card-body border-0 tab-content p-0" id="task-lists">
-                <div class="tab-pane active m-0 p-0" id="todo">
-                    <ul class="list-group" id="todo-list">
-                        <li class="list-group-item">
-                            No todo items found.
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#todo" data-toggle="tab"><b>Todo</b></a>
                         </li>
-                    </ul>
-                  </div>
-                <div class="tab-pane p-0" id="completed">
-                    <ul class="list-group" id="completed-list">
-                        <li class="list-group-item">
-                            No completed tasks.
+                        <li class="nav-item">
+                            <a class="nav-link" href="#in-progress" data-toggle="tab"><b>In progress</b></a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#completed" data-toggle="tab"><b>Done</b></a>
+                        </li>
+                        {% if 'management' in request.path and 'calendar' not in request.path %}
+                        <div class="nav-link ml-auto text-light" id="addTask"><svg class="icon" viewBox="0 0 8 8"><use xlink:href="#plus"></use></svg></div>
+                        {% endif %}
                     </ul>
                 </div>
-            </div>
-        </div>
-        <div class="card" style="flex: 2 0 0%;">
-            <div class="card-header">
-                <b>Calendar</b>
-            </div>
-            <div class="card-body">
-                <div class="card-block" id="calendar">
-
+                <div class="card-body border-0 tab-content p-0" id="task-lists">
+                    <div class="tab-pane active m-0 p-0" id="todo">
+                        <ul class="list-group" id="todo-list">
+                            <li class="list-group-item">
+                                No todo items found.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="tab-pane p-0" id="in-progress">
+                        <ul class="list-group" id="in-progress-list">
+                            <li class="list-group-item">
+                                No tasks in progress.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="tab-pane p-0" id="completed">
+                        <ul class="list-group" id="completed-list">
+                            <li class="list-group-item">
+                                No completed tasks.
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
+            <div class="card" style="flex: 2 0 0%;">
+                <div class="card-header">
+                    <b>Calendar</b>
+                </div>
+                <div class="card-body">
+                    <div class="card-block" id="calendar">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="taskModal"></div>
