@@ -10,81 +10,18 @@ var taskDetail;
 /**
 * Backbone Model for tasks. the fields that are objects are parsed by server.
 */
-var TaskModel = Backbone.Model.extend({
+var UserTaskModel = TaskModel.extend({
     urlRoot: '/app/task_complete/',
-    defaults: {
-        id: null,
-        name: null,
-        description: null,
-        assigned: null,
-        due_date: null,
-        timestamp: null,
-        complete: null,
-        related_experiment: null,
-        project: null,
-    },
-    to_event: function(){
-        var e = {
-            id: this.get('id'),
-            title: this.get('name'),
-            start: this.get('due_date'),
-            color: (this.get('complete')) ? '#ccc' : ''
-        };
-        return e;
-    },
 });
 
 /**
 * Backbone collection for tasks.
 */
-var TaskCollection = Backbone.Collection.extend({
-    url: '/management/projects/' + p_id + '/tasks',
+var UserTaskCollection = TaskCollection.extend({
+    url: '/app/task_complete/',
     model: TaskModel,
-    initialize: function() {
-        _.bindAll(this, 'to_events');
-    },
-    parse: function(data){
-        return data.data;
-    },
-    to_events: function() {
-        var e = [];
-        this.each(function(task) {
-            if (task.get('due_date')){
-                e.push(task.to_event());
-            }
-        });
-        return e;
-    }
 });
 
-
-/**
-* View for individual tasks in the list
-*/
-var TaskView = Backbone.View.extend({
-    tagName: 'li',
-    className: 'list-group-item',
-    template: _.template($('#taskTemplate').html()),
-    events: {
-        'click': 'clickAction',
-    },
-    initialize: function(){
-        this.listenTo(this.model, 'sync', this.render);
-        this.render();
-    },
-    render: function(){
-        this.$el.html(this.template(this.model.toJSON()));
-        var self = this;
-        if (this.model.get('complete')) {
-            self.$('input:checkbox').attr('checked', true);
-        }
-
-        return this;
-    },
-    clickAction: function(){
-        taskDetail = new TaskModalView({model: this.model});
-    },
-});
 
 /**
 * View for rendering a list of tasks
@@ -209,13 +146,13 @@ var CalendarView = Backbone.View.extend({
 
 
 $(document).ready(function(){
-    tasks = new TaskCollection();
+    tasks = new UserTaskCollection();
     tasks.add(tasks_array);
     new TaskListView({collection: tasks});
     new CalendarView({collection: tasks}).render();
 
     $('#addTask').click(function(){
-        taskDetail = new TaskModalView({model: new TaskModel({name: 'New Task'})});
+        taskDetail = new TaskModalView({model: new UserTaskModel({name: 'New Task'})});
     });
 
     $('#taskModal').on('hidden.bs.modal', function(){
@@ -223,3 +160,4 @@ $(document).ready(function(){
     });
 
 });
+

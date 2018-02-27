@@ -67,7 +67,7 @@
                 <p><%= description %></p>
                 <h5>Assigned</h5>
                 <% if (assigned) { %>
-                <p><a href="/accounts/user/<%= assigned.id %>"><%= assigned.first_name %> <%= assigned.last_name %></a></p>
+                <p><a href="/accounts/user/<%= assigned.id %>"><%= assigned.name %></a></p>
                 <% } else { %>
                 <p>No user assigned</p>
                 <% } %>
@@ -110,5 +110,6 @@
 <script type="text/javascript">
     var tasks_array = {{ object_list | safe }};
 </script>
+<script src="{% static 'js/task_list_base.js' %}"></script>
 <script src="{% static 'js/tasklist.js' %}"></script>
 {% endblock %}

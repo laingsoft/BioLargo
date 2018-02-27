@@ -122,3 +122,73 @@ var TaskListView = Backbone.View.extend({
         this.render();
     },
 });
+
+
+var TaskModalView = Backbone.View.extend({
+    el: '#taskModal',
+    template: _.template($('#modalTemplate').html()),
+    events: {
+        'click #complete-btn': 'markComplete',
+        'click #in-progress-btn': 'markInProgress',
+    },
+    initialize: function() {
+        this.render();
+    },
+    render: function() {
+        this.$el.empty();
+        this.$el.html(this.template(this.model.toJSON()));
+        this.$el.modal('show');
+        return this;
+    },
+
+    // clears modal container and removes all listeners.
+    destroy: function() {
+        this.undelegateEvents();
+        this.$el.removeData();
+        this.$el.empty();
+    },
+
+    //  called when save button is clicked.
+    //  validates data before saving to model and server.
+    //  state of edited objects should persist as long as it is valid.
+    saveTask: function() {
+        var self = this;
+        var values = {};
+        $('#taskForm :input').each(function() {
+            values[this.name] = this.value;
+        });
+
+        self.model.set(values, { validate: true });
+
+        if (this.model.isValid()) {
+            this.model.save(null, {
+                wait: true,
+                success: function(model, response) {
+                    self.model.set('id', response.data.id);
+                    tasks.add(self.model);
+                },
+                error: function(response) {
+                    console.log(response);
+                }
+            });
+
+            this.$el.modal('hide');
+        }
+    },
+
+    markComplete: function() {
+        new RelatedExperimentView({model: this.model }).render();
+        this.model.set({ 'in_progress': false, 'complete': true });
+    },
+    markInProgress: function() {
+        this.model.set({ 'in_progress': true, 'complete': false });
+    },
+    setStatus: function() {
+        this.$('#status');
+    },
+    markIncomplete: function() {
+        this.model.set('complete', false);
+    },
+});
+
+

@@ -29,18 +29,16 @@ var ManagementTaskListView = TaskListView.extend({
  * View for the modal for updating and editing tasks. Used for just details as
  * well
  */
-var TaskModalView = Backbone.View.extend({
+var ManagementTaskModalView = TaskModalView.extend({
     el: '#taskModal',
     template: _.template($('#modalTemplate').html()),
-    events: {
-        'click #save-btn': 'saveTask',
-        'click #delete-btn': 'deleteTask',
-        'click #complete-btn': 'markComplete',
-        'click #in-progress-btn': 'markInProgress',
+    events: function() {
+        return _.extend({}, TaskModalView.prototype.events, {
+            'click #save-btn': 'saveTask',
+            'click #delete-btn': 'deleteTask',
+        })
     },
-    initialize: function() {
-        this.render();
-    },
+
     render: function() {
         data = this.model.toJSON();
 
@@ -79,13 +77,6 @@ var TaskModalView = Backbone.View.extend({
         this.$el.modal('show');
         return this;
 
-    },
-
-    // clears modal container and removes all listeners.
-    destroy: function() {
-        this.undelegateEvents();
-        this.$el.removeData();
-        this.$el.empty();
     },
 
     //  called when save button is clicked.
@@ -156,10 +147,10 @@ var CalendarView = Backbone.View.extend({
         this.$el.fullCalendar({
             editable: true,
             eventClick: function(calEvent) {
-                taskDetail = new TaskModalView({ model: self.collection.get(calEvent.id) });
+                taskDetail = new ManagementTaskModalView({ model: self.collection.get(calEvent.id) });
             },
             dayClick: function(date) {
-                taskDetail = new TaskModalView({
+                taskDetail = new ManagementTaskModalView({
                     model: new ManagementTaskModel({ name: 'New Task', due_date: date.format() })
                 });
             },
@@ -198,7 +189,7 @@ $(document).ready(function() {
     tasks.fetch({ reset: true });
 
     $('#addTask').click(function() {
-        taskDetail = new TaskModalView({ model: new ManagementTaskModel({ name: 'New Task' }) });
+        taskDetail = new ManagementTaskModalView({ model: new ManagementTaskModel({ name: 'New Task' }) });
     });
 
     $('#taskModal').on('hidden.bs.modal', function() {
