@@ -5,8 +5,8 @@ var TaskModel = Backbone.Model.extend({
         description: null,
         assigned: null,
         due_date: null,
-        timestamp: null,
-        complete: null
+        complete: null,
+        in_progress: null,
     },
     to_event: function(){
         var e = {
@@ -29,13 +29,6 @@ var TaskModel = Backbone.Model.extend({
             return 'Due date is in the past.';
         }
     },
-    toJSON: function(options) {
-        data = _.clone(this.attributes);
-        if (data.assigned) {
-            data.assigned = data.assigned.id
-        }
-        return data;
-    }
 });
 
 /**
@@ -47,7 +40,6 @@ var TaskCollection = Backbone.Collection.extend({
         _.bindAll(this, 'to_events');
     },
     parse: function(data){
-        console.log(data.data)
         return data.data;
     },
     to_events: function() {
@@ -79,11 +71,6 @@ var TaskView = Backbone.View.extend({
     },
     render: function(){
         this.$el.html(this.template(this.model.toJSON()));
-        var self = this;
-        if (this.model.get('complete')) {
-            self.$('input:checkbox').attr('checked', true);
-        }
-
         return this;
     },
     clickAction: function(){
