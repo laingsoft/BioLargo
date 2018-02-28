@@ -99,6 +99,14 @@ def mark_task_complete(request, id):
     task.save()
     return JsonResponse({'success' : True})
 
+#Pass in a Task ID and it will be marked as "in progress" 
+@api_view(['GET'])
+def mark_task_in_progress(request, id):
+    task = Task.objects.get(id=id)
+    task.in_progress = True
+    task.save()
+    return JsonResponse({'success' : True})
+
 
 @api_view(['GET'])
 def getProjectStats(request, id):
@@ -126,7 +134,7 @@ def getProjectStats(request, id):
 
 
     return JsonResponse({"experiment_count" : experiment_count, 
-                        "progress" : progress, 
+                        "progress" : "{0:.2f}".format(progress), 
                         "scientists" : scientists})
 
 

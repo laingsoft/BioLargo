@@ -7,7 +7,7 @@ class userSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'company', 'first_name', 'last_name',
-            'email', 'is_manager']
+            'email', 'is_manager', "last_login"]
 
 class commentSerializer(serializers.ModelSerializer):
     user = userSerializer()
