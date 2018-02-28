@@ -134,7 +134,7 @@ def getProjectStats(request, id):
 
 
     return JsonResponse({"experiment_count" : experiment_count, 
-                        "progress" : progress, 
+                        "progress" : "{0:.2f}".format(progress), 
                         "scientists" : scientists})
 
 
