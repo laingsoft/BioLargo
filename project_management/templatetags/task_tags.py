@@ -13,19 +13,11 @@ def incomplete_tasks(user):
 
 
 @register.simple_tag
-def complete_tasks(user):
-    """
-    gets a user's complete tasks
-    """
-    return Task.complete.filter(assigned=user)
-
-
-@register.simple_tag
 def task_progress(project):
     """
     calculates progress percentage. complete / total
     """
-    complete = Task.completed.filter(project=project).count()
+    complete = Task.objects.filter(project=project, status='C').count()
     total = Task.objects.filter(project=project).count()
     if total == 0:
         return 0

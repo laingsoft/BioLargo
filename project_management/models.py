@@ -27,26 +27,25 @@ class Project(models.Model):
         unique_together = (("company", "name"))
 
 
-class CompletedTaskManager(models.Manager):
-    """
-    manager for getting completed tasks.
-    """
-    def get_queryset(self):
-        return super().get_queryset().filter(complete=True)
-
-
 class IncompleteTaskManager(models.Manager):
     """
     manager for getting incomplete tasks.
     """
     def get_queryset(self):
-        return super().get_queryset().filter(complete=False)
+        return super().get_queryset().filter(Q(status='I') | Q(status='N') )
 
 
 class Task(models.Model):
     """
     Model for tasks in a project.
     """
+
+    STATUS = (
+        ('N', 'Not started'),
+        ('I', 'In progress'),
+        ('C', 'Complete')
+        )
+
     company = models.ForeignKey(Company)
     project = models.ForeignKey(Project, related_name="tasks", on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
@@ -56,15 +55,14 @@ class Task(models.Model):
         related_name="tasks",
         null=True
         )
-    complete = models.BooleanField(default=False)
-    in_progress = models.BooleanField(default=False)
+    status = models.CharField(max_length=1, choices=STATUS, default='N')
     related_experiment = models.ForeignKey('app.Experiment', null=True)
     due_date = models.DateField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     objects = models.Manager()
-    completed = CompletedTaskManager()
     incomplete = IncompleteTaskManager()
+
 
     class Meta:
         ordering = ['timestamp']
