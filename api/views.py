@@ -16,33 +16,21 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from app.forms import ExperimentDataForm
 from .serializers import *
-from django.core.serializers import serialize
 from django.http import Http404
 from rest_framework.response import Response
 from django.db import IntegrityError
 from project_management.models import Project
 
-def requestTest(request):
-    print(request.body)
-    return JsonResponse({"test":True})
-
 def index(request):
     pass
 
-# autocomplete results for fields
-@login_required
-def fields_autocomplete(request):
-    if request.method == "GET":
-        q = request.GET.get("q")
-        result = Fields.objects.all().filter(name__icontains = q)
-        return JsonResponse({'data' : [{'key':str(item), 'value':str(item)} for item in result]})
+@api_view(['GET'])
+def analysis_page(request):
+    company = request.user.company
+    all_tags = Tag.objects.filter(company=company)
+    all_groups = Project.objects.filter(company=company)
+    return render(request, "test.html", {"usr":request.user, "tags":all_tags, "groups":all_groups})
 
-# autocomplete results for groups
-@login_required
-def groups_list(request):
-    if request.method == "GET":
-        result = [str(i) for i in Group.objects.all()]
-        return JsonResponse({'data' : [{'key':str(item), 'value':str(item)} for item in result]})
 
 #This will return the user's information so that it can be used to customize the client's applicaiton
 @api_view(['GET', 'POST'])
@@ -65,7 +53,6 @@ def get_company_users(request):
     serializer = userSerializer
     users = User.objects.filter(company = company)
     return Response(serializer(users, many=True).data)
-
 
 
 #This generates a new Token for the user when an old token is passed in. This is used instead of
@@ -352,11 +339,3 @@ class comment(APIView):
     def get(self, request, id):
         comments = Comment.objects.filter(experiment = id)
         return Response(commentSerializer(comments, many = True).data)
-
-
-@api_view(['GET'])
-def analysis_page(request):
-    company = request.user.company
-    all_tags = Tag.objects.filter(company=company)
-    all_groups = Project.objects.filter(company=company)
-    return render(request, "test.html", {"usr":request.user, "tags":all_tags, "groups":all_groups})
