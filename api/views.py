@@ -95,7 +95,7 @@ def read_notification(request, id):
 @api_view(['GET'])
 def mark_task_complete(request, id):
     task = Task.objects.get(id=id)
-    task.complete = True
+    task.status = "C"
     task.save()
     return JsonResponse({'success' : True})
 
@@ -103,7 +103,7 @@ def mark_task_complete(request, id):
 @api_view(['GET'])
 def mark_task_in_progress(request, id):
     task = Task.objects.get(id=id)
-    task.in_progress = True
+    task.status = "I"
     task.save()
     return JsonResponse({'success' : True})
 
