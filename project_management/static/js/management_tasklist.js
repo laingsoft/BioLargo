@@ -29,16 +29,16 @@ var ManagementTaskListView = TaskListView.extend({
  * View for the modal for updating and editing tasks. Used for just details as
  * well
  */
-var ManagementTaskModalView = TaskModalView.extend({
+var TaskModalView = Backbone.View.extend({
     el: '#taskModal',
     template: _.template($('#modalTemplate').html()),
-    events: function() {
-        return _.extend({}, TaskModalView.prototype.events, {
+    events: {
             'click #save-btn': 'saveTask',
             'click #delete-btn': 'deleteTask',
-        })
+        },
+    initialize: function() {
+        this.render()
     },
-
     render: function() {
         data = this.model.toJSON();
 
@@ -78,6 +78,12 @@ var ManagementTaskModalView = TaskModalView.extend({
         return this;
 
     },
+    // clears modal container and removes all listeners.
+    destroy: function() {
+        this.undelegateEvents();
+        this.$el.removeData();
+        this.$el.empty();
+    },
 
     //  called when save button is clicked.
     //  validates data before saving to model and server.
@@ -115,18 +121,6 @@ var ManagementTaskModalView = TaskModalView.extend({
             this.$el.modal('hide');
         }
     },
-    markComplete: function() {
-        this.model.set({ 'in_progress': false, 'complete': true });
-    },
-    markInProgress: function() {
-        this.model.set({ 'in_progress': true, 'complete': false });
-    },
-    setStatus: function() {
-        this.$('#status');
-    },
-    markIncomplete: function() {
-        this.model.set('complete', false);
-    },
 });
 
 /*
@@ -147,10 +141,10 @@ var CalendarView = Backbone.View.extend({
         this.$el.fullCalendar({
             editable: true,
             eventClick: function(calEvent) {
-                taskDetail = new ManagementTaskModalView({ model: self.collection.get(calEvent.id) });
+                taskDetail = new TaskModalView({ model: self.collection.get(calEvent.id) });
             },
             dayClick: function(date) {
-                taskDetail = new ManagementTaskModalView({
+                taskDetail = new TaskModalView({
                     model: new ManagementTaskModel({ name: 'New Task', due_date: date.format() })
                 });
             },
@@ -189,7 +183,7 @@ $(document).ready(function() {
     tasks.fetch({ reset: true });
 
     $('#addTask').click(function() {
-        taskDetail = new ManagementTaskModalView({ model: new ManagementTaskModel({ name: 'New Task' }) });
+        taskDetail = new TaskModalView({ model: new ManagementTaskModel({ name: 'New Task' }) });
     });
 
     $('#taskModal').on('hidden.bs.modal', function() {

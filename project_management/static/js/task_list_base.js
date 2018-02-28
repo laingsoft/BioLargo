@@ -5,8 +5,7 @@ var TaskModel = Backbone.Model.extend({
         description: null,
         assigned: null,
         due_date: null,
-        complete: null,
-        in_progress: null,
+        status: 'N',
     },
     to_event: function(){
         var e = {
@@ -90,15 +89,20 @@ var TaskListView = Backbone.View.extend({
     render: function(){
         var self = this;
         this.collection.each(function(task){
-            if (task.get('complete')){
-                self.$('#completed-list').append(new TaskView({model: task}).el);
+            var list = '';
+
+            switch (task.get('status')) {
+                case 'N':
+                    list = '#todo-list';
+                    break;
+                case 'I':
+                    list = '#in-progress-list'
+                    break;
+                case 'C':
+                    list = '#completed-list'
             }
-            else if (task.get('in_progress')) {
-                self.$('#in-progress-list').append(new TaskView({model: task}).el);
-            }
-            else {
-                self.$('#todo-list').append(new TaskView({model: task}).el);
-            }
+
+            self.$(list).append(new TaskView({model: task}).el);
 
         });
 
@@ -127,10 +131,6 @@ var TaskListView = Backbone.View.extend({
 var TaskModalView = Backbone.View.extend({
     el: '#taskModal',
     template: _.template($('#modalTemplate').html()),
-    events: {
-        'click #complete-btn': 'markComplete',
-        'click #in-progress-btn': 'markInProgress',
-    },
     initialize: function() {
         this.render();
     },
@@ -147,48 +147,5 @@ var TaskModalView = Backbone.View.extend({
         this.$el.removeData();
         this.$el.empty();
     },
-
-    //  called when save button is clicked.
-    //  validates data before saving to model and server.
-    //  state of edited objects should persist as long as it is valid.
-    saveTask: function() {
-        var self = this;
-        var values = {};
-        $('#taskForm :input').each(function() {
-            values[this.name] = this.value;
-        });
-
-        self.model.set(values, { validate: true });
-
-        if (this.model.isValid()) {
-            this.model.save(null, {
-                wait: true,
-                success: function(model, response) {
-                    self.model.set('id', response.data.id);
-                    tasks.add(self.model);
-                },
-                error: function(response) {
-                    console.log(response);
-                }
-            });
-
-            this.$el.modal('hide');
-        }
-    },
-
-    markComplete: function() {
-        new RelatedExperimentView({model: this.model }).render();
-        this.model.set({ 'in_progress': false, 'complete': true });
-    },
-    markInProgress: function() {
-        this.model.set({ 'in_progress': true, 'complete': false });
-    },
-    setStatus: function() {
-        this.$('#status');
-    },
-    markIncomplete: function() {
-        this.model.set('complete', false);
-    },
 });
-
 
