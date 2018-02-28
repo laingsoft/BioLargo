@@ -6,7 +6,7 @@ from management.mixins import ManagerTestMixin
 from .models import Project, Task
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
-from api.serializers import TaskSerializer
+from api.serializers import SimpleTaskSerializer, SimpleUserSerializer
 from django.db import Error
 import json
 from django.contrib.auth import get_user_model
@@ -71,7 +71,7 @@ class TaskView(ManagerTestMixin, View):
             )
 
         # serialize task
-        task_data = TaskSerializer(tasks, many=True).data
+        task_data = SimpleTaskSerializer(tasks, many=True).data
 
         return JsonResponse({'data': task_data})
 
@@ -89,18 +89,20 @@ class TaskView(ManagerTestMixin, View):
         task.company = request.user.company
         task.save()
 
-        return JsonResponse({'data': TaskSerializer(task).data})
+        return JsonResponse({'data': SimpleTaskSerializer(task).data})
 
     def put(self, request, **kwargs):
         """
         updates task. Uses TaskForm to update.
         """
         params = json.loads(request.body)
+
         task = get_object_or_404(Task, id=kwargs.get('task_id'), project_id=kwargs.get('project'), company=request.user.company)
 
         form = TaskForm(params, instance=task, company=request.user.company)
 
         if not form.is_valid():
+            print(form.errors)
             return HttpResponse(status=400)
 
         try:
@@ -111,7 +113,7 @@ class TaskView(ManagerTestMixin, View):
         except Error:
             return HttpResponse(status=500)
 
-        return JsonResponse({'data': TaskSerializer(task).data})
+        return JsonResponse({'data': SimpleTaskSerializer(task).data})
 
     def delete(self, request, **kwargs):
         """
@@ -125,21 +127,41 @@ class TaskView(ManagerTestMixin, View):
         except Error:
             return HttpResponse(status=500)
 
-        return JsonResponse({'data': TaskSerializer(task).data})
+        return JsonResponse({'data': SimpleTaskSerializer(task).data})
 
 
 def find_user(request):
+    """
+    user for autocomplete. Can find user by id and first_name, last_name or email.
+    """
     if request.method == 'GET':
         search = request.GET.get('q', '')
-        qs = get_user_model().objects.filter(
-            Q(first_name__icontains=search) |
-            Q(last_name__icontains=search) |
-            Q(email__icontains=search) &
-            Q(company=request.user.company)
-            ).values('id', 'first_name', 'last_name', 'email')
+        usr_id = request.GET.get('id', '')
+        if search:
+            qs = get_user_model().objects.filter(
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(email__icontains=search) &
+                Q(company=request.user.company)
+                )
+            return JsonResponse({'users': SimpleUserSerializer(qs, many=True).data})
+
+        elif usr_id:
+            user = get_user_model().objects.get(id=usr_id, company=request.user.company)
+
+            return JsonResponse(SimpleUserSerializer(user).data)
+
+        else:
+            return JsonResponse({'users': SimpleUserSerializer(request.user.company.user_set.all(), many=True).data})
 
 
-        return JsonResponse({'users': list(qs)})
+def find_experiment(request):
+    """
+    used for autocompleting experiment assignment.
+    """
+    if request.method == 'GET':
+        q = request.GET.get('q')
+        experiments = request.user.company.experiment_set.filter(friendly_name=q)
 
 
 def task_complete(request, id):
@@ -156,7 +178,7 @@ def task_complete(request, id):
 
         task.save()
 
-        return JsonResponse(TaskSerializer(task).data)
+        return JsonResponse(SimpleTaskSerializer(task).data)
 
 
 class UserTaskListView(ListView):
@@ -166,7 +188,7 @@ class UserTaskListView(ListView):
     model = Task
     template_name = 'project_management/task_list.html'
     def get_queryset(self):
-        return json.dumps(TaskSerializer(self.request.user.tasks.all(), many=True).data)
+        return json.dumps(SimpleTaskSerializer(self.request.user.tasks.all(), many=True).data)
 
 
 class CalendarTaskView(ListView):
@@ -186,7 +208,7 @@ class CalendarTaskView(ListView):
 
         qs = self.request.user.company.task_set.filter(due_date__gte = cutoff_date)
 
-        return json.dumps(TaskSerializer(qs, many=True).data)
+        return json.dumps(SimpleTaskSerializer(qs, many=True).data)
 
 
 

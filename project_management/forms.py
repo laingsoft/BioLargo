@@ -8,12 +8,6 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         exclude = ('company', 'project', 'complete', 'timestamp', 'related_experiment')
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'maxlength': 255, 'class': 'form-control', 'rows': 5}),
-            'assigned': forms.Select(attrs={'class': 'form-control'}),
-            'due_date': forms.TextInput(attrs={'class': 'form-control'})
-        }
 
     def __init__(self, *args, **kwargs):
         company = kwargs.pop('company')

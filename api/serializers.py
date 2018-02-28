@@ -71,3 +71,38 @@ class notificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = '__all__'
+
+
+
+class SimpleProjectSerializer(serializers.ModelSerializer):
+    """
+    only serializes id and name. No extra information provided. Used by
+    website.
+    """
+    class Meta:
+        model = Project
+        fields = ('id', 'name')
+
+class SimpleUserSerializer(serializers.ModelSerializer):
+    """
+    returns a name or email and an id
+    """
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('id', 'name', 'email')
+
+    def get_name(self, obj):
+        return obj.get_full_name()
+
+class SimpleTaskSerializer(serializers.ModelSerializer):
+    """
+    Serializes tasks with all foreign keys as ids, except project. Used by the
+    website.
+    """
+    project = SimpleProjectSerializer()
+
+    class Meta:
+        model = Task
+        exclude = ('company', 'timestamp')
