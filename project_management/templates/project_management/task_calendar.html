@@ -52,7 +52,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="taskModalLabel"><%= name %>
-                <% if (complete) { %>
+                <% if (status === 'C') { %>
                     <span class="badge badge-success ml-3">Completed</span>
                 <% } %>
                 </h4>
@@ -78,14 +78,14 @@
                     <p>No due date set. </p>
                 <% } %>
 
-                <%if (complete && related_experiment) { %>
+                <%if (status === 'C' && related_experiment) { %>
                 <h5>Related Experiment</h5>
                 <p><%= related_experiment %></p>
 
                 <% } %>
             </div>
             <div class="modal-footer">
-                <%if (!complete) { %>
+                <%if (status !== 'C') { %>
                 <button type="button" class="btn btn-success mr-auto" id="complete-btn" data-dismiss="modal">Mark Complete</button>
                 <% }%>
                 <button type="button" class="btn btn-danger" data-dismiss="modal" id="close-btn">close</button>
