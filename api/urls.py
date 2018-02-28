@@ -9,7 +9,8 @@ router.register(r'experiment', views.experiments, 'experiment')
 
 
 urlpatterns = [
-    url(r'^task/(?P<id>[0-9]+)$', views.mark_task_complete),
+    url(r'^task_in_progress/(?P<id>[0-9]+)$', views.mark_task_in_progress),
+    url(r'^task_complete/(?P<id>[0-9]+)$', views.mark_task_complete),
     url(r'^analysis/', views.analysis_page),
     url(r'^read_notification/(?P<id>[0-9]+)$', views.read_notification),
     url(r'^toggle_watch/$', views.watch),
