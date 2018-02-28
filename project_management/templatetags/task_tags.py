@@ -1,6 +1,7 @@
 from django import template
 from project_management.models import Task
 
+
 register = template.Library()
 
 
