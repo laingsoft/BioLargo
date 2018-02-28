@@ -25,6 +25,7 @@ var UserTaskCollection = TaskCollection.extend({
 var UserTaskListView = TaskListView.extend({
     initialize: function() {
         this.listenTo(this.collection, 'sync', this.viewSync);
+        this.listenTo(this.collection, 'change', this.viewSync);
         this.viewSync();
     },
 })
@@ -50,6 +51,34 @@ var CalendarView = Backbone.View.extend({
             },
         });
     },
+});
+
+var TaskModalView = Backbone.View.extend({
+    el: '#taskModal',
+    template: _.template($('#modalTemplate').html()),
+    events: {
+        'change #status': 'changeStatus'
+    },
+    initialize: function() {
+        this.render();
+    },
+    render: function() {
+        this.$el.empty();
+        this.$el.html(this.template(this.model.toJSON()));
+        this.$el.modal('show');
+        return this;
+    },
+
+    // clears modal container and removes all listeners.
+    destroy: function() {
+        this.undelegateEvents();
+        this.$el.removeData();
+        this.$el.empty();
+    },
+    changeStatus: function(e) {
+        this.model.set('status', this.$('#status').val())
+        this.model.save()
+    }
 });
 
 

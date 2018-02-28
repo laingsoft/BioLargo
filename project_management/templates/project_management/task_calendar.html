@@ -54,7 +54,10 @@
                 <h4 class="modal-title" id="taskModalLabel"><%= name %>
                 <% if (status === 'C') { %>
                     <span class="badge badge-success ml-3">Completed</span>
+                <% }  else if (status === 'I') { %>
+                    <span class="badge badge-warning ml-3">In progress</span>
                 <% } %>
+
                 </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
@@ -81,15 +84,16 @@
                 <%if (status === 'C' && related_experiment) { %>
                 <h5>Related Experiment</h5>
                 <p><%= related_experiment %></p>
-
                 <% } %>
+
             </div>
             <div class="modal-footer">
-                <%if (status !== 'C') { %>
-                <button type="button" class="btn btn-success mr-auto" id="complete-btn" data-dismiss="modal">Mark Complete</button>
-                <% }%>
+                <select class="btn btn-primary mr-auto" style="appearance: none; -moz-appearance:none;" id="status" name="status">
+                    <option value="N" <% if (status === 'N') { %> selected <% } %>>Not started</option>
+                    <option value="I" <% if (status === 'I') { %> selected <% } %>>In progress</option>
+                    <option value="C" <% if (status === 'C') { %> selected <% } %>>Complete</option>
+                </select>
                 <button type="button" class="btn btn-danger" data-dismiss="modal" id="close-btn">close</button>
-
             </div>
         </div>
     </div>
