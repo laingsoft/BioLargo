@@ -69,7 +69,7 @@ def get_new_token(request):
 
 #This will get all the epxeriments that are part of the project whose ID is passed in
 @api_view(['GET'])
-def getExperimentsWithProjectId(request, id):
+def get_experiments_with_project_id(request, id):
     experiments = Experiment.objects.filter(project = id)
     serializer = experimentSerializer
     return Response(serializer(experiments, many = True).data)
@@ -77,7 +77,7 @@ def getExperimentsWithProjectId(request, id):
 
 #Get the Data from the Experiment Data model according to the experiment id passed in
 @api_view(['GET'])
-def getExperimentData(request, id):
+def get_experiment_data(request, id):
     serializer = experimentDataSerializer
     experiment_data = ExperimentData.objects.filter(experiment = id)
     return Response(serializer(experiment_data, many=True).data)
@@ -95,7 +95,7 @@ def read_notification(request, id):
 @api_view(['GET'])
 def mark_task_complete(request, id):
     task = Task.objects.get(id=id)
-    task.complete = True
+    task.status = "C"
     task.save()
     return JsonResponse({'success' : True})
 
@@ -103,13 +103,13 @@ def mark_task_complete(request, id):
 @api_view(['GET'])
 def mark_task_in_progress(request, id):
     task = Task.objects.get(id=id)
-    task.in_progress = True
+    task.status = "I"
     task.save()
     return JsonResponse({'success' : True})
 
 
 @api_view(['GET'])
-def getProjectStats(request, id):
+def get_project_stats(request, id):
     experiments = Experiment.objects.filter(project = id)
     #Get the number of experiments that the project has associated
     experiment_count = experiments.count()
@@ -123,7 +123,7 @@ def getProjectStats(request, id):
     tasks = Task.objects.filter(project = id)
     todo_count = 0
     for each in tasks:
-        if(each.complete == False):
+        if(each.status == "N"):
             todo_count += 1
     if tasks.count() != 0:
         progress = 100 * (1 - (todo_count / tasks.count()))
@@ -139,7 +139,7 @@ def getProjectStats(request, id):
 
 
 @api_view(['GET'])
-def getOverviewCount(request):
+def get_overview_count(request):
     #Get the counts for the amount of experiments, projects, and users for the particular company
     user_company = request.user.company
     experiment_count = Experiment.objects.filter(company = user_company).count()
