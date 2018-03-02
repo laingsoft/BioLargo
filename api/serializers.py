@@ -40,9 +40,6 @@ class experimentSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    project = projectSerializer()
-    assigned = userSerializer()
-
     class Meta:
         model = Task
         exclude = ('company', 'timestamp')
@@ -97,12 +94,7 @@ class SimpleUserSerializer(serializers.ModelSerializer):
         return obj.get_full_name()
 
 class SimpleTaskSerializer(serializers.ModelSerializer):
-    """
-    Serializes tasks with all foreign keys as ids, except project. Used by the
-    website.
-    """
     project = SimpleProjectSerializer()
-
     class Meta:
         model = Task
         exclude = ('company', 'timestamp')

@@ -25,7 +25,7 @@ SECRET_KEY = 'zl88d=ab=wk!q@h08xi$wer-p2#3%$=mw&%q6$oj$($^!ice1d'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.11', '192.168.1.12', '0.0.0.0', 'localhost', 'pasteur.io','208.75.74.213', '192.168.1.25', '192.168.99.100']
+ALLOWED_HOSTS = ['192.168.1.8', '192.168.1.9', '192.168.1.11', '192.168.1.12', '0.0.0.0', 'localhost', 'pasteur.io','208.75.74.213', '192.168.1.25', '192.168.99.100']
 #192.168.1.9 = connect from remote device directly to VM
 #192.168.99.100 = Mac IP
 
@@ -162,6 +162,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
+    'DEFAULT_PAGINATION_CLASS': 
+        'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 1
 }
 
 LOGIN_REDIRECT_URL = '/app'

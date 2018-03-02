@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -185,7 +186,6 @@ def watch(request):
     ObjectTypes = {'EXP': Experiment, 'PRJ': Project}
     object_id = request.POST['id']
     object_type = request.POST['type']
-    print(request.data)
     if ObjectTypes[object_type].objects.filter(id=object_id).exists():
         obj = ObjectTypes[object_type].objects.get(id=object_id)
         #If the user is already following this particular object, then remove them from the list
@@ -215,13 +215,19 @@ class tags(APIView):
 
 class projects(APIView):
     #Retrieves the list of projects from the same company the user is part of.
-    def get(self, request, id = None):
+    def get(self, request, page):
         user_company = request.user.company
         serializer = projectSerializer
-        if(id == None):
-            project_list = Project.objects.filter(company = user_company)
-        else:
-            project_list = Project.objects.filter(id = id)
+        # Get the list of projects form the user's company
+        project_list = Project.objects.filter(company = user_company).order_by('id')
+        #Setup the paginator on the project list, 10 per page
+        paginator = Paginator(project_list, 10)
+        try:
+            #Try to get the page from the paginator that was passed in.
+            project_list = paginator.page(page)
+        except EmptyPage:
+            #Gets the last page
+            project_list = paginator.page(paginator.num_pages)
         return Response(serializer(project_list, many=True).data)
     #Post a new Project
     def post(self, request, *args, **kwargs):
