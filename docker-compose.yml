@@ -1,6 +1,14 @@
 version: '2.0'
 
 services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d
+    depends_on:
+      - web
   db:
     image: postgres
   web:
@@ -8,8 +16,8 @@ services:
     command: bash -c "python3 manage.py runworker & daphne -b 0.0.0.0 -p 80 PredoxWeb.asgi:channel_layer"
     volumes:
       - .:/code
-    ports:
-      - "80:80"
+    expose:
+      - "80"
     depends_on:
       - db
       - redis
