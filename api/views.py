@@ -219,7 +219,7 @@ class projects(APIView):
         user_company = request.user.company
         serializer = projectSerializer
         # Get the list of projects form the user's company
-        project_list = Project.objects.filter(company = user_company).order_by('id')
+        project_list = Project.objects.filter(company = user_company).order_by('-id')
         #Setup the paginator on the project list, 10 per page
         paginator = Paginator(project_list, 10)
         try:
