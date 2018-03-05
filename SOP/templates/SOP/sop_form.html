@@ -5,7 +5,7 @@
     <a href="/management">Manage</a>
 </li>
 <li class="breadcrumb-item">
-    <a href="#">SOP</a>
+    <a href="/management/sop">SOP</a>
 </li>
 <li class="breadcrumb-item active">
     Upload SOP
@@ -19,7 +19,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="card-block">
-                    <form action='.' method="POST", enctype="multipart/form-data">
+                    <form method="POST", enctype="multipart/form-data">
                         {% csrf_token %}
                         {{ form.as_p }}
                         <button class="btn btn-primary">Save</button>

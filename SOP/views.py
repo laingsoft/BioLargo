@@ -1,8 +1,10 @@
 from .models import SOP
 from app.mixins import CompanyObjectsMixin, CompanyObjectCreateMixin
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, UpdateView
 from management.mixins import ManagerTestMixin
-
+from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
 
 class SOPListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
     model = SOP
@@ -10,7 +12,33 @@ class SOPListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
 
 
 class SOPUploadView(ManagerTestMixin, CompanyObjectCreateMixin, CompanyObjectsMixin, CreateView):
+    """
+    Used in management panel for uploading SOP files. usually PDF.
+    """
     model = SOP
     fields = ('name', 'description', 'file')
-    success_url = '/SOP'
+    success_url = '/management/sop'
 
+
+@ login_required
+def SOPDownloadView(request, file_id):
+    """
+    Does internal redirect and sends file through nginx. Only requires user to
+    be logged in.
+    """
+    if request.method == 'GET':
+        # check if the file exists within company. 404 if not.
+        sop = get_object_or_404(SOP, company=request.user.company, id=file_id)
+
+        response = HttpResponse()
+        response["Content-Disposition"] = "attachment; filename={0}".format(sop.file.name[4:])
+        response['X-Accel-Redirect'] = '/files/' + sop.file.url
+        return response
+
+    raise Http404
+
+
+class SOPUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
+    model = SOP
+    fields = ('name', 'description')
+    success_url = '/management/sop'

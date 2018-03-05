@@ -11,8 +11,11 @@
 
 {% block content %}
 <div class="row">
+    <div class="col"><h1>SOPs</h1></div>
+    <div class="col"><a href="upload" class="btn btn-primary float-right">Upload</a></div>
+</div>
+<div class="row">
     <div class="col">
-        <h1>SOPs</h1>
         <div class="card">
             <div class="card-body">
                 <div class="card-block">
@@ -21,13 +24,18 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Description</th>
+                                <th>File name</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for sop in object_list %}
-                            <tr>
+                            <tr class="clickable" data-id="{{ sop.id }}">
                                 <td>{{sop.name}}</td>
                                 <td>{{sop.description}}</td>
+                                <td>{{sop.file.name}}</td>
+                                <td><a href="download/{{sop.id}}" class="btn btn-primary float-right">Download</a>
+                                </td>
                             </tr>
                             {% empty %}
                             <tr><td class="text-center" colspan="999">No SOPs added.</td></tr>
@@ -39,4 +47,12 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block script_extra %}
+<script type="text/javascript">
+    $('.clickable').click(function(){
+        window.location.href = $(this).data('id');
+    });
+</script>
 {% endblock %}

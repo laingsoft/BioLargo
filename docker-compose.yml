@@ -7,6 +7,7 @@ services:
       - "80:80"
     volumes:
       - ./config/nginx:/etc/nginx/conf.d
+      - uploads:/uploads
     depends_on:
       - web
   db:
@@ -16,6 +17,7 @@ services:
     command: bash -c "python3 manage.py runworker & daphne -b 0.0.0.0 -p 80 PredoxWeb.asgi:channel_layer"
     volumes:
       - .:/code
+      - uploads:/uploads
     expose:
       - "80"
     depends_on:
@@ -26,3 +28,5 @@ services:
     image: 'redis:3.2.0'
     expose:
       - "6379"
+volumes:
+  uploads:
