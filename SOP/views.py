@@ -30,8 +30,8 @@ def SOPDownloadView(request, file_id):
         sop = get_object_or_404(SOP, company=request.user.company, id=file_id)
 
         response = HttpResponse()
-        response['Content Type'] = ''
-        response['X-Accel-Redirect'] = '/' + sop.file.url
+        response["Content-Disposition"] = "attachment"
+        response['X-Accel-Redirect'] = '/files/' + sop.file.url
         return response
 
 
