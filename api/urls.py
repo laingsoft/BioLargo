@@ -9,6 +9,7 @@ router.register(r'experiment', views.experiments, 'experiment')
 
 
 urlpatterns = [
+    url(r'^get_tasks/(?P<status>[N,C,I])/(?P<page>[0-9]+)/$', views.get_tasks),
     url(r'^task_in_progress/(?P<id>[0-9]+)$', views.mark_task_in_progress),
     url(r'^task_complete/(?P<id>[0-9]+)$', views.mark_task_complete),
     url(r'^analysis/', views.analysis_page),
@@ -17,9 +18,9 @@ urlpatterns = [
     url(r'^overview_count/$', views.get_overview_count),
     url(r'^tags/$', views.tags.as_view()),
     url(r'^experiment_data/(?P<id>[0-9]+)$', views.get_experiment_data),
-    url(r'^experiments_with_project_id/(?P<id>[0-9]+)$', views.get_experiments_with_project_id, name="experiments_with_project_id"),
-    url(r'^experiments/(?P<id>[0-9]+)$', views.experiments.as_view(), name="delete_experiment"),
-    url(r'^experiments/$', views.experiments.as_view(), name="experiments"),
+    url(r'^experiments_with_project_id/(?P<id>[0-9]+)/(?P<page>[0-9]+)$', views.get_experiments_with_project_id, name="experiments_with_project_id"),
+    url(r'^experiments_with_experiment_id/(?P<id>[0-9]+)$', views.get_experiments_with_experiment_id, name="experiments_with_experiment_id"),
+    url(r'^experiments/(?P<page>[0-9]+)$', views.experiments.as_view()),
     url(r'^project_stats/(?P<id>[0-9]+)$', views.get_project_stats),
     url(r'^projects/(?P<page>[0-9]+)/$', views.projects.as_view()),
     url(r'^get_company_users/$', views.get_company_users),

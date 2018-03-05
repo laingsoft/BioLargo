@@ -66,14 +66,26 @@ def get_new_token(request):
     token = jwt_encode_handler(payload)
     return Response(token)
 
-
-
 #This will get all the epxeriments that are part of the project whose ID is passed in
 @api_view(['GET'])
-def get_experiments_with_project_id(request, id):
-    experiments = Experiment.objects.filter(project = id)
+def get_experiments_with_project_id(request, id, page):
+    experiments = Experiment.objects.filter(project = id).order_by('-id')
     serializer = experimentSerializer
+    paginator = Paginator(experiments, 10)
+    try:
+        #Try to get the page from the paginator that was passed in.
+        experiments = paginator.page(page)
+    except EmptyPage:
+        #Gets the last page
+        experiments = paginator.page(paginator.num_pages)
     return Response(serializer(experiments, many = True).data)
+
+#This will get the epxeriment that has the ID that is passed in
+@api_view(['GET'])
+def get_experiments_with_experiment_id(request, id):
+    experiments = Experiment.objects.filter(id = id)
+    serializer = experimentSerializer
+    return Response(serializer(experiments).data)
 
 
 #Get the Data from the Experiment Data model according to the experiment id passed in
@@ -164,20 +176,29 @@ def get_overview_count(request):
     notifications = notificationSerializer(Notification.objects.filter(read=False,
         recipient = request.user), many = True).data
 
-    #############
-    #Get the project ids for any projects that have tasks assigned to this user
-    tasks = Task.objects.filter(company=request.user.company, assigned = request.user)
-
-    task_data = TaskSerializer(tasks, many=True).data
-
     return JsonResponse({"experiments" : experiment_count,
                         "projects" : project_count,
                         "users" : user_count,
                         "first" : dayOne,
                         "second" : dayTwo,
                         "third" : dayThree,
-                        "notifications": notifications, 
-                        "tasks": task_data})
+                        "notifications": notifications})
+
+#Will return the tasks that are associated with the status that is passed in: N, I, C
+# and will allow for pagination of the tasks      
+@api_view(['GET'])
+def get_tasks(request, status, page):
+    #Get the project ids for any projects that have tasks assigned to this user
+    tasks = Task.objects.filter(status = status, company=request.user.company, assigned = request.user).order_by('-id')
+    paginator = Paginator(tasks, 10)
+    try:
+        #Try to get the page from the paginator that was passed in.
+        tasks = paginator.page(page)
+    except EmptyPage:
+        #Gets the last page
+        tasks = paginator.page(paginator.num_pages)
+    return Response(TaskSerializer(tasks, many=True).data)
+
 
 #Will toggle a "Watch" on both experiments and/or projects
 #Requires an experiment/project id and a type as to differentiate between EXP or PRJ
@@ -252,13 +273,17 @@ class projects(APIView):
 
 class experiments(APIView):
     #Retrieves the list of experiments from the same company the user is part of.
-    def get(self, request, id = None):
+    def get(self, request, page):
         user_company = request.user.company
         serializer = experimentSerializer
-        if(id == None):
-            experiment_list = Experiment.objects.filter(company = user_company)
-        else:
-            experiment_list = Experiment.objects.filter(id = id)
+        experiment_list = Experiment.objects.filter(company = user_company).order_by('-id')
+        paginator = Paginator(experiment_list, 10)
+        try:
+            #Try to get the experiemnts on the page number that is passed in
+            experiment_list = paginator.page(page)
+        except EmptyPage:
+            #If the page we treid to get is empty, return the last page instead
+            project_list = paginator.page(paginator.num_pages)
         return Response(serializer(experiment_list, many=True).data)
     #Post a new Experiment - This method uses the simplifiedExperimentSerializer which requires less data to create a new experiment.
     def post(self, request, *args, **kwargs):
