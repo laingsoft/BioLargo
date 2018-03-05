@@ -1,5 +1,6 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 from . import views
+
 
 urlpatterns = [
     url(r'^$', views.ProjectListView.as_view()),
@@ -10,4 +11,5 @@ urlpatterns = [
     url(r'^(?P<project>\d+)/tasks/(?P<task_id>\d+)/?$', views.TaskView.as_view()),
     url(r'^find_user/$', views.find_user),
     url(r'^calendar/$', views.CalendarTaskView.as_view()),
+    url(r'sop/', include('SOP.urls'))
 ]
