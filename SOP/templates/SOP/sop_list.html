@@ -21,6 +21,8 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Description</th>
+                                <th>File name</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -28,6 +30,9 @@
                             <tr class="clickable" data-id="{{ sop.id }}">
                                 <td>{{sop.name}}</td>
                                 <td>{{sop.description}}</td>
+                                <td>{{sop.file.name}}</td>
+                                <td><a href="download/{{sop.id}}" class="btn btn-primary float-right">Download</a>
+                                </td>
                             </tr>
                             {% empty %}
                             <tr><td class="text-center" colspan="999">No SOPs added.</td></tr>

@@ -1,6 +1,6 @@
 from .models import SOP
 from app.mixins import CompanyObjectsMixin, CompanyObjectCreateMixin
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, UpdateView
 from management.mixins import ManagerTestMixin
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
@@ -17,13 +17,14 @@ class SOPUploadView(ManagerTestMixin, CompanyObjectCreateMixin, CompanyObjectsMi
     """
     model = SOP
     fields = ('name', 'description', 'file')
-    success_url = '/SOP'
+    success_url = '/management/sop'
 
 
 @ login_required
 def SOPDownloadView(request, file_id):
     """
-    Does internal redirect and sends file through nginx
+    Does internal redirect and sends file through nginx. Only requires user to
+    be logged in.
     """
     if request.method == 'GET':
         # check if the file exists within company. 404 if not.
@@ -36,3 +37,9 @@ def SOPDownloadView(request, file_id):
 
 
     raise Http404
+
+
+class SOPUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
+    model = SOP
+    fields = ('name', 'description')
+    success_url = '/management/sop'
