@@ -186,9 +186,9 @@ def get_overview_count(request):
 #Will return the tasks that are associated with the status that is passed in: N, I, C
 # and will allow for pagination of the tasks      
 @api_view(['GET'])
-def get_tasks(request, status, page):
+def get_tasks(request, task_status, page):
     #Get the project ids for any projects that have tasks assigned to this user
-    tasks = Task.objects.filter(status = status, company=request.user.company, assigned = request.user).order_by('-id')
+    tasks = Task.objects.filter(status = task_status, company=request.user.company, assigned = request.user).order_by('-id')
     paginator = Paginator(tasks, 10)
     try:
         #Try to get the page from the paginator that was passed in.
