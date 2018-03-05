@@ -76,8 +76,7 @@ def get_experiments_with_project_id(request, id, page):
         #Try to get the page from the paginator that was passed in.
         experiments = paginator.page(page)
     except EmptyPage:
-        #Gets the last page
-        experiments = paginator.page(paginator.num_pages)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
     return Response(serializer(experiments, many = True).data)
 
 #This will get the epxeriment that has the ID that is passed in
@@ -195,8 +194,7 @@ def get_tasks(request, status, page):
         #Try to get the page from the paginator that was passed in.
         tasks = paginator.page(page)
     except EmptyPage:
-        #Gets the last page
-        tasks = paginator.page(paginator.num_pages)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
     return Response(TaskSerializer(tasks, many=True).data)
 
 
@@ -247,8 +245,7 @@ class projects(APIView):
             #Try to get the page from the paginator that was passed in.
             project_list = paginator.page(page)
         except EmptyPage:
-            #Gets the last page
-            project_list = paginator.page(paginator.num_pages)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer(project_list, many=True).data)
     #Post a new Project
     def post(self, request, *args, **kwargs):
@@ -282,8 +279,7 @@ class experiments(APIView):
             #Try to get the experiemnts on the page number that is passed in
             experiment_list = paginator.page(page)
         except EmptyPage:
-            #If the page we treid to get is empty, return the last page instead
-            project_list = paginator.page(paginator.num_pages)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer(experiment_list, many=True).data)
     #Post a new Experiment - This method uses the simplifiedExperimentSerializer which requires less data to create a new experiment.
     def post(self, request, *args, **kwargs):

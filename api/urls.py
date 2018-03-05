@@ -20,7 +20,7 @@ urlpatterns = [
     url(r'^experiment_data/(?P<id>[0-9]+)$', views.get_experiment_data),
     url(r'^experiments_with_project_id/(?P<id>[0-9]+)/(?P<page>[0-9]+)$', views.get_experiments_with_project_id, name="experiments_with_project_id"),
     url(r'^experiments_with_experiment_id/(?P<id>[0-9]+)$', views.get_experiments_with_experiment_id, name="experiments_with_experiment_id"),
-    url(r'^experiments/(?P<page>[0-9]+)$', views.experiments.as_view()),
+    url(r'^experiments/(?P<page>[0-9]+)/$', views.experiments.as_view()),
     url(r'^project_stats/(?P<id>[0-9]+)$', views.get_project_stats),
     url(r'^projects/(?P<page>[0-9]+)/$', views.projects.as_view()),
     url(r'^get_company_users/$', views.get_company_users),
