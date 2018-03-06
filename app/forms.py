@@ -34,7 +34,7 @@ class ExperimentForm(forms.ModelForm):
     """
     class Meta:
         model = Experiment
-        fields = ('friendly_name', 'project', 'tags',)
+        fields = ('friendly_name', 'project', 'tags', 'sop')
         widgets = {'friendly_name': forms.TextInput(attrs={'class': 'form-control'}), }
 
     def __init__(self, *args, **kwargs):
@@ -52,6 +52,9 @@ class ExperimentForm(forms.ModelForm):
         self.fields['tags'] = forms.ModelMultipleChoiceField(
             queryset=Tag.objects.filter(company=company),
             to_field_name='name')
+
+        self.fields['sop'] = forms.ModelChoiceField(
+            queryset=company.sop_set.all(), to_field_name='name', required=False)
 
 
 class ProjectForm(forms.ModelForm):

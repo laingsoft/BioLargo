@@ -2,9 +2,10 @@ from .models import SOP
 from app.mixins import CompanyObjectsMixin, CompanyObjectCreateMixin
 from django.views.generic import CreateView, ListView, UpdateView
 from management.mixins import ManagerTestMixin
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
+from api.serializers import SimpleSOPSerializer
 
 class SOPListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
     model = SOP
@@ -42,3 +43,10 @@ class SOPUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
     model = SOP
     fields = ('name', 'description')
     success_url = '/management/sop'
+
+
+@login_required
+def findSOP(request):
+    if request.method == 'GET':
+        qs = request.user.company.sop_set.filter(name__icontains=request.GET.get('q', ''))
+        return JsonResponse({'data': SimpleSOPSerializer(qs, many=True).data})

@@ -80,6 +80,10 @@
                 <% } else { %>
                     <p>No due date set. </p>
                 <% } %>
+                <% if (sop) { %>
+                    <h5>SOP</h5>
+                    <p><a href="/sop/download/<%= sop.id %>" <%= sop.name %></p>
+                <% } %>
 
                 <%if (status === 'C' && related_experiment) { %>
                 <h5>Related Experiment</h5>

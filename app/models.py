@@ -33,6 +33,7 @@ class Experiment(models.Model):
     tags = models.ManyToManyField(Tag)
     metadata = JSONField(default='')
     friendly_name = models.CharField(max_length=255)
+    sop = models.ForeignKey('SOP.SOP', null=True, blank=True)
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followed_experiments", blank = True)
 
 

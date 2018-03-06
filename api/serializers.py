@@ -2,6 +2,7 @@ from app.models import *
 from accounts.models import User
 from rest_framework import serializers
 from project_management.models import Task
+from SOP.models import SOP
 
 class userSerializer(serializers.ModelSerializer):
     class Meta:
@@ -93,8 +94,19 @@ class SimpleUserSerializer(serializers.ModelSerializer):
     def get_name(self, obj):
         return obj.get_full_name()
 
+
+class SimpleSOPSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SOP
+        fields = ('name', 'id')
+
+
 class SimpleTaskSerializer(serializers.ModelSerializer):
     project = SimpleProjectSerializer()
+    sop = SimpleSOPSerializer()
+
     class Meta:
         model = Task
         exclude = ('company', 'timestamp')
+
+
