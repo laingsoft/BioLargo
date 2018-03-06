@@ -80,7 +80,7 @@ var TaskModalView = Backbone.View.extend({
             labelField: 'name',
             preload: 'focus',
             load: function(q, callback) {
-                $.get('/sop/find/', { 'q': q }, function(res) {
+                $.get('/sop/find', { 'q': q }, function(res) {
                     callback(res.data);
                 })
             },
@@ -121,7 +121,7 @@ var TaskModalView = Backbone.View.extend({
             this.model.save(null, {
                 wait: true,
                 success: function(model, response) {
-                    self.model.set('id', response.data.id);
+                    self.model.set(response.data);
                     tasks.add(self.model);
                 },
                 error: function(response) {
