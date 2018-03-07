@@ -228,18 +228,25 @@ def watch(request):
 
 
 class tags(APIView):
+    #Returns all the tags for the company
     def get(self, request):
         company = request.user.company
         queryset = Tag.objects.filter(company = company)
         serializer = tagsSerializer
         return Response(serializer(queryset, many=True).data)
 
+    #If the tag that is trying to be made already exists, return that tag, 
+    #   else create a new one
     def post(self, request, *args, **kwargs):
         serializer = tagsSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            already_exists = Tag.objects.filter(company = request.user.company, name = request.data['name']).get()
+            return Response(tagsSerializer(already_exists).data)
+        except Tag.DoesNotExist:
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET','DELETE'])
 def projects_delete(request, id):
