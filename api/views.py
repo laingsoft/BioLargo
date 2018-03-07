@@ -232,6 +232,16 @@ class tags(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET','DELETE'])
+def projects_delete(request, id):
+    if(request.user.is_manager):
+        company = request.user.company
+        data = Project.objects.filter(id = id, company = company)
+        if not data.exists():
+            raise Http404("Project not found")
+        result = data.delete()
+        return JsonResponse({"result": result[0]>0})
+    return Response(status=status.HTTP_400_BAD_REQUEST)
 class projects(APIView):
     #Retrieves the list of projects from the same company the user is part of.
     def get(self, request, page):
@@ -257,16 +267,18 @@ class projects(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, id):
-        if(request.user.is_manager):
-            company = request.user.company
-            data = Project.objects.filter(id = id, company = company)
-            if not data.exists():
-                raise Http404("Project not found")
-            result = data.delete()
-            return JsonResponse({"result": result[0]>0})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET','DELETE'])
+def experiments_delete(request, id):
+    company = request.user.company
+    if(request.user.is_manager):
+        data = Experiment.objects.filter(id = id, company = company)
+    else:
+        data = Experiment.objects.filter(user = request.user, id = id, company = company)
+    if not data.exists():
+        raise Http404("Experiment not found")
+    result = data.delete()
+    return JsonResponse({"result": result[0]>0})
 
 class experiments(APIView):
     #Retrieves the list of experiments from the same company the user is part of.
@@ -311,17 +323,6 @@ class experiments(APIView):
                     ExperimentData.objects.create(experiment=experiment, experimentData=json.loads(request.POST['experimentData'])[i], company=request.user.company)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    def delete(self, request, id):
-        company = request.user.company
-        if(request.user.is_manager):
-            data = Experiment.objects.filter(id = id, company = company)
-        else:
-            data = Experiment.objects.filter(user = request.user, id = id, company = company)
-        if not data.exists():
-            raise Http404("Experiment not found")
-        result = data.delete()
-        return JsonResponse({"result": result[0]>0})
-
 
 class template(APIView):
     def get(self, request, id = None):
