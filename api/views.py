@@ -6,8 +6,6 @@ from django.contrib.auth import get_user
 import json
 import datetime
 from io import TextIOWrapper, StringIO
-from app.models import *
-from accounts.models import User
 from app.parsers import Parser, JsonParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import FileUploadParser
@@ -20,6 +18,9 @@ from .serializers import *
 from django.http import Http404
 from rest_framework.response import Response
 from django.db import IntegrityError
+from app.models import *
+from accounts.models import User
+from SOP.models import SOP
 from project_management.models import Project
 
 def index(request):
@@ -118,6 +119,14 @@ def mark_task_in_progress(request, id):
     task.status = "I"
     task.save()
     return JsonResponse({'success' : True})
+
+
+@api_view(['GET'])
+def get_sop(request):
+    serializer = SimpleSOPSerializer
+    sops = SOP.objects.filter(company = request.user.company)
+    return Response(serializer(sops, many = True).data)
+
 
 
 @api_view(['GET'])

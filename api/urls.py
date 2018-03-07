@@ -9,6 +9,7 @@ router.register(r'experiment', views.experiments, 'experiment')
 
 
 urlpatterns = [
+    url(r'^sop/$', views.get_sop),
     url(r'^get_tasks/(?P<task_status>[N,C,I])/(?P<page>[0-9]+)/$', views.get_tasks),
     url(r'^task_in_progress/(?P<id>[0-9]+)$', views.mark_task_in_progress),
     url(r'^task_complete/(?P<id>[0-9]+)$', views.mark_task_complete),
