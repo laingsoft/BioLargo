@@ -74,6 +74,26 @@ var TaskModalView = Backbone.View.extend({
             }
         });
 
+        $('#relatedSOP').selectize({
+            maxItems: 1,
+            valueField: 'id',
+            labelField: 'name',
+            preload: 'focus',
+            load: function(q, callback) {
+                $.get('/sop/find/', { 'q': q }, function(res) {
+                    callback(res.data);
+                })
+            },
+            onInitialize: function() {
+                sop = self.model.get('sop');
+                if (sop) {
+                    this.addOption(sop);
+                    this.setValue(sop.id);
+                }
+            },
+        });
+
+
         this.$el.modal('show');
         return this;
 

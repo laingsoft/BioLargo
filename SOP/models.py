@@ -8,6 +8,8 @@ class SOP(models.Model):
     file = models.FileField(upload_to='SOP/')
     company = models.ForeignKey(Company)
 
+    def __str__(self):
+        return self.name
 
 class SOPMaterials(models.Model):
     UNITS = (

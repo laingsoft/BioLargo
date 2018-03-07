@@ -68,11 +68,15 @@
                 <p><a href="/management/projects/<%= project.id %>"><%= project.name %></a></p>
                 <h5>Description</h5>
                 <p><%= description %></p>
-                                <h5>Due Date</h5>
+                <h5>Due Date</h5>
                 <% if (due_date)  { %>
                     <p><%= due_date %></p>
                 <% } else { %>
                     <p>No due date set. </p>
+                <% } %>
+                <% if (sop) { %>
+                    <h5>SOP</h5>
+                    <p><a href="/sop/download/<%= sop.id %>" <%= sop.name %></p>
                 <% } %>
 
                 <%if (status === 'C' && related_experiment) { %>

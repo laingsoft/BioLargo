@@ -37,6 +37,14 @@ $("document").ready(function(){
         placeholder: 'Select a project',
     });
 
+    $('#id_exp-sop').selectize({
+        preload: true,
+        placeholder: 'Select SOP followed',
+        closeAfterSelect: true,
+        allowEmptyOption: true,
+
+    });
+
     $('#id_exp-tags').selectize({
         preload: true,
         placeholder: 'Add Tags',
