@@ -17,7 +17,7 @@ from app.forms import ExperimentDataForm
 from .serializers import *
 from django.http import Http404
 from rest_framework.response import Response
-from django.db import IntegrityError
+from django.db import IntegrityError, DataError
 from app.models import *
 from accounts.models import User
 from SOP.models import SOP
@@ -46,8 +46,7 @@ def get_user(request):
         request.user.last_name = request.data['last_name']
         request.user.email = request.data['email']
         request.user.save()
-        return JsonResponse({"success":True})
-
+       
 
 @api_view(['GET'])
 def get_company_users(request):
@@ -82,8 +81,8 @@ def get_experiments_with_project_id(request, id, page):
 
 #This will get the epxeriment that has the ID that is passed in
 @api_view(['GET'])
-def get_experiments_with_experiment_id(request, id):
-    experiments = Experiment.objects.filter(id = id)
+def get_experiment_with_experiment_id(request, id):
+    experiments = Experiment.objects.get(company = request.user.company, id = id)
     serializer = experimentSerializer
     return Response(serializer(experiments).data)
 
