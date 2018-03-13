@@ -189,13 +189,6 @@ def get_csv(request, exp_id, header=0):
     return response
 
 
-def analysis_page(request):
-    company = request.user.company
-    all_tags = Tag.objects.filter(company=company)
-    all_groups = Project.objects.filter(company=company)
-    return render(request, "app/analysis.html", {"usr":get_user(request), "tags":all_tags, "groups":all_groups})
-
-
 class ProjectListView(ProjectFilterMixin, CompanyObjectsMixin, ListView):
     model = Project
     template_name = 'app/project_list.html'

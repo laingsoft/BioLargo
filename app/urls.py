@@ -12,7 +12,6 @@ urlpatterns = [
     url(r'^experimentjs/(?P<exp_id>[0-9]+)', views.experiment_json, name='experiment_json'),
     url(r'^experimentrm/(?P<exp_id>[0-9]+)', views.experimentrm, name="experimentrm"),
     url(r'^experiment/csv/(?P<exp_id>[0-9]+)', views.get_csv, name='get_csv'),
-    url(r'^analysis', views.analysis_page, name='analysis_page'),
     url(r'^projects/(?P<pk>[0-9]+)/$', views.ProjectDetailView.as_view(), name="project_page"),
     url(r'^projects/$', views.ProjectListView.as_view(), name="project_list"),
     url(r'^create_tag/$', views.create_tag, name="create_tag"),

@@ -8,16 +8,21 @@ services:
     volumes:
       - ./config/nginx:/etc/nginx/conf.d
       - uploads:/uploads
+      - static:/static
     depends_on:
       - web
   db:
     image: postgres
   web:
     build: .
-    command: bash -c "python3 manage.py runworker & daphne -b 0.0.0.0 -p 80 PredoxWeb.asgi:channel_layer"
+    # Command for production.
+    # command: bash -c "python3 manage.py runworker & daphne -b 0.0.0.0 -p 80 PredoxWeb.asgi:application"
+    # for development
+    command: bash -c "python3 manage.py runserver 0.0.0.0:80"
     volumes:
       - .:/code
       - uploads:/uploads
+      - static:/static
     expose:
       - "80"
     depends_on:
@@ -30,3 +35,4 @@ services:
       - "6379"
 volumes:
   uploads:
+  static:

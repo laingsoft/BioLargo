@@ -115,8 +115,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -144,14 +142,14 @@ STATICFILES_DIRS = [
 
 
 CHANNEL_LAYERS = {
-    "default":{
-        "BACKEND": "asgi_redis.RedisChannelLayer",
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts":[("redis",6379)]
-        },
-        "ROUTING": "PredoxWeb.routing.channel_routing",
-        },
-    }
+            "hosts": [("redis", 6379)]
+        }
+    },
+}
+
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -186,3 +184,5 @@ JWT_AUTH = {
 }
 
 MEDIA_ROOT = '/uploads/'
+
+ASGI_APPLICATION = "PredoxWeb.routing.application"
