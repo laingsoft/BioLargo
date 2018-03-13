@@ -1,64 +1,95 @@
-# import json
-# from django.db.models.functions import TruncDay
-# from django.db.models import Count
-# from accounts.models import User
-# from channels.auth import channel_session_user, channel_session_user_from_http
-# from .models import Experiment
+from django.db.models.functions import TruncDay
+from django.db.models import Count
+from channels.generic.websocket import JsonWebsocketConsumer
+from datetime import datetime, timedelta
+import pytz
 
 
-# def getUploadsPerUser(data, channel):
-#     '''
-#     Populates the section "Most Active Users"
-#     '''
-#     company_users = User.objects.filter(company=channel.user.company).annotate(num_exp=Count('experiment'))
-#     retval = {}
+class IndexStatConsumer(JsonWebsocketConsumer):
+    '''
+    Provides stats for index page.
+    Doesn't use channel or groups.
+    '''
 
-#     for user in company_users:
-#         retval[user.first_name] = user.num_exp
+    # Valid actions/method names to restrict callable methods from client.
+    STATS = frozenset((
+        'get_daily_upload_stats',
+        'get_top_uploaders',
+        ))
 
-#     retval = {"data":retval, "action":"showUserUploadGraph"}
-#     channel.reply_channel.send({
-#         "text":json.dumps(retval)
-#         })
+    def connect(self):
+        '''
+        On connection, check if user is logged in.
+        '''
+        self.user = self.scope["user"]
+        if self.user.is_anonymous:
+            self.disconnect()
 
+        self.accept()
 
-# def getUserStats(data, channel):
-#     '''
-#     Fills in the "Number of Experiments Uploaded" graph. I really should rename these
-#     '''
-#     uploads_dates = Experiment.objects.filter(company = channel.user.company)\
-#                     .annotate(day=TruncDay('create_timestamp'))\
-#                     .values('day')\
-#                     .annotate(count =Count('id'))\
-#                     .values('day', 'count')
+    def receive_json(self, content):
+        '''
+        Called when text frame is recieved. Calls method
+        based on 'action' parameter sent by client.
+        arguments:
+            - content: decoded JSON.
+        '''
+        action = content.get("action")
+        print('RECEIVED!')
+        if action not in IndexStatConsumer.STATS:
+            pass  # TODO: send error if method doesn't exist or not callable.
 
-#     tupl = {}
-#     for i in uploads_dates:
-#         tupl[i['day'].strftime("%a %b %d")] = i['count']
+        getattr(self, action)()  # calls method based on name.
 
-#     retval = {"data":tupl, "action":"userstats"}
-#     channel.reply_channel.send({
-#         "text":json.dumps(retval)
-#         })
+    def get_week(self):
+        '''
+        Gets current week, starting on Sunday.
+        '''
+        today = datetime.now(pytz.utc)  # utcnow for timezone support
+        start = today - timedelta(days=(today.weekday() + 1) % 7)
+        end = start + timedelta(days=7)
 
+        return (start.date(), end.date())
 
-# INDEX_OBJECTS = {"getUserStats": getUserStats, "getUploadsPerUser":getUploadsPerUser}
+    def get_daily_upload_stats(self):
+        '''
+        Gets the number of of experiments uploaded per day for the current
+        week
+        '''
+        print('!!!')
+        week = self.get_week()
+        qs = self.user.company.experiment_set.filter(
+            create_timestamp__gte=week[0],
+            create_timestamp__lt=week[1]) \
+            .annotate(day=TruncDay('create_timestamp'))\
+            .values('day') \
+            .annotate(count=Count('id')) \
+            .values('day', 'count')
 
+        data = {i['day'].strftime("%a %b %d"): i['count'] for i in qs}
 
-# @channel_session_user
-# def ws_index_page(consumable):
-#     '''
-#     Serves as the dispacher for the websocket for the index page.
-#     '''
-#     data = json.loads(consumable.content['text'])
-#     INDEX_OBJECTS[data['action']](data['data'], consumable)
+        current = week[0]
 
-# @channel_session_user_from_http
-# def ws_index_connect(consumable):
-#     '''
-#     Handles the incoming connection for the websocket.
-#     It's not really necessary, but we need to be able to get the user object
-#     Because of how channels optimises the data sent of the wire, if we don't
-#     grab the user object at connection, we never get it.
-#     '''
-#     consumable.reply_channel.send({'accept':True})
+        while current < week[1]:
+            datestring = current.strftime("%a %b %d")
+            if datestring not in data:
+                data[datestring] = 0
+            current += timedelta(days=1)
+
+        self.send_json({'action': 'get_daily_upload_stats', 'data': data})
+
+    def get_top_uploaders(self):
+        '''
+        Gets the top 10 users with the highest number of uploads this week
+        '''
+        week = self.get_week()
+        qs = self.user.company.experiment_set.filter(
+            create_timestamp__gte=week[0],
+            create_timestamp__lt=week[1]) \
+            .values('user') \
+            .annotate(count=Count('id')) \
+            .values('user__first_name', 'count') \
+            .order_by('count')[:10]
+
+        data = {i['user__first_name']: i['count'] for i in qs}
+        self.send_json({'action': 'get_top_uploaders', 'data': data})

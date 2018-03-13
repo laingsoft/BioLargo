@@ -81,7 +81,7 @@ function showUserUploadGraph(data){
 }
 
 // ACTIONS is the dispacher graph. Register the functions you want to use here.
-var ACTIONS = {'userstats': showUserStats, "showUserUploadGraph":showUserUploadGraph};
+var ACTIONS = {'get_daily_upload_stats': showUserStats, "get_top_uploaders":showUserUploadGraph};
 
 /*
 * Dispacher function. Uses the data sent from the server to tell the client what to do with
@@ -99,14 +99,16 @@ $(document).ready(function() {
     // Basically just everything that needs to be done on the page. Perhaps think
     // about using a loader so the page doesn't seem lethargic.
     socket = new WebSocket("ws://"+window.location.host+window.location.pathname);
-    socket.onmessage = function(e){
-        socket_dispach(e);
+    socket.onmessage = function(event){
+        console.log(event.data);
+        socket_dispach(event);
+        // socket.close();
     }
     socket.onopen = function(){
-	socket.send(JSON.stringify({'action':'getUploadsPerUser', 'data':0}));
-        socket.send(JSON.stringify({'action':'getUserStats', 'data':0}));
+	socket.send(JSON.stringify({'action':'get_daily_upload_stats'}));
+    socket.send(JSON.stringify({'action':'get_top_uploaders'}));
 
-	console.log("sent");
+	// console.log("sent");
     }
 
 
@@ -116,3 +118,7 @@ window.location.href="/app/experiment/" + $(this).data('id')
 
 })
 
+window.onbeforeunload = function() {
+    socket.onclose = function () {}; // disable onclose handler first
+    socket.close()
+};
