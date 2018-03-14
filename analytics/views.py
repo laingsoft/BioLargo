@@ -1,3 +1,5 @@
 from django.shortcuts import render
 
-# Create your views here.
+
+def analytics_page(request):
+    return render(request, 'analytics/analytics.html', {})

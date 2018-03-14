@@ -35,7 +35,6 @@ class IndexStatConsumer(JsonWebsocketConsumer):
             - content: decoded JSON.
         '''
         action = content.get("action")
-        print('RECEIVED!')
         if action not in IndexStatConsumer.STATS:
             pass  # TODO: send error if method doesn't exist or not callable.
 
@@ -56,7 +55,6 @@ class IndexStatConsumer(JsonWebsocketConsumer):
         Gets the number of of experiments uploaded per day for the current
         week
         '''
-        print('!!!')
         week = self.get_week()
         qs = self.user.company.experiment_set.filter(
             create_timestamp__gte=week[0],

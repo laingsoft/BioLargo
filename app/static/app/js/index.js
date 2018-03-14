@@ -1,11 +1,10 @@
 /*
-* Fills in the "Most Active Users Graph
-* Sister function is located in consumers: getUploadsPerUser
-*
-*/
+ * Fills in the "Most Active Users Graph
+ * Sister function is located in consumers: getUploadsPerUser
+ *
+ */
 
-function showUserStats(data){
-   // console.log(data);
+function showUserStats(data) {
     var exp_data = [{
         type: 'line',
         x: Object.keys(data),
@@ -41,13 +40,12 @@ function showUserStats(data){
 };
 
 /*
-* Fills in the "Number of experiments uploaded" graph
-* Sister function is in consumers.py: getUserStats
-*
-*/
+ * Fills in the "Number of experiments uploaded" graph
+ * Sister function is in consumers.py: getUserStats
+ *
+ */
 
-function showUserUploadGraph(data){
-    console.log(data);
+function showUserUploadGraph(data) {
     var user_data = [{
         type: 'bar',
         x: Object.values(data),
@@ -81,14 +79,13 @@ function showUserUploadGraph(data){
 }
 
 // ACTIONS is the dispacher graph. Register the functions you want to use here.
-var ACTIONS = {'get_daily_upload_stats': showUserStats, "get_top_uploaders":showUserUploadGraph};
+var ACTIONS = { 'get_daily_upload_stats': showUserStats, "get_top_uploaders": showUserUploadGraph };
 
 /*
-* Dispacher function. Uses the data sent from the server to tell the client what to do with
-* the data.
-*/
-function socket_dispach(e){
-    console.log("Recieved: "+e.data);
+ * Dispacher function. Uses the data sent from the server to tell the client what to do with
+ * the data.
+ */
+function socket_dispach(e) {
     recv = JSON.parse(e.data);
     ACTIONS[recv['action']](recv['data']);
 };
@@ -98,27 +95,18 @@ $(document).ready(function() {
     // Do some basic setup stuff
     // Basically just everything that needs to be done on the page. Perhaps think
     // about using a loader so the page doesn't seem lethargic.
-    socket = new WebSocket("ws://"+window.location.host+window.location.pathname);
-    socket.onmessage = function(event){
-        console.log(event.data);
+    socket = new WebSocket("ws://" + window.location.host + window.location.pathname);
+    socket.onmessage = function(event) {
         socket_dispach(event);
-        // socket.close();
     }
-    socket.onopen = function(){
-	socket.send(JSON.stringify({'action':'get_daily_upload_stats'}));
-    socket.send(JSON.stringify({'action':'get_top_uploaders'}));
-
-	// console.log("sent");
+    socket.onopen = function() {
+        socket.send(JSON.stringify({ 'action': 'get_daily_upload_stats' }));
+        socket.send(JSON.stringify({ 'action': 'get_top_uploaders' }));
     }
 
 
-$(".clickable").click(function(){
-window.location.href="/app/experiment/" + $(this).data('id')
-})
+    $(".clickable").click(function() {
+        window.location.href = "/app/experiment/" + $(this).data('id')
+    })
 
 })
-
-window.onbeforeunload = function() {
-    socket.onclose = function () {}; // disable onclose handler first
-    socket.close()
-};

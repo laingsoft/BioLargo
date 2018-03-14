@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['192.168.1.8', '192.168.1.9', '192.168.1.11', '192.168.1.12', '
 # Application definition
 
 INSTALLED_APPS = [
+    'analytics',
     'project_management.apps.ProjectManagementConfig',
     'SOP.apps.SopConfig',
     'frontpage.apps.FrontpageConfig',
