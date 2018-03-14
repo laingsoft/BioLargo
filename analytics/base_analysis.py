@@ -25,13 +25,13 @@ class max_tool(Tool):
 
     def evaluate(self):
         return max(self.data)
-
+    
 
 class min_tool(Tool):
     '''
     Accepts a list, returns a minimum value when eval is called
     '''
-
+    
     def __init__(self, data):
         self.data = data
 
@@ -57,7 +57,7 @@ class median_tool(Tool):
         self.data = data
     def evaluate(self):
         return median(self.data)
-
+    
 class mode_tool(Tool):
     def __init__(self, data):
         self.data = data
@@ -120,11 +120,11 @@ class ngX_score_tool(Tool):
             running_sum += cursor
             i+=1
         return cursor
+    
 
 
-
-
-
-
-
-
+       
+    
+            
+    
+    
