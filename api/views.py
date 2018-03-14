@@ -86,6 +86,12 @@ def get_experiment_with_experiment_id(request, id):
     serializer = experimentSerializer
     return Response(serializer(experiments).data)
 
+#This will get the project that has the ID that is passed in
+@api_view(['GET'])
+def get_project_with_project_id(request, id):
+    project = Project.objects.get(company = request.user.company, id = id)
+    serializer = projectSerializer
+    return Response(serializer(project).data)
 
 #Get the Data from the Experiment Data model according to the experiment id passed in
 @api_view(['GET'])

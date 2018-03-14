@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^project_stats/(?P<id>[0-9]+)$', views.get_project_stats),
     url(r'^projects/delete/(?P<id>[0-9]+)/$', views.projects_delete),
     url(r'^projects/(?P<page>[0-9]+)/$', views.projects.as_view()),
+    url(r'^project_with_project_id/(?P<id>[0-9]+)$', views.get_project_with_project_id),
     url(r'^get_company_users/$', views.get_company_users),
     url(r'^get_user', views.get_user),
     url(r'^get_token', obtain_jwt_token),
