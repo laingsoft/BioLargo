@@ -1,6 +1,6 @@
 Django>=1.8, <2.0
 psycopg2-binary
-channels<=2.0
+channels==2.0.2
 python-magic
 channels_redis
 djangorestframework
