@@ -11,6 +11,9 @@ class Session(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     dataset = JSONField()  # queryset parameters.
 
+    class Meta:
+        unique_together = (('user', 'name'))
+
     def generate_qs(self):
         """
         uses dataset parameters (dictionary) to generate a queryset.

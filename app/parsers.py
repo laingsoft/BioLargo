@@ -52,8 +52,15 @@ class BaseParser(ABC):
             try:
                 self.comments.append(row.pop(self.comment_field).strip())
             except KeyError:
-                pass
-                # do nothing if no comment field or comment field name not correct.
+                pass  # do nothing if no comment or field name wrong.
+
+            for col in row:
+                try:
+                    row[col] = literal_eval(row[col])
+                except ValueError:
+                    pass  # do nothing if string.
+
+            print(row)
 
     def create_objects(self, experiment):
         """
