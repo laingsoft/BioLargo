@@ -1,5 +1,5 @@
 from app.models import ExperimentData
-from django.db.models import Max, Min, Sum, Avg
+from django.db.models import Max, Min, Sum, Avg, StdDev, Variance
 from django.contrib.postgres.fields.jsonb import KeyTextTransform
 from django.db.models import FloatField
 from django.db.models.functions import Cast
@@ -14,7 +14,7 @@ class Tool:
         - filters: a dictionary of additional filters for qs.
         - fields: a list of field names (string) for operation.
     """
-    def __init__(self, base_qs, field, filters=None, *args, **kwargs):
+    def __init__(self, base_qs, field, filters=[], *args, **kwargs):
         self.base_qs = base_qs
         self.filters = filters
         self.field = field
@@ -26,16 +26,19 @@ class Tool:
 class BaseAggregateTool(Tool):
     """
     Base tool for aggregrate functions performed on database.
-    Aggregate function used must be defined in child class.
+    Aggregate function used must be defined by child classes.
 
     """
     function = None
 
     def evaluate(self):
-        qs = self.base_qs.annotate(
-            val=Cast(KeyTextTransform(self.field, 'experimentData'), FloatField())
-            ).aggregate(self.function('val'))
-        return qs
+        query = self.base_qs.filter(*self.filters) \
+            .annotate(
+                val=Cast(
+                    KeyTextTransform(self.field, 'experimentData'),
+                    FloatField())) \
+            .aggregate(self.function('val'))
+        return query
 
 
 # ###############
@@ -62,20 +65,24 @@ class AvgTool(BaseAggregateTool):
     """
     function = Avg
 
-# class simple_avg_tool(Tool):
-#     '''
-#     Accepts a list, returns a simple average
-#     '''
-#     def __init__(self, data):
-#         self.data = data
-
-#     def evaluate(self):
-#         total_sum = sum(self.data)
-#         return total_sum/len(self.data)
 
 # #########################
 # # Stats Library Wrapper #
 # #########################
+
+class STDVTool(BaseAggregateTool):
+    """
+    gets standard deviation
+    """
+    function = StdDev
+
+
+class VarianceTool(BaseAggregateTool):
+    """
+    gets variance.
+    """
+    function = Variance
+
 # class median_tool(Tool):
 #     def __init__(self, data):
 #         self.data = data
@@ -87,18 +94,6 @@ class AvgTool(BaseAggregateTool):
 #         self.data = data
 #     def evaluate(self):
 #         return mode(self.data)
-
-# class stdv_tool(Tool):
-#     def __init__(self, data):
-#         self.data = data
-#     def evaluate(self):
-#         return mode(self.data)
-
-# class variance_tool(Tool):
-#     def __init__(self, data):
-#         self.data = data
-#     def evaluate(self):
-#         return variance(self.data)
 
 
 # ##################

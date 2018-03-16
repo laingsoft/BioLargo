@@ -1,14 +1,22 @@
 from channels.generic.websocket import JsonWebsocketConsumer
 from asgiref.sync import async_to_sync
 from .models import Session, Action
-from django.db.utils import DatabaseError
-from .base_analysis import MaxTool, MinTool, AvgTool
+import analytics.base_analysis as tools
+
+TOOLS = {
+    'max': tools.MaxTool,
+    'min': tools.MinTool,
+    'avg': tools.AvgTool,
+    'stdv': tools.STDVTool,
+    'variance': tools.VarianceTool
+}
 
 
 class AnalyticsConsumer(JsonWebsocketConsumer):
     """
     This consumer handles websocket connections for analysis.
     """
+
     def connect(self):
         """
         called on initial connection
@@ -35,16 +43,9 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         field = content.get('field')
 
-        TOOLS = {
-            'max': MaxTool,
-            'min': MinTool,
-            'avg': AvgTool
-        }
-
         val = TOOLS[action](self.user.company.experimentdata_set.all(), field).evaluate()
 
         self.send_json(val)
-
 
     def disconnect(self, code):
         """
