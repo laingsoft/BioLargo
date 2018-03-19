@@ -1,6 +1,7 @@
 from .models import Notification, Comment, Experiment
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from fcm_django.models import FCMDevice
 
 
 @receiver(post_save, sender=Comment)
@@ -26,6 +27,10 @@ def comment_save_reciever(sender, instance, **kwargs):
             notifications.append(Notification(**args, recipient=r))
 
         Notification.objects.bulk_create(notifications)
+
+        device = FCMDevice.objects.all().first()
+        print("TESTING", FCMDevice.objects.all())
+        device.send_message("Title", "Message")
 
 
 @receiver(post_save, sender=Experiment)
