@@ -8,7 +8,9 @@ TOOLS = {
     'min': tools.MinTool,
     'avg': tools.AvgTool,
     'stdv': tools.STDVTool,
-    'variance': tools.VarianceTool
+    'variance': tools.VarianceTool,
+    'mode': tools.ModeTool,
+    'median': tools.MedianTool
 }
 
 

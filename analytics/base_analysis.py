@@ -1,8 +1,9 @@
-from app.models import ExperimentData
 from django.db.models import Max, Min, Sum, Avg, StdDev, Variance
 from django.contrib.postgres.fields.jsonb import KeyTextTransform
 from django.db.models import FloatField
 from django.db.models.functions import Cast
+from .aggregates import Mode, Percentile
+from django.db import connection
 # from statistics import median, mode, stdev, variance
 
 
@@ -27,9 +28,12 @@ class BaseAggregateTool(Tool):
     """
     Base tool for aggregrate functions performed on database.
     Aggregate function used must be defined by child classes.
+    function: Aggregate function name from postgres
+    extra: list of other arguments that need to be passed into function.
 
     """
     function = None
+    extra = []
 
     def evaluate(self):
         query = self.base_qs.filter(*self.filters) \
@@ -37,7 +41,8 @@ class BaseAggregateTool(Tool):
                 val=Cast(
                     KeyTextTransform(self.field, 'experimentData'),
                     FloatField())) \
-            .aggregate(self.function('val'))
+            .aggregate(result=self.function('val', *self.extra))
+
         return query
 
 
@@ -83,17 +88,21 @@ class VarianceTool(BaseAggregateTool):
     """
     function = Variance
 
-# class median_tool(Tool):
-#     def __init__(self, data):
-#         self.data = data
-#     def evaluate(self):
-#         return median(self.data)
 
-# class mode_tool(Tool):
-#     def __init__(self, data):
-#         self.data = data
-#     def evaluate(self):
-#         return mode(self.data)
+class ModeTool(BaseAggregateTool):
+    """
+    gets mode using PostgreSQL's Mode aggregate.
+    """
+    function = Mode
+
+
+class MedianTool(BaseAggregateTool):
+    """
+    gets median.
+    Can't get query to work with ORM, so this one is done by executing raw SQL.
+    """
+    function = Percentile
+    extra = [0.5]
 
 
 # ##################
