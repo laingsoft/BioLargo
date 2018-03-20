@@ -96,5 +96,3 @@ class Mode(Aggregate):
     name = "Mode"
     template = "%(function)s() WITHIN GROUP (ORDER BY %(expressions)s)"
 
-    def __init__(self, expressions, **extra):
-        super().__init__(expressions, **extra)

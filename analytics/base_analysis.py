@@ -99,7 +99,6 @@ class ModeTool(BaseAggregateTool):
 class MedianTool(BaseAggregateTool):
     """
     gets median.
-    Can't get query to work with ORM, so this one is done by executing raw SQL.
     """
     function = Percentile
     extra = [0.5]
