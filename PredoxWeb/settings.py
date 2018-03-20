@@ -52,11 +52,6 @@ INSTALLED_APPS = [
     'fcm_django'
 ]
 
-FCM_DJANGO_SETTINGS = {
-        "FCM_SERVER_KEY": "AIzaSyAl4bvTeECDn7WBgOLYsVdpe51J9aje7r4",
-        "ONE_DEVICE_PER_USER": False,
-}
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

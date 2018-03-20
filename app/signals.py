@@ -2,6 +2,7 @@ from .models import Notification, Comment, Experiment
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from fcm_django.models import FCMDevice
+import pyfcm
 
 
 @receiver(post_save, sender=Comment)
@@ -25,12 +26,14 @@ def comment_save_reciever(sender, instance, **kwargs):
 
         for r in recipients:
             notifications.append(Notification(**args, recipient=r))
+            #Get the device of the recipent and send a push notification
+            device = FCMDevice.objects.filter(id = r.id)
+            message_body = str(instance.user.first_name) + " " + \
+                str(instance.user.last_name) + " commented on " + str(instance.experiment.friendly_name) + " " + str(instance.content[:255])
+            device.send_message(data={"title" : "New Comment", "body" : message_body})
 
         Notification.objects.bulk_create(notifications)
 
-        device = FCMDevice.objects.all().first()
-        print("TESTING", FCMDevice.objects.all())
-        device.send_message("Title", "Message")
 
 
 @receiver(post_save, sender=Experiment)
@@ -53,6 +56,10 @@ def experiment_update_reciever(sender, instance, created, **kwargs):
 
             for r in recipients:
                 notifications.append(Notification(**args, recipient=r))
+                device = FCMDevice.objects.filter(id = r.id)
+                message_body = str(instance.user.first_name) + " " + \
+                    str(instance.user.last_name) + " updated " + str(instance.experiment.friendly_name)
+                device.send_message(data={"title" : "Experiment Updated", "body" : message_body})
 
             Notification.objects.bulk_create(notifications)
 
@@ -84,5 +91,9 @@ def experiment_upload_reciever(sender, instance, created, **kwargs):
 
             for r in recipients:
                 notifications.append(Notification(**args, recipient=r))
+                device = FCMDevice.objects.filter(id = r.id)
+                message_body = str(instance.user.first_name) + " " + \
+                    str(instance.user.last_name) + " uploaded to " + str(instance.project.name)
+                device.send_message(data={"title" : "New Experiment", "body" : message_body})
 
             Notification.objects.bulk_create(notifications)

@@ -18,12 +18,8 @@ from django.contrib import admin
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 from fcm_django.api.rest_framework import FCMDeviceAuthorizedViewSet
 
-from rest_framework.routers import DefaultRouter
-router = DefaultRouter()
-router.register(r'devices', FCMDeviceAuthorizedViewSet)
-
 urlpatterns = [
-    url(r'^TEST', include(router.urls)),
+    url(r'^devices/', FCMDeviceAuthorizedViewSet.as_view({'post':'create', 'get':'list'}), name='create_fcm_device'),
     url(r'^admin/', admin.site.urls),
     url(r'^app/', include('app.urls')),
     url(r'^accounts/',include('accounts.urls')),
