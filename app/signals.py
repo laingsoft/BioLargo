@@ -30,7 +30,7 @@ def comment_save_reciever(sender, instance, **kwargs):
             device = FCMDevice.objects.filter(id = r.id)
             message_body = str(instance.user.first_name) + " " + \
                 str(instance.user.last_name) + " commented on " + str(instance.experiment.friendly_name) + " " + str(instance.content[:255])
-            device.send_message(data={"title" : "New Comment", "body" : message_body})
+            device.send_message(data={"type": 0, "title" : "New Comment", "body" : message_body})
 
         Notification.objects.bulk_create(notifications)
 
@@ -59,7 +59,7 @@ def experiment_update_reciever(sender, instance, created, **kwargs):
                 device = FCMDevice.objects.filter(id = r.id)
                 message_body = str(instance.user.first_name) + " " + \
                     str(instance.user.last_name) + " updated " + str(instance.experiment.friendly_name)
-                device.send_message(data={"title" : "Experiment Updated", "body" : message_body})
+                device.send_message(data={"type": 1, "title" : "Experiment Updated", "body" : message_body})
 
             Notification.objects.bulk_create(notifications)
 
@@ -94,6 +94,6 @@ def experiment_upload_reciever(sender, instance, created, **kwargs):
                 device = FCMDevice.objects.filter(id = r.id)
                 message_body = str(instance.user.first_name) + " " + \
                     str(instance.user.last_name) + " uploaded to " + str(instance.project.name)
-                device.send_message(data={"title" : "New Experiment", "body" : message_body})
+                device.send_message(data={"type": 2, "title" : "New Experiment", "body" : message_body})
 
             Notification.objects.bulk_create(notifications)
