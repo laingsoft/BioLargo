@@ -71,6 +71,13 @@ class AvgTool(BaseAggregateTool):
     function = Avg
 
 
+class SumTool(BaseAggregateTool):
+    """
+    gets sum of values
+    """
+    function = Sum
+
+
 # #########################
 # # Stats Library Wrapper #
 # #########################
