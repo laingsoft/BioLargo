@@ -1,0 +1,75 @@
+{% load accounts_tags %}
+{% load notifications_tags %}
+{% load task_tags %}
+{% incomplete_tasks request.user as tasks %}
+
+{% unread_notifications request.user as notifications %}
+
+<ul class="nav navbar-nav ml-auto">
+    <li class="nav-item d-md-down-none">
+        <div class="dropdown">
+            <a class="nav-link" href="#" id="notif-toggle" data-toggle="dropdown">
+                <svg class="icon notif-icon">
+                    <use xlink:href="#bell"></use>
+                </svg>
+                <span id="notif-count" class="badge badge-pill badge-danger">{{notifications.count}}</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right notification-dropdown">
+                <div class="dropdown-header"><b>Notifications</b></div>
+                <ul class="list-group">
+                    {% with dropdown=True %} {% include 'app/watched_list.html' %} {% endwith %}
+                </ul>
+            </div>
+        </div>
+    </li>
+    <li class="nav-item d-md-down-none">
+        <a class="nav-link" href="/app/tasks">
+            <svg class="icon notif-icon">
+                <use xlink:href="#task"></use>
+            </svg>
+            <span id="notif-count" class="badge badge-pill badge-danger">{{tasks.count}}</span>
+        </a>
+    </li>
+    <li class="nav-item dropdown pr-4">
+        <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    {{request.user.email | gravatar:40 }}
+                    {{request.user.get_full_name}}
+                 </a>
+        <div class="dropdown-menu dropdown-menu-right">
+            <div class="dropdown-header text-center">
+                <strong>Account</strong>
+            </div>
+            <!--  <a class="dropdown-item" href="#"><i class="fa fa-bell-o"></i> Updates<span class="badge badge-info">42</span></a>
+                    <a class="dropdown-item" href="#"><i class="fa fa-envelope-o"></i> Messages<span class="badge badge-success">42</span></a>
+                    <a class="dropdown-item" href="#"><i class="fa fa-tasks"></i> Tasks<span class="badge badge-danger">42</span></a>
+                    <a class="dropdown-item" href="#"><i class="fa fa-comments"></i> Comments<span class="badge badge-warning">42</span></a>
+                    <div class="dropdown-header text-center">
+                        <strong>Settings</strong>
+                    </div> -->
+            <a class="dropdown-item" href="/accounts/profile">
+                <svg class="icon" viewBox="0 0 8 8">
+                    <use xlink:href="#person"></use>
+                </svg> Profile</a>
+            <a class="dropdown-item" href="#">
+                <svg class="icon" viewBox="0 0 8 8">
+                    <use xlink:href="#cog"></use>
+                </svg>Settings</a>
+            <!-- <a class="dropdown-item" href="#"><i class="fa fa-file"></i> Projects<span class="badge badge-primary">42</span></a>
+                    <div class="divider"></div> -->
+            <!-- <a class="dropdown-item" href="#"><i class="fa fa-shield"></i> Lock Account</a> -->
+            <a class="dropdown-item" href="/accounts/logout">
+                <svg class="icon" viewBox="0 0 8 8">
+                    <use xlink:href="#account-logout"></use>
+                </svg> Logout</a>
+            {% if request.user.is_manager %}
+            <div class="dropdown-header text-center">
+                <strong>Management</strong>
+            </div>
+            <a class="dropdown-item" href="/management">
+                <svg class="icon" viewBox="0 0 8 8">
+                    <use xlink:href="#wrench"></use>
+                </svg>Management panel</a>
+            {% endif %}
+        </div>
+    </li>
+</ul>

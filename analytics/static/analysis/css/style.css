@@ -10482,9 +10482,8 @@ base-chart.chart {
   -ms-flex-direction: column;
       flex-direction: column;
   padding: 0;
-  color: #29363d;
-  background: #fff;
-  border-right: 1px solid #a4b7c1; }
+  color: #fff;
+  background: #29363d; }
   .sidebar .sidebar-close {
     position: absolute;
     right: 0;
@@ -10493,7 +10492,7 @@ base-chart.chart {
     font-size: 24px;
     font-weight: 800;
     line-height: 55px;
-    color: #29363d;
+    color: #fff;
     background: 0;
     border: 0;
     opacity: .8; }
@@ -10507,7 +10506,7 @@ base-chart.chart {
     background: rgba(0, 0, 0, 0.2); }
   .sidebar .sidebar-form .form-control {
     color: #fff;
-    background: #e6e6e6;
+    background: #151b1f;
     border: 0; }
     .sidebar .sidebar-form .form-control::-webkit-input-placeholder {
       color: rgba(255, 255, 255, 0.7); }
@@ -10524,25 +10523,25 @@ base-chart.chart {
     overflow-x: hidden;
     overflow-y: auto;
     -ms-overflow-style: -ms-autohiding-scrollbar;
-    width: 199px; }
+    width: 200px; }
     .sidebar .sidebar-nav::-webkit-scrollbar {
       position: absolute;
       width: 10px;
       margin-left: -10px;
       -webkit-appearance: none; }
     .sidebar .sidebar-nav::-webkit-scrollbar-track {
-      background-color: white;
-      border-right: 1px solid #f2f2f2;
-      border-left: 1px solid #f2f2f2; }
+      background-color: #33444c;
+      border-right: 1px solid #1f292e;
+      border-left: 1px solid #1f292e; }
     .sidebar .sidebar-nav::-webkit-scrollbar-thumb {
       height: 50px;
-      background-color: #e6e6e6;
+      background-color: #151b1f;
       background-clip: content-box;
       border-color: transparent;
       border-style: solid;
       border-width: 1px 2px; }
   .sidebar .nav {
-    width: 199px;
+    width: 200px;
     -ms-flex-direction: column;
         flex-direction: column;
     min-height: 100%; }
@@ -10585,7 +10584,7 @@ base-chart.chart {
       margin-top: 2px; }
     .sidebar .nav-link.active, .sidebar .navbar .active.dropdown-toggle, .navbar .sidebar .active.dropdown-toggle {
       color: #fff;
-      background: white; }
+      background: #33444c; }
       .sidebar .nav-link.active i, .sidebar .navbar .active.dropdown-toggle i, .navbar .sidebar .active.dropdown-toggle i {
         color: #673AB7; }
     .sidebar .nav-link:hover, .sidebar .navbar .dropdown-toggle:hover, .navbar .sidebar .dropdown-toggle:hover {
@@ -10846,7 +10845,7 @@ base-chart.chart {
     padding: 0.09375rem 1rem;
     color: #c2cfd6; }
     .sidebar .nav-label:hover {
-      color: #29363d;
+      color: #fff;
       text-decoration: none; }
     .sidebar .nav-label i {
       width: 20px;
@@ -10855,6 +10854,8 @@ base-chart.chart {
       color: #536c79;
       text-align: center;
       vertical-align: middle; }
+  .sidebar .progress {
+    background-color: #485f6b !important; }
   .sidebar .sidebar-footer {
     -ms-flex: 0 0 auto;
         flex: 0 0 auto;
@@ -10887,9 +10888,9 @@ base-chart.chart {
 
 @media (min-width: 992px) {
   .sidebar-compact .sidebar .sidebar-nav {
-    width: 149px; }
+    width: 150px; }
   .sidebar-compact .sidebar .nav {
-    width: 149px; }
+    width: 150px; }
     .sidebar-compact .sidebar .nav .nav-title {
       text-align: center; }
     .sidebar-compact .sidebar .nav .nav-item {
@@ -10914,9 +10915,9 @@ base-chart.chart {
     z-index: 1019; }
     .sidebar-minimized .sidebar .sidebar-nav {
       overflow: visible;
-      width: 49px; }
+      width: 50px; }
     .sidebar-minimized .sidebar .nav {
-      width: 49px; }
+      width: 50px; }
     .sidebar-minimized .sidebar .nav-divider, .sidebar-minimized .sidebar .divider,
     .sidebar-minimized .sidebar .nav-title,
     .sidebar-minimized .sidebar .sidebar-footer,
@@ -10967,7 +10968,7 @@ base-chart.chart {
     .sidebar-minimized .sidebar .nav > .nav-dropdown > .nav-dropdown-items {
       display: none;
       max-height: 1000px;
-      background: #fff; }
+      background: #29363d; }
     .sidebar-minimized .sidebar .nav > .nav-dropdown:hover {
       background: #673AB7; }
       .sidebar-minimized .sidebar .nav > .nav-dropdown:hover > .nav-dropdown-items {

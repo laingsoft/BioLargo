@@ -1,153 +1,21 @@
-{% load static %}
-{% load accounts_tags %}
-{% load notifications_tags %}
-{% load task_tags %}
-{% unread_notifications request.user as notifications %}
-{% incomplete_tasks request.user as tasks %}
+{% extends 'app/base_template.html' %}
 
-<!--
- * CoreUI - Open Source Bootstrap Admin Template
- * @version v1.0.10
- * @link http://coreui.io
- * Copyright (c) 2018 creativeLabs Łukasz Holeczek
- * @license MIT
+{% block body_classes %}
+sidebar-hidden aside-menu-hidden
+{% endblock %}
+
+{% block header %}
+<button class="navbar-toggler sidebar-toggler">
+  <span class="navbar-toggler-icon"></span>
+</button>
+<!-- Navigation for analysis
+- new session
+- open session
+- export
  -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="CoreUI - Open Source Bootstrap Admin Template">
-  <meta name="author" content="Łukasz Holeczek">
-  <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,AngularJS,Angular,Angular2,Angular 2,Angular4,Angular 4,jQuery,CSS,HTML,RWD,Dashboard,React,React.js,Vue,Vue.js">
-  <link rel="shortcut icon" href="img/favicon.png">
-  <title>Pasteur.io</title>
+{% include 'app/app_user_menu.html' %}
+{% endblock %}
 
-  <!-- Main styles for this application -->
-  <link href="{% static 'analysis/css/style.css' %}" rel="stylesheet">
-  <!-- Styles required by this views -->
-  {% block css_extra %}
-  {% endblock %}
+{% block main %}
 
-</head>
-
-<!-- BODY options, add following classes to body to change options
-
-// Header options
-1. '.header-fixed'                  - Fixed Header
-
-// Brand options
-1. '.brand-minimized'       - Minimized brand (Only symbol)
-
-// Sidebar options
-1. '.sidebar-fixed'                 - Fixed Sidebar
-2. '.sidebar-hidden'                - Hidden Sidebar
-3. '.sidebar-off-canvas'        - Off Canvas Sidebar
-4. '.sidebar-minimized'         - Minimized Sidebar (Only icons)
-5. '.sidebar-compact'             - Compact Sidebar
-
-// Aside options
-1. '.aside-menu-fixed'          - Fixed Aside Menu
-2. '.aside-menu-hidden'         - Hidden Aside Menu
-3. '.aside-menu-off-canvas' - Off Canvas Aside Menu
-
-// Breadcrumb options
-1. '.breadcrumb-fixed'          - Fixed Breadcrumb
-
-// Footer options
-1. '.footer-fixed'                  - Fixed footer
-
--->
-
-<body class="app header-fixed sidebar-fixed aside-menu-fixed ">
-  <header class="app-header navbar">
-    <button class="navbar-toggler sidebar-toggler">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-  </header>
-
-  <div class="app-body">
-    <div class="sidebar">
-        <h4 class="p-2">Tools</h4>
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Find tools" aria-label="" aria-describedby="basic-addon1">
-            <div class="input-group-prepend">
-                <button class="btn btn-secondary" type="button">Search</button>
-            </div>
-        </div>
-
-
-        <div class="tools-container">
-            <a class="dropdown-toggle p-3" style="display: block;" href="#tool-group-1" data-toggle="collapse">
-            Visualize Data
-            </a>
-
-            <div class="collapse show" id="tool-group-1">
-                <ul class="list-group">
-                    <li class="list-group-item">
-                        <div class="media">
-                            <img class="mr-3" src="http://via.placeholder.com/50x50">
-                            <div class="media-body">
-                                <p class="font-weight-bold">Tool</p>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main content -->
-    <main class="main">
-      <div class="container-fluid">
-      </div>
-      <!-- /.conainer-fluid -->
-    </main>
-    <aside class="aside-menu">
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active show" data-toggle="tab" href="#data-options" tole="tab">Data</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#tool-options" tole="tab">Options</a>
-            </li>
-        </ul>
-        <div class="tab-content">
-            <div class="tab-pane active show" id="data-options">
-                Select data for tool here - should appear when editing something.
-            </div>
-            <div class="tab-pane" id="tool-options">
-                Set options for tool here.
-            </div>
-        </div>
-
-    </aside>
-
-  </div>
-
-  <!-- Bootstrap and necessary plugins -->
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
-
-
-<script type="text/javascript">
-    var socket = new WebSocket('ws://localhost/analytics/')
-
-    socket.onmessage = function (event) {
-        console.log(event.data);
-    }
-</script>
-
-  <!-- CoreUI main scripts -->
-
-  <script src="{% static 'analysis/js/app.js'%}"></script>
-
-  <!-- Plugins and scripts required by this views -->
-
-
-
-</body>
-</html>
+{% endblock %}

@@ -22,5 +22,5 @@ urlpatterns = [
     url(r'^notif_read/$', views.notif_read),
     url(r'^tasks/$', UserTaskListView.as_view()),
     url(r'^task_complete/(?P<id>[0-9]+)/?$', task_complete),
-    url(r'^analytics/', include(analytics.urls))
+    url(r'^analysis/', include(analytics.urls))
     ]
