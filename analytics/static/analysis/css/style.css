@@ -12252,7 +12252,13 @@ app-root {
   margin-left: 200px; }
 
 .sidebar-fixed.sidebar-hidden .main, .sidebar-fixed.sidebar-hidden .app-footer {
+  margin-left: 200px; }
+
+.sidebar-fixed.sidebar-hidden .toolbox {
   margin-left: 0; }
+
+.sidebar-fixed .toolbox {
+  margin-left: 200px; }
 
 .sidebar-off-canvas .sidebar {
   position: fixed;
@@ -12354,7 +12360,8 @@ app-root {
 .app-footer,
 .sidebar,
 .main,
-.aside-menu {
+.aside-menu,
+.toolbox {
   transition: margin-left 0.25s, margin-right 0.25s, width 0.25s, flex 0.25s;
   transition: margin-left 0.25s, margin-right 0.25s, width 0.25s, flex 0.25s, -ms-flex 0.25s; }
 
@@ -12678,9 +12685,8 @@ hr.transparent {
   background: #fff;
   height: calc(100vh - 55px);
   position: fixed;
+  z-index: 1018;
   border-right: 1px solid #a4b7c1; }
-  .toolbox.toolbox-hidden {
-    margin-left: -400px; }
   .toolbox .toolbox-header {
     padding: 0.75rem 1rem;
     border-bottom: 1px solid #a4b7c1; }
@@ -12691,3 +12697,6 @@ hr.transparent {
       display: inline-block;
       padding: 0.75rem 1rem;
       border-bottom: 1px solid #a4b7c1; }
+
+#output {
+  min-height: calc(100vh - 55px); }

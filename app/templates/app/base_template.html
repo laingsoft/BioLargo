@@ -94,8 +94,8 @@
             {% endblock %}
         </div>
         <!-- Main content -->
+        {% block main %}
         <main class="main">
-            {% block main %}
             <!-- Breadcrumb -->
             <ol class="breadcrumb">
                 {% block breadcrumb %}
@@ -114,8 +114,8 @@
                 </div>
             </div>
             <!-- /.conainer-fluid -->
-            {% endblock %}
         </main>
+        {% endblock %}
         {% block aside %}
         {% endblock %}
     </div>

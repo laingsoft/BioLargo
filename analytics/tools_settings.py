@@ -1,5 +1,5 @@
 # A dictionary of tools and their settings that will be used when rendering
-# the tool box.
+# analysis page.
 
 TOOLS = {
     'Visualization': {

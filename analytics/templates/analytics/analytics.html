@@ -14,7 +14,7 @@ sidebar-hidden aside-menu-fixed
 {% endblock %}
 
 {% block header %}
-<button class="navbar-toggler sidebar-toggler">
+<button class="navbar-toggler sidebar-toggler toolbox-fixed">
   <span class="navbar-toggler-icon"></span>
 </button>
 <!-- Navigation for analysis
@@ -37,8 +37,14 @@ sidebar-hidden aside-menu-fixed
 </div>
 <!-- End toolbox -->
 
+<div class="main">
 <!-- Content -->
+<div class="container container-fluid">
+  <div class="animated-fadeIn" id="output">
 
+  </div>
+</div>
+</div>
 <!-- end content -->
 
 {% endblock %}
@@ -67,5 +73,6 @@ sidebar-hidden aside-menu-fixed
 {% endblock %}
 
 {% block script_extra %}
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js"></script>
+
+<script type="text/javascript" src="{% static 'analysis/js/analysis.js' %}"></script>
 {% endblock %}
