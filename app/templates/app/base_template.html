@@ -19,8 +19,10 @@
     <link rel="shortcut icon" href="">
     <title>{% block title %}Pasteur.io{% endblock %}</title>
     <!-- Main styles for this application -->
+    {% block css %}
     <link href="{% static 'app/style.css' %}" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'app/icons.css' %}">
+    {% endblock %}
     <style type="text/css">
         .notification-dropdown{
             min-width: 250px;

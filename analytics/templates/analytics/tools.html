@@ -1,13 +1,19 @@
-<!--  Template for tools in a tool set. -->
-<ul class="list-group">
-{% for tool in tools %}
-<li class="list-group-item">
-    <div class="media">
-        <img class="mr-3" src="http://via.placeholder.com/50x50">
-        <div class="media-body">
-            <p class="font-weight-bold">Tool</p>
-        </div>
-    </div>
-</li>
+{% for name, tool_set in tools.items %}
+<div class="set-header dropdown-toggle">
+    <a data-toggle="collapse" href="#{{ name | slugify }}">{{ name }}</a>
+</div>
+<div class="collapse {% if forloop.first %}show{% endif %}" id="{{ name | slugify}}">
+    <ul class="list-group">
+    {% for tool in tool_set%}
+        <li class="list-group-item">
+            <div class="media">
+                <img class="mr-3" src="http://via.placeholder.com/50x50">
+                <div class="media-body">
+                    <p class="font-weight-bold">{{ tool }}</p>
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
 {% endfor %}
-</ul>

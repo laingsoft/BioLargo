@@ -2,11 +2,20 @@
 # the tool box.
 
 TOOLS = {
-    'Set 1': {
-        'Tool 1' : {
-            'command': 'template of command sent to server.'
-            'icon': 'placeholder.svg',
-            'hint': 'Some descriptive text'
-        }
+    'Visualization': {
+        'Bar Chart' : {},
+        'Boxplot': {},
+        'Line Chart': {},
+        'Stem-and-Leaf': {},
+        'Histogram': {},
+        'Scatter Plot': {},
+        'Pie Chart': {}
+    },
+    'Statistics': {
+        'Summary': {},
+        'T-Test': {},
+        'F-Test': {},
+        'ANOVA': {},
+        'Correlation': {}
     }
 }

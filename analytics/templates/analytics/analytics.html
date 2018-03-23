@@ -1,7 +1,16 @@
 {% extends 'app/base_template.html' %}
 
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'analysis/css/style.css' %}">
+<!--  remove this if icon set changes -->
+<link rel="stylesheet" type="text/css" href="{% static 'app/icons.css' %}">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.css">
+{% endblock %}
+
 {% block body_classes %}
-sidebar-hidden aside-menu-hidden
+sidebar-hidden aside-menu-fixed
 {% endblock %}
 
 {% block header %}
@@ -17,5 +26,46 @@ sidebar-hidden aside-menu-hidden
 {% endblock %}
 
 {% block main %}
+<!--  toolbox -->
+<div class="toolbox">
+  <div class="toolbox-header">
+    Toolbox
+  </div>
+  <div class="tools-container">
+    {% include 'analytics/tools.html'%}
+  </div>
+</div>
+<!-- End toolbox -->
 
+<!-- Content -->
+
+<!-- end content -->
+
+{% endblock %}
+
+{% block aside %}
+<aside class="aside-menu">
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link active" data-toggle="tab" href="#data-tab" role="tab">Data</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#options-tab" role="tab">Options</a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <div id="data-tab" class="tab-pane active" role="tabpanel">
+      data
+    </div>
+    <div id="options-tab" class="tab-pane" role="tabpanel">
+      options
+    </div>
+  </div>
+
+</aside>
+{% endblock %}
+
+{% block script_extra %}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js"></script>
 {% endblock %}
