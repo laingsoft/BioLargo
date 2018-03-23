@@ -26,12 +26,8 @@ def comment_save_reciever(sender, instance, **kwargs):
 
         for r in recipients:
             notifications.append(Notification(**args, recipient=r))
-            #Get the device of the recipent and send a push notification
-            device = FCMDevice.objects.filter(id = r.id)
-            message_body = str(instance.user.first_name) + " " + \
-                str(instance.user.last_name) + " commented on " + str(instance.experiment.friendly_name) + " " + str(instance.content[:255])
-            device.send_message(data={"type": 0, "title" : "New Comment", "body" : message_body})
-
+            sendPushNotification(r, instance, 0)   
+        
         Notification.objects.bulk_create(notifications)
 
 
@@ -56,10 +52,7 @@ def experiment_update_reciever(sender, instance, created, **kwargs):
 
             for r in recipients:
                 notifications.append(Notification(**args, recipient=r))
-                device = FCMDevice.objects.filter(id = r.id)
-                message_body = str(instance.user.first_name) + " " + \
-                    str(instance.user.last_name) + " updated " + str(instance.experiment.friendly_name)
-                device.send_message(data={"type": 1, "title" : "Experiment Updated", "body" : message_body})
+                sendPushNotification(r, instance, 1)
 
             Notification.objects.bulk_create(notifications)
 
@@ -91,9 +84,24 @@ def experiment_upload_reciever(sender, instance, created, **kwargs):
 
             for r in recipients:
                 notifications.append(Notification(**args, recipient=r))
-                device = FCMDevice.objects.filter(id = r.id)
-                message_body = str(instance.user.first_name) + " " + \
-                    str(instance.user.last_name) + " uploaded to " + str(instance.project.name)
-                device.send_message(data={"type": 2, "title" : "New Experiment", "body" : message_body})
+                sendPushNotification(r, instance, 2)
 
             Notification.objects.bulk_create(notifications)
+
+
+#This function will send a push notification to the user "r" according to the "type" passed in
+#type 0 = new comment
+#type 1 = experiment updated
+#type 2 = new upload
+def sendPushNotification(r, instance, type):
+    device = FCMDevice.objects.filter(id = r.id)
+    if type == 0:
+        message_body = str(instance.user.first_name) + " " + \
+                str(instance.user.last_name) + " commented on " + str(instance.experiment.friendly_name) + " " + str(instance.content[:255])
+    elif type == 1:
+        message_body = str(instance.user.first_name) + " " + \
+                    str(instance.user.last_name) + " updated " + str(instance.experiment.friendly_name)
+    elif type == 2:
+        message_body = str(instance.user.first_name) + " " + \
+            str(instance.user.last_name) + " uploaded to " + str(instance.project.name)
+    device.send_message(data={"type": 2, "title" : "New Experiment", "body" : message_body})
