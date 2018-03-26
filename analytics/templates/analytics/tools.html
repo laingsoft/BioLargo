@@ -1,3 +1,4 @@
+{% load static %}
 {% for name, tool_set in tools.items %}
 <div class="set-header dropdown-toggle">
     <a data-toggle="collapse" href="#{{ name | slugify }}">{{ name }}</a>
@@ -5,9 +6,9 @@
 <div class="collapse" id="{{ name | slugify}}">
     <ul class="list-group tool-list">
     {% for tool_name, settings in tool_set.items%}
-        <li class="list-group-item" draggable="true">
+        <li class="list-group-item" draggable="true" data-tool-name="{{ tool_name }}">
             <div class="media">
-                <img class="mr-3" src="http://via.placeholder.com/50x50">
+                <img class="mr-3" src="{% static 'analysis/img/placeholder.png' %}" ondragstart="return false;">
                 <div class="media-body">
                     <p class="font-weight-bold">{{ tool_name }}</p>
                 </div>
