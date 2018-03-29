@@ -60,7 +60,7 @@ class Task(models.Model):
     related_experiment = models.ForeignKey('app.Experiment', null=True)
     due_date = models.DateField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    sop = models.ForeignKey('SOP.SOP', null=True)
+    sop = models.ForeignKey('SOP.SOP', null=True, blank=True)
 
     objects = models.Manager()
     incomplete = IncompleteTaskManager()

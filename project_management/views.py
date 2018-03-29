@@ -82,6 +82,7 @@ class TaskView(ManagerTestMixin, View):
         form = TaskForm(json.loads(request.body), company=request.user.company)
 
         if not form.is_valid():
+            print(form.errors)
             return HttpResponse(status=400)
 
         task = form.save(commit=False)
@@ -102,7 +103,6 @@ class TaskView(ManagerTestMixin, View):
         form = TaskForm(params, instance=task, company=request.user.company)
 
         if not form.is_valid():
-            print(form.errors)
             return HttpResponse(status=400)
 
         try:

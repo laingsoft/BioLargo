@@ -1,51 +1,61 @@
 var container = $('#container')
 
-function dragStartHandler(evt) {
+/**
+* Drag event handlers
+*/
+
+function ToolContainer() {
+
+}
+
+function toolDragStartHandler(evt) {
     evt.dataTransfer.effectAllowed = 'move';
     evt.dataTransfer.setData('text/plain', evt.target.dataset.toolName);
     return true;
 }
 
-function dragEnterHandler(evt) {
+function toolDragEnterHandler(evt) {
     evt.preventDefault();
     evt.stopPropagation();
 }
 
-function dragOverHandler(evt) {
+function toolDragOverHandler(evt) {
     evt.preventDefault();
 }
 
-function dropHandler(evt) {
+function toolDropHandler(evt) {
     evt.preventDefault();
     var toolName = evt.dataTransfer.getData('text/plain');
+    // TODO: make collapse and remove work properly.
     container.append(`
-    <div class="row">
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <div class="card-block">
-                    <h5 class="card-title">${toolName}</h5>
-                </div>
-            </div>
+<div class="card">
+    <div class="card-header">
+        ${toolName}
+        <div class="card-actions">
+            <a href="#"aria-expanded="true">-</a>
+            <a href="#">x</a>
         </div>
+    </div>
+    <div class="card-body collapse show" id="">
     </div>
 </div>
         `)
-
+window.scrollTo(0, document.body.scrollHeight);
 }
 
 $(document).ready(function(){
     var tools = document.querySelectorAll('.tool-list .list-group-item');
 
     [].forEach.call(tools, function(tool){
-        tool.addEventListener('dragstart', dragStartHandler, false);
+        tool.addEventListener('dragstart', toolDragStartHandler, false);
     })
 
     var drop_target = document.querySelector(".main")
 
 
-    drop_target.addEventListener('dragenter', dragEnterHandler)
-    drop_target.addEventListener('dragover', dragOverHandler)
-    drop_target.addEventListener('drop', dropHandler)
+    drop_target.addEventListener('dragenter', toolDragEnterHandler)
+    drop_target.addEventListener('dragover', toolDragOverHandler)
+    drop_target.addEventListener('drop', toolDropHandler)
 
+    socket = new WebSocket("ws://" + window.location.host + '/analytics/');
 })

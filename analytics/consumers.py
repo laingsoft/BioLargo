@@ -2,6 +2,7 @@ from channels.generic.websocket import JsonWebsocketConsumer
 from asgiref.sync import async_to_sync
 from .models import Session, Action
 import analytics.base_analysis as tools
+from functools import reduce
 
 TOOLS = {
     'max': tools.MaxTool,
@@ -61,3 +62,9 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         """
         data = self.user.company.tag_set.all().values_list('name', flat=True)
         self.send_json({'data': list(data)})
+
+    def get_fields(self):
+        fields_list = self.qs.experimentdata_set.all().values_list('experimentData', flat=True)
+        fields = reduce(lambda a, b: {**a, **b}, fields_list).keys()
+
+        self.send_json({'fields': fields})
