@@ -3,7 +3,7 @@ psycopg2
 channels>=1.1, <2.0
 python-magic
 asgi_redis
-djangorestframework
+djangorestframework==3.7.7
 markdown
 django-filter
 djangorestframework-jwt
