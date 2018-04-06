@@ -36,10 +36,11 @@ function toolDropHandler(evt) {
             <a href="#">x</a>
         </div>
     </div>
-    <div class="card-body collapse show" id="">
+    <div class="card-body collapse show">
     </div>
 </div>
         `)
+
 window.scrollTo(0, document.body.scrollHeight);
 }
 
