@@ -2,7 +2,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user
 import json
 import datetime
 from io import TextIOWrapper, StringIO
@@ -17,7 +16,7 @@ from app.forms import ExperimentDataForm
 from .serializers import *
 from django.http import Http404
 from rest_framework.response import Response
-from django.db import IntegrityError
+from django.db import IntegrityError, DataError
 from app.models import *
 from accounts.models import User
 from SOP.models import SOP
@@ -47,7 +46,7 @@ def get_user(request):
         request.user.email = request.data['email']
         request.user.save()
         return JsonResponse({"success":True})
-
+       
 
 @api_view(['GET'])
 def get_company_users(request):
@@ -70,7 +69,7 @@ def get_new_token(request):
 #This will get all the epxeriments that are part of the project whose ID is passed in
 @api_view(['GET'])
 def get_experiments_with_project_id(request, id, page):
-    experiments = Experiment.objects.filter(project = id).order_by('-id')
+    experiments = Experiment.objects.filter(company = request.user.company, project = id).order_by('-id')
     serializer = experimentSerializer
     paginator = Paginator(experiments, 10)
     try:
@@ -82,17 +81,23 @@ def get_experiments_with_project_id(request, id, page):
 
 #This will get the epxeriment that has the ID that is passed in
 @api_view(['GET'])
-def get_experiments_with_experiment_id(request, id):
-    experiments = Experiment.objects.filter(id = id)
+def get_experiment_with_experiment_id(request, id):
+    experiments = Experiment.objects.get(company = request.user.company, id = id)
     serializer = experimentSerializer
     return Response(serializer(experiments).data)
 
+#This will get the project that has the ID that is passed in
+@api_view(['GET'])
+def get_project_with_project_id(request, id):
+    project = Project.objects.get(company = request.user.company, id = id)
+    serializer = projectSerializer
+    return Response(serializer(project).data)
 
 #Get the Data from the Experiment Data model according to the experiment id passed in
 @api_view(['GET'])
 def get_experiment_data(request, id):
     serializer = experimentDataSerializer
-    experiment_data = ExperimentData.objects.filter(experiment = id)
+    experiment_data = ExperimentData.objects.filter(company = request.user.company, experiment = id)
     return Response(serializer(experiment_data, many=True).data)
 
 
@@ -131,7 +136,7 @@ def get_sop(request):
 
 @api_view(['GET'])
 def get_project_stats(request, id):
-    experiments = Experiment.objects.filter(project = id)
+    experiments = Experiment.objects.filter(company = request.user.company, project = id)
     #Get the number of experiments that the project has associated
     experiment_count = experiments.count()
     #Get the number of people that have uploaded experiments for this project id   
@@ -141,7 +146,7 @@ def get_project_stats(request, id):
             tempList.append(each.user.id)
     scientists = len(tempList)
     #Get the progress from the ratio of tasks todo / tasks complete
-    tasks = Task.objects.filter(project = id)
+    tasks = Task.objects.filter(company = request.user.company, project = id)
     todo_count = 0
     for each in tasks:
         if(each.status == "N"):
@@ -173,11 +178,11 @@ def get_overview_count(request):
     delta = datetime.timedelta(days=1)
 
     minusOne = currentDate - delta
-    dayOne = Experiment.objects.filter(create_timestamp__range=[minusOne, currentDate]).count()
+    dayOne = Experiment.objects.filter(company = request.user.company, create_timestamp__range=[minusOne, currentDate]).count()
     minusTwo = minusOne - delta
-    dayTwo = Experiment.objects.filter(create_timestamp__range=[minusTwo, minusOne]).count()
+    dayTwo = Experiment.objects.filter(company = request.user.company, create_timestamp__range=[minusTwo, minusOne]).count()
     minusThree = minusTwo - delta
-    dayThree = Experiment.objects.filter(create_timestamp__range=[minusThree, minusTwo]).count()
+    dayThree = Experiment.objects.filter(company = request.user.company, create_timestamp__range=[minusThree, minusTwo]).count()
 
     #############
     #Get all the unread notifications that the user should see.
@@ -214,7 +219,7 @@ def watch(request):
     ObjectTypes = {'EXP': Experiment, 'PRJ': Project}
     object_id = request.POST['id']
     object_type = request.POST['type']
-    if ObjectTypes[object_type].objects.filter(id=object_id).exists():
+    if ObjectTypes[object_type].objects.filter(company = request.user.company, id=object_id).exists():
         obj = ObjectTypes[object_type].objects.get(id=object_id)
         #If the user is already following this particular object, then remove them from the list
         if obj.followers.filter(id=request.user.id).exists():
@@ -248,6 +253,26 @@ class tags(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+#Returns a list of projects that match the search term passed in
+#Will check against:
+# - project name
+# - project's description
+@api_view(['GET'])
+def projects_search(request, search):
+    #This has the list of Project that match and of the search queries
+    projects = []
+    
+    #Search the Project name
+    for project in Project.objects.filter(company = request.user.company, name__icontains = search):
+        projects.append(project)
+    #Search the projects description
+    for project in Project.objects.filter(company = request.user.company, description__icontains = search):
+        projects.append(project)
+
+    serializer = projectSerializer
+    return Response(serializer(projects, many = True).data)
+
+
 @api_view(['GET','DELETE'])
 def projects_delete(request, id):
     if(request.user.is_manager):
@@ -258,6 +283,8 @@ def projects_delete(request, id):
         result = data.delete()
         return JsonResponse({"result": result[0]>0})
     return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 class projects(APIView):
     #Retrieves the list of projects from the same company the user is part of.
     def get(self, request, page):
@@ -283,6 +310,37 @@ class projects(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
+#Returns a list of experiments that match the search term passed in
+#Will check against:
+# - experiment name
+# - project name
+# - user's first name
+# - user's last name
+# - tag names
+@api_view(['GET'])
+def experiments_search(request, search):
+    #This has the list of experiments that match and of the search queries
+    experiments = []
+    
+    #Search the experiments name
+    for experiment in Experiment.objects.filter(company = request.user.company, friendly_name__icontains = search):
+        experiments.append(experiment)
+    #Search the projects name
+    for experiment in Experiment.objects.filter(company = request.user.company, project__name__icontains = search):
+        experiments.append(experiment)
+    #Search the users first name
+    for experiment in Experiment.objects.filter(company = request.user.company, user__first_name__icontains = search):
+        experiments.append(experiment)
+    #Search the users last name
+    for experiment in Experiment.objects.filter(company = request.user.company, user__last_name__icontains = search):
+        experiments.append(experiment)
+    #Search the tags names
+    for experiment in Experiment.objects.filter(company = request.user.company, tags__name__icontains = search):
+        experiments.append(experiment)
+
+    serializer = experimentSerializer
+    return Response(serializer(experiments, many = True).data)
 
 @api_view(['GET','DELETE'])
 def experiments_delete(request, id):
@@ -358,7 +416,7 @@ class template(APIView):
 
         if name and fields:
             # check if name already exists
-            if Template.objects.filter(name=name).exists():
+            if Template.objects.filter(company = request.user.company, name=name).exists():
                 return JsonResponse({'success': False, 'error': "Name already exists"})
 
             template = Template(name = name)

@@ -3,7 +3,8 @@ psycopg2-binary
 channels==2.0.2
 python-magic
 channels_redis
-djangorestframework
+djangorestframework==3.7.7
 markdown
 django-filter
 djangorestframework-jwt
+pyfcm
