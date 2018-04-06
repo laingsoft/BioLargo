@@ -41,11 +41,11 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         if action == 'get_tags':
             self.get_tags()
-
             return
 
         if action == 'get_fields':
             self.get_fields()
+            return
 
         field = content.get('field')
 
@@ -68,6 +68,6 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
     def get_fields(self):
         fields_list = self.qs.values_list('experimentData', flat=True)
-        fields = reduce(lambda a, b: {**a, **b}, fields_list).keys()
+        fields = reduce(lambda a, b: {**a, **b}, fields_list, {}).keys()
 
         self.send_json({'fields': list(fields)})
