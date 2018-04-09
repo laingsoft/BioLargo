@@ -24,13 +24,15 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         """
         called on initial connection
         """
+
         self.user = self.scope["user"]
-        self.qs = self.user.company.experimentdata_set.all()
 
         if self.user.is_anonymous:
             self.close()
 
-        self.accept()
+        else: 
+            self.qs = self.user.company.experimentdata_set.all()
+            self.accept()
 
     def receive_json(self, content):
         """
