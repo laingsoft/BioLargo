@@ -325,19 +325,26 @@ def experiments_search(request, search):
     
     #Search the experiments name
     for experiment in Experiment.objects.filter(company = request.user.company, friendly_name__icontains = search):
-        experiments.append(experiment)
+        if experiment not in experiments:
+            experiments.append(experiment)
     #Search the projects name
     for experiment in Experiment.objects.filter(company = request.user.company, project__name__icontains = search):
-        experiments.append(experiment)
+        if experiment not in experiments:
+            experiments.append(experiment)
     #Search the users first name
     for experiment in Experiment.objects.filter(company = request.user.company, user__first_name__icontains = search):
-        experiments.append(experiment)
+        if experiment not in experiments:
+            experiments.append(experiment)
     #Search the users last name
     for experiment in Experiment.objects.filter(company = request.user.company, user__last_name__icontains = search):
-        experiments.append(experiment)
+        if experiment not in experiments:
+            experiments.append(experiment)
     #Search the tags names
     for experiment in Experiment.objects.filter(company = request.user.company, tags__name__icontains = search):
-        experiments.append(experiment)
+        if experiment not in experiments:
+            experiments.append(experiment)
+
+
 
     serializer = experimentSerializer
     return Response(serializer(experiments, many = True).data)
