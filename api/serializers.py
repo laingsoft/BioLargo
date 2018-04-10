@@ -16,11 +16,6 @@ class commentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = '__all__'
 
-class experimentDataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ExperimentData
-        fields = ['experimentData']
-
 class tagsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
@@ -39,6 +34,10 @@ class experimentSerializer(serializers.ModelSerializer):
         model = Experiment
         fields = '__all__'
 
+class experimentDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExperimentData
+        fields = ['experimentData', 'experiment']
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:

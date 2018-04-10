@@ -26,7 +26,7 @@ urlpatterns = [
     url(r'^experiment_with_experiment_id/(?P<id>[0-9]+)/$', views.get_experiment_with_experiment_id, name="experiments_with_experiment_id"),
     url(r'^experiments/delete/(?P<id>[0-9]+)/$', views.experiments_delete),
     url(r'^experiments/(?P<page>[0-9]+)/$', views.experiments.as_view()),
-    url(r'^experiments/search/(?P<search>[a-zA-Z0-9_.-]*)/$', views.experiments_search),
+    url(r'^experiments/search/(?P<search>.*)/$', views.experiments_search),
     
 
     url(r'^project_stats/(?P<id>[0-9]+)/$', views.get_project_stats),
@@ -35,15 +35,17 @@ urlpatterns = [
     url(r'^projects/(?P<page>[0-9]+)/$', views.projects.as_view()),
     url(r'^projects/search/(?P<search>[a-zA-Z0-9_.-]*)/$', views.projects_search),
 
+    url(r'^$', views.index, name='index'),
     url(r'^get_company_users/$', views.get_company_users),
     url(r'^get_user', views.get_user),
     url(r'^get_token', obtain_jwt_token),
     url(r'^get_new_token', views.get_new_token),
     url(r'^verifyToken', verify_jwt_token),
     url(r'^', include(router.urls)),
-    url(r'^$', views.index, name='index'),
+    
     url(r'^templates/(?P<id>[0-9]+)/$', views.template.as_view(), name="template"),
     url(r'^templates/$', views.template.as_view(), name="templates"),
+
     url(r'^comment/(?P<id>[0-9]+)/$', views.comment.as_view()),
     url(r'^comment/$', views.comment.as_view()),
 ]
