@@ -3,22 +3,68 @@ from django.contrib.postgres.fields.jsonb import KeyTextTransform
 from django.db.models import FloatField
 from django.db.models.functions import Cast
 from .aggregates import Mode, Percentile
-from django.db import connection
 # from statistics import median, mode, stdev, variance
+import re
+from django.utils.text import slugify
 
 
 class Tool:
     """
     Base tool for all analysis. Contains information to query database.
     parameters:
-        - base_qs: Base queryset (stored by the session)
+        - base_qs: Base queryset of ExperimentData (stored by the session)
         - filters: a dictionary of additional filters for qs.
         - fields: a list of field names (string) for operation.
     """
-    def __init__(self, base_qs, field, filters=[], *args, **kwargs):
+    def __init__(self, base_qs, field, *args, **kwargs):
         self.base_qs = base_qs
-        self.filters = filters
         self.field = field
+
+    def evaluate(self):
+        pass
+
+
+class EquationTool(Tool):
+    """
+    Calculates equations.
+    Takes same arguements as Tool, without the fields argument, and
+    with an additional equations list.
+    """
+    def __init__(self, base_qs, *args, **kwargs):
+        super().__init__(base_qs, None, **kwargs)
+        self.equations = kwargs.get('equations')  # a list of strings
+
+    def tokenize_equation(self, equation):
+        """
+        Breaks equation up into a list of individual tokens.
+
+        Ex.
+        "AVG(LOG('StockCFU [CFU/mL]') - LOG('RemainingCFU [CFU/mL]'))"
+
+        will return
+        ['AVG', '(', 'LOG', '(', "'StockCFU [CFU/mL]'", ')', '-',
+        'LOG', '(', "'RemainingCFU [CFU/mL]'", ')', ')']
+        """
+        pattern = "('[^']+'|[\\+\\-*\\/]|\w+|[\\(\\)])"
+        pattern = re.compile(pattern)
+        return pattern.findall(equation)
+
+    def get_field(self, field_name):
+        """
+        gets json fields. field_name is the json key.
+        """
+        return {
+            slugify(field_name): Cast(
+                KeyTextTransform(
+                    field_name,
+                    'experimentData'),
+                FloatField())}
+
+    def build_annotation(self, tokens):
+        """
+        Builds the annotation part of the equation to be evaluated.
+        """
+        pass
 
     def evaluate(self):
         pass
@@ -36,8 +82,7 @@ class BaseAggregateTool(Tool):
     extra = []
 
     def evaluate(self):
-        query = self.base_qs.filter(*self.filters) \
-            .annotate(
+        query = self.base_qs.annotate(
                 val=Cast(
                     KeyTextTransform(self.field, 'experimentData'),
                     FloatField())) \
