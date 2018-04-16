@@ -1,0 +1,3 @@
+[submodule "analytics-frontend"]
+	path = analytics-frontend
+	url = https://github.com/kkwong02/analytics-frontend.git
