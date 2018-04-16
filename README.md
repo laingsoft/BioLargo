@@ -2,9 +2,15 @@ BioLargo Data storage and analysis  project.
 
 Built using Docker and Django.
 
-To build and run, use:
-   docker-compose up
+Analytics frontend submodule is needed to run. To get, run 
+```
+git submodule update --init --recursive
+```
 
+To build and run, use:
+```
+docker-compose up
+```
 ---
 
 ## Third-party software used
