@@ -10,7 +10,18 @@
             <form method="post">
                 <legend>Company Information</legend>
             {% csrf_token %}
-            {{ form.as_p }}
+		<div class = "company-data">
+		{% for i in form %}
+		<div class = "company-data-field">
+		  <p><b>{{i.name.capitalize}}:</b><span>
+		      {{i.value}}</span>
+		  </p>
+		</div>
+		{% endfor %}
+		<div class="company-data-edit" style="display: none">
+		  {{form}}
+		</div>
+		</div>
             <legend>Settings</legend>
             {{ settings.as_p }}
             <input class="btn btn-primary" type="submit" value="Submit"/>
