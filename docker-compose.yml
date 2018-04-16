@@ -9,9 +9,11 @@ services:
       - ./config/nginx:/etc/nginx/conf.d
       - uploads:/uploads
       - static:/static
-      - ./analytics-frontend/pasteur/build:/analytics_frontend
+      # - ./analytics-frontend/pasteur/build:/analytics_frontend
+      - analysis:/analytics_frontend
     depends_on:
       - web
+      - react
   db:
     image: postgres
   web:
@@ -34,6 +36,16 @@ services:
     image: 'redis:3.2.0'
     expose:
       - "6379"
+  react:
+    container_name: 'react_build'
+    image: 'node:8.11'
+    command: /bin/bash -c "npm install && npm run build"
+    working_dir: /code
+    volumes:
+      - ./analytics-frontend/pasteur/:/code
+      - analysis:/code/build
+
 volumes:
   uploads:
   static:
+  analysis:
