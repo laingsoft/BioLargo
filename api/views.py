@@ -133,7 +133,6 @@ def get_sop(request):
     return Response(serializer(sops, many = True).data)
 
 
-
 @api_view(['GET'])
 def get_project_stats(request, id):
     experiments = Experiment.objects.filter(company = request.user.company, project = id)
@@ -318,6 +317,7 @@ class projects(APIView):
 # - user's first name
 # - user's last name
 # - tag names
+# - experiment data - keys and values
 @api_view(['GET'])
 def experiments_search(request, search):
     #This has the list of experiments that match and of the search queries
@@ -325,22 +325,35 @@ def experiments_search(request, search):
     
     #Search the experiments name
     for experiment in Experiment.objects.filter(company = request.user.company, friendly_name__icontains = search):
-        experiments.append(experiment)
+        if experiment not in experiments:
+            experiments.append(experiment)
     #Search the projects name
     for experiment in Experiment.objects.filter(company = request.user.company, project__name__icontains = search):
-        experiments.append(experiment)
+        if experiment not in experiments:
+            experiments.append(experiment)
     #Search the users first name
     for experiment in Experiment.objects.filter(company = request.user.company, user__first_name__icontains = search):
-        experiments.append(experiment)
+        if experiment not in experiments:
+            experiments.append(experiment)
     #Search the users last name
     for experiment in Experiment.objects.filter(company = request.user.company, user__last_name__icontains = search):
-        experiments.append(experiment)
+        if experiment not in experiments:
+            experiments.append(experiment)
     #Search the tags names
     for experiment in Experiment.objects.filter(company = request.user.company, tags__name__icontains = search):
-        experiments.append(experiment)
-
+        if experiment not in experiments:
+            experiments.append(experiment)
+    #Search the experiment's data         
+        #Find the experiment data that contains the search text, then iterate through those experiment data objects
+        #   to find the Experiments that contain those experiment data objects, and append those to the list
+    for experiment_data in ExperimentData.objects.filter(company = request.user.company, experimentData__icontains = search):
+        experiment = experiment_data.experiment
+        if experiment not in experiments:
+            experiments.append(experiment)
+            
     serializer = experimentSerializer
     return Response(serializer(experiments, many = True).data)
+
 
 @api_view(['GET','DELETE'])
 def experiments_delete(request, id):
