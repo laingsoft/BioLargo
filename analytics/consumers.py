@@ -5,6 +5,7 @@ import analytics.base_analysis as tools
 from functools import reduce
 from django.contrib.postgres.search import SearchVector
 from django.contrib.postgres.aggregates import StringAgg
+from api.serializers import simpleExperimentSerializer
 
 TOOLS = {
     'max': tools.MaxTool,
@@ -15,6 +16,7 @@ TOOLS = {
     'mode': tools.ModeTool,
     'median': tools.MedianTool
 }
+
 
 class AnalyticsConsumer(JsonWebsocketConsumer):
     """
@@ -48,6 +50,9 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         if action == 'get_fields':
             self.get_fields()
+
+        if action == 'get_experiment_list':
+            self.get_experiment_list()
 
         if action == 'get_data':
             params = content.get('params')
@@ -92,8 +97,9 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
             expressions: [""] // list of expressions or fields
                 ex. 'RemainingCFU [CFU/mL]' or
                 LOG('StockCFU [CFU/mL]') - LOG('RemainingCFU [CFU/mL]')"
-                Quote field names with spaces.
+                Single quotes around field names required.
             group_by: [] // A list of fields to group by.
+            replicates: boolean value. effect grouping.
         }
 
         Ex.
@@ -144,6 +150,3 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         if order_by:
             qs = qs.order_by(order_by)
-
-        #  return the experiment set.
-

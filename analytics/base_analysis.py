@@ -6,6 +6,25 @@ from .aggregates import Mode, Percentile
 # from statistics import median, mode, stdev, variance
 import re
 from django.utils.text import slugify
+from functools import reduce
+from django.db.models import Func, F
+
+
+# Some math functions from postgres.
+class Log(Func):
+    function = 'log'
+
+
+class Ln(Func):
+    function = 'ln'
+
+
+class Sqrt(Func):
+    function = 'sqrt'
+
+
+class Abs(Func):
+    function = 'abs'
 
 
 class Tool:
@@ -30,9 +49,19 @@ class EquationTool(Tool):
     Takes same arguements as Tool, without the fields argument, and
     with an additional equations list.
     """
+    BINARY_OPS = {'+', '-', '*', '/', '^'}
+    UNARY_OPS = {
+        'LOG': Log,
+        'LN': Ln,
+        'SQRT': Sqrt,
+        'ABS': Abs
+    }
+
     def __init__(self, base_qs, *args, **kwargs):
         super().__init__(base_qs, None, **kwargs)
         self.equations = kwargs.get('equations')  # a list of strings
+        self.vars = dict()  # a dictionary of annotations needed. key=slugify('field')
+        self.annotations()
 
     def tokenize_equation(self, equation):
         """
@@ -53,21 +82,68 @@ class EquationTool(Tool):
         """
         gets json fields. field_name is the json key.
         """
-        return {
-            slugify(field_name): Cast(
+        return Cast(
                 KeyTextTransform(
                     field_name,
                     'experimentData'),
-                FloatField())}
+                FloatField())
+
+    def combine_annotations(self, annotations):
+        """
+        Combines a list of dictionaries of annotations into one dictionary.
+        """
+        return reduce(lambda a, b: {**a, **b}, annotations, {})
 
     def build_annotation(self, tokens):
         """
         Builds the annotation part of the equation to be evaluated.
         """
-        pass
+        op_stack = []
+        var_stack = []
+        open_bracket = 0  # for syntax checking.
+
+        for token in tokens:
+            if token == '(':
+                open_bracket += 1
+
+            elif token == ')':
+                # check if there is an open bracket
+                if not open_bracket:
+                    # Syntax error if there is no open bracket at all.
+                    raise ValueError
+                open_bracket -= 1
+
+                op = op_stack.pop()
+                while op != '(':
+                    if op in self.UNARY_OPS:
+                        pass
+                    if op in self.BINARY_OPS:
+                        pass
+
+
+                # pop from var stack
+                # perform operation
+                # append back to var stack.
+
+            elif token[0] == '\'':
+                # check if a variable
+                var = self.vars(slugify(token[1:-1]), self.get_field(token[1:-1]))
+                if slugify(token[1:-1]) not in self.vars:
+                    self.vars[slugify(token[1:-1])] = var
+
+                var_stack.append(var)
+
+            elif token in self.UNARY_OPS or token in self.BINARY_OPS:
+                op_stack.append(token)
+
+            else:
+                # if it doesn't fit anything then it's a syntax error.
+                raise ValueError
 
     def evaluate(self):
-        pass
+        for equation in self.equations:
+            tokens = self.tokenize_equation(equation)
+            self.build_annotation(tokens)
 
 
 class BaseAggregateTool(Tool):
