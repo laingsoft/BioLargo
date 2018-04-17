@@ -60,4 +60,4 @@ class CompanyForm(forms.ModelForm):
 
     class Meta:
         model = Company
-        exclude = ['is_active']
+        exclude = ['is_active', 'good_standing']
