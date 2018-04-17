@@ -23,5 +23,5 @@ class Action(models.Model):
     action (whatever is needed to generated object with js), what is needed to
     get data set, etc.
     """
-    session = models.ForeignKey(Session)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
     action = JSONField()
