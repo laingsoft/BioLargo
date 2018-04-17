@@ -6,6 +6,7 @@ from functools import reduce
 from django.contrib.postgres.search import SearchVector
 from django.contrib.postgres.aggregates import StringAgg
 from api.serializers import simpleExperimentSerializer
+import json
 
 TOOLS = {
     'max': tools.MaxTool,
@@ -52,7 +53,9 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
             self.get_fields()
 
         if action == 'get_experiment_list':
-            self.get_experiment_list()
+            filters = content.get('filters')
+            order_by = content.get('order_by')
+            self.get_experiment_list(filters=filters, order_by=order_by)
 
         if action == 'get_data':
             params = content.get('params')
@@ -133,7 +136,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         q = kwargs.get("search", '').strip()  # search query
         filters = kwargs.get("filters", {})
-        order_by = kwargs.get("order_by")  # string. -field for descending
+        order_by = kwargs.get("order_by", None)  # string. -field for descending
 
         # Search vector used
         vector = SearchVector(
@@ -150,3 +153,5 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         if order_by:
             qs = qs.order_by(order_by)
+
+        self.send_json({'data': json.dumps(simpleExperimentSerializer(qs, many=True).data)})
