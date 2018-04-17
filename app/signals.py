@@ -11,7 +11,7 @@ def comment_save_reciever(sender, instance, **kwargs):
     reciever that notifies all users watching an experiment or a project on
     a new comment
     """
-
+    
     recipients = instance.experiment.followers.all()
     if recipients.exists():
         notifications = []
@@ -23,10 +23,10 @@ def comment_save_reciever(sender, instance, **kwargs):
             "content": instance.content[:255],
             "object_name": instance.experiment.friendly_name,
         }
-
         for r in recipients:
-            notifications.append(Notification(**args, recipient=r))
-            sendPushNotification(r, instance, 0)   
+            if(instance.user != r):
+                notifications.append(Notification(**args, recipient=r))
+                sendPushNotification(r, instance, 0)   
         
         Notification.objects.bulk_create(notifications)
 
@@ -51,8 +51,9 @@ def experiment_update_reciever(sender, instance, created, **kwargs):
             }
 
             for r in recipients:
-                notifications.append(Notification(**args, recipient=r))
-                sendPushNotification(r, instance, 1)
+                if(instance.user != r):
+                    notifications.append(Notification(**args, recipient=r))
+                    sendPushNotification(r, instance, 1)
 
             Notification.objects.bulk_create(notifications)
 
@@ -83,8 +84,9 @@ def experiment_upload_reciever(sender, instance, created, **kwargs):
             }
 
             for r in recipients:
-                notifications.append(Notification(**args, recipient=r))
-                sendPushNotification(r, instance, 2)
+                if(instance.user != r):
+                    notifications.append(Notification(**args, recipient=r))
+                    sendPushNotification(r, instance, 2)
 
             Notification.objects.bulk_create(notifications)
 
