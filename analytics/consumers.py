@@ -5,7 +5,7 @@ import analytics.base_analysis as tools
 from functools import reduce
 from django.contrib.postgres.search import SearchVector
 from django.contrib.postgres.aggregates import StringAgg
-from api.serializers import simpleExperimentSerializer
+from .serializers import SessionSerializer, ExperimentSerializer
 import json
 
 TOOLS = {
@@ -15,7 +15,8 @@ TOOLS = {
     'stdv': tools.STDVTool,
     'variance': tools.VarianceTool,
     'mode': tools.ModeTool,
-    'median': tools.MedianTool
+    'median': tools.MedianTool,
+    'equation': tools.EquationTool
 }
 
 
@@ -26,7 +27,8 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
     def connect(self):
         """
-        called on initial connection
+        Called on initial socket connection. Accepts if user is authenticated,
+        else, close.
         """
 
         self.user = self.scope["user"]
@@ -35,9 +37,51 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
             self.close()
 
         else:
-            self.base_qs = self.user.company.experimentdata_set.all()
-            self.base_exeriment_set = self.user.company.experiment_set.all()
             self.accept()
+
+    def session_list(self):
+        """
+        Called by receive_json when session_list command is received.
+        gets a list of all sessions from the user.
+        """
+        sessions = SessionSerializer(self.user.session_set.all(), many=True).data
+
+        self.send_json({'action': 'session_list', 'data': sessions})
+
+    def session_connect(self, session_id):
+        """
+        Called by receive_json when session_connect command is received.
+        connects user to a specified session.
+        """
+
+        try:
+            self.session = self.user.session_set.get(pk="session_id")
+        except Session.DoesNotExist:
+            self.send_json({
+                'action': 'session_connect',
+                'error': "Invalid session."
+                })
+
+    def session_close(self):
+        """
+        Called by receive_json when session_close command is received.
+        closes the current sessions.
+        """
+        self.session = None
+
+    def session_delete(self, session_id):
+        """
+        Called by receive_json when session_delete command is received.
+        Deletes a session specified by id.
+        """
+        try:
+            session = self.user.session_set.get(pk=session_id)
+        except Session.DoesNotExist:
+            self.send_json({'action': 'session_delete', 'status': 'error'})
+
+        session.delete()
+
+        self.send_json({'action': 'session_delete', 'status': 'success'})
 
     def receive_json(self, content):
         """
@@ -55,7 +99,8 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         if action == 'get_experiment_list':
             filters = content.get('filters')
             order_by = content.get('order_by')
-            self.get_experiment_list(filters=filters, order_by=order_by)
+            search = content.get('search')
+            self.get_experiment_list(filters=filters, order_by=order_by, search=search)
 
         if action == 'get_data':
             params = content.get('params')
@@ -132,11 +177,11 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         Takes filter, order_by and search as parameters.
         filter is a dictionary with fields to filter by.
         """
-        qs = self.base_exeriment_set
+        qs = self.user.company.experiment_set.all()
 
         q = kwargs.get("search", '').strip()  # search query
         filters = kwargs.get("filters", {})
-        order_by = kwargs.get("order_by", None)  # string. -field for descending
+        order_by = kwargs.get("order_by", None)
 
         # Search vector used
         vector = SearchVector(
@@ -154,4 +199,4 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         if order_by:
             qs = qs.order_by(order_by)
 
-        self.send_json({'data': json.dumps(simpleExperimentSerializer(qs, many=True).data)})
+        self.send_json({'data': json.dumps(ExperimentSerializer(qs, many=True).data)})
