@@ -1,0 +1,28 @@
+var tour = {
+    id: "hello-pasteur",
+    steps:[
+	{
+	    title:"At a Glance",
+	    content:"At a glance settings",
+	    target:"stats",
+	    placement:"right"
+	},
+	{
+	    title:"Navigation Bar",
+	    content:"This is your navigation bar",
+	    target:"tour-user-stop",
+	    placement:"left",
+	    onNext: $("#tour-user-stop").click()
+	    
+	},
+	{
+	    title:"Management Panel",
+	    content:"This is the management panel",
+	    target:"tour-management-stop",
+	    placement:"left"
+	}
+	
+    ]
+};
+
+	    

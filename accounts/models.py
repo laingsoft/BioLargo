@@ -11,6 +11,9 @@ from django.utils import timezone
 # Create your models here.
 
 
+    
+
+
 class Plan(models.Model):
     """
     Available plans. if is_active is true, then it is shown on the pricing page
@@ -37,13 +40,21 @@ class Company(models.Model):
     phone = models.CharField(max_length=20)
     plan = models.ForeignKey(Plan)
     is_active = models.BooleanField(default=True)
+    good_standing = models.BooleanField(default = True)
 
     def __str__(self):
         return self.name
 
     def __repr__(self):
         return self.name
-
+    
+class Payment(models.Model):
+    date_payed = models.DateTimeField(_('date payed'), default=timezone.now)
+    date_next_due = models.DateTimeField(_('date next due'), default=timezone.now)
+    company = models.ForeignKey(Company)
+    balance = models.FloatField()
+    
+    
 
 class User(AbstractBaseUser, PermissionsMixin):
     """

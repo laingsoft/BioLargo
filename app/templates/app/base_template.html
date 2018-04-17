@@ -21,6 +21,7 @@
     <!-- Main styles for this application -->
     {% block css %}
     <link href="{% static 'app/style.css' %}" rel="stylesheet">
+    <link href="{% static 'app/hopscotch.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'app/icons.css' %}">
     {% endblock %}
     <style type="text/css">
@@ -82,13 +83,13 @@
 
 <body class="app header-fixed sidebar-fixed  aside-menu-fixed {% block body_classes %} sidebar-minimized aside-menu-hidden{% endblock %}">
     <img src="{% static 'common/svg/open-iconic.min.svg' %}" class="iconic-sprite" style="display:none;" />
-    <header class="app-header navbar">
+    <header class="app-header navbar" id="tour-header-navbar">
         {% block header %}
         {% include 'app/app_header.html' %}
         {% endblock %}
     </header>
     <div class="app-body">
-        <div class="sidebar">
+        <div class="sidebar" id="tour-sidebar">
             {% block sidebar %}
             {% include 'app/app_sidebar_nav.html' %}
             {% endblock %}
