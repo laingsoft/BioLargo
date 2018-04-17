@@ -8,10 +8,10 @@ from channels.security.websocket import AllowedHostsOriginValidator
 application = ProtocolTypeRouter({
     # (http->django views is added by default)
     'websocket': AllowedHostsOriginValidator(
-    AuthMiddlewareStack(
-        URLRouter([
-            url('app/', include(app.routing.websocket_urlpatterns)),
-            url('analytics/', include(analytics.routing.websocket_urlpatterns)),
-        ])
-    )),
+        AuthMiddlewareStack(
+            URLRouter([
+                url('app/', include(app.routing.websocket_urlpatterns)),
+                url('analytics/', include(analytics.routing.websocket_urlpatterns)),
+            ])
+        )),
 })

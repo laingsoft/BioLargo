@@ -30,7 +30,6 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         Called on initial socket connection. Accepts if user is authenticated,
         else, close.
         """
-
         self.user = self.scope["user"]
 
         if self.user.is_anonymous:
@@ -90,21 +89,24 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         """
         action = content.get('action')
 
-        if action == 'get_tags':
-            self.get_tags()
+        # if action == 'get_tags':
+        #     self.get_tags()
 
-        if action == 'get_fields':
-            self.get_fields()
+        # if action == 'get_fields':
+        #     self.get_fields()
 
-        if action == 'get_experiment_list':
-            filters = content.get('filters')
-            order_by = content.get('order_by')
-            search = content.get('search')
-            self.get_experiment_list(filters=filters, order_by=order_by, search=search)
+        # if action == 'get_experiment_list':
+        #     filters = content.get('filters', {})
+        #     order_by = content.get('order_by', '')
+        #     search = content.get('search', '')
+        #     self.get_experiment_list(filters=filters, order_by=order_by, search=search)
 
-        if action == 'get_data':
-            params = content.get('params')
-            self.get_data(params)
+        # if action == 'get_data':
+        #     params = content.get('params', {})
+        #     self.get_data(params)
+        if action == "session_create":
+            pass
+
 
     def disconnect(self, code):
         """
@@ -179,7 +181,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         """
         qs = self.user.company.experiment_set.all()
 
-        q = kwargs.get("search", '').strip()  # search query
+        q = kwargs.get("search", '')  # search query
         filters = kwargs.get("filters", {})
         order_by = kwargs.get("order_by", None)
 
@@ -200,3 +202,6 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
             qs = qs.order_by(order_by)
 
         self.send_json({'data': json.dumps(ExperimentSerializer(qs, many=True).data)})
+
+    def something_test(self, event):
+        self.send_json({'response': 'ok'})
