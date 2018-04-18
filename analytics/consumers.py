@@ -38,75 +38,117 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         else:
             self.accept()
 
-    def session_list(self):
+    def session_list(self, **kwargs):
         """
-        Called by receive_json when session_list command is received.
+        Called by receive_json when session.list command is received.
         gets a list of all sessions from the user.
-        """
-        sessions = SessionSerializer(self.user.session_set.all(), many=True).data
 
-        self.send_json({'action': 'session_list', 'data': sessions})
-
-    def session_connect(self, session_id):
-        """
-        Called by receive_json when session_connect command is received.
-        connects user to a specified session.
+        Arguments:
+            search: a search query for session name or project name
         """
 
-        try:
-            self.session = self.user.session_set.get(pk="session_id")
-        except Session.DoesNotExist:
-            self.send_json({
-                'action': 'session_connect',
-                'error': "Invalid session."
-                })
+        search_query = kwargs.get("search", '')
+        qs = self.user.session_set.all()
 
-    def session_close(self):
+        vector = SearchVector(
+            'name',
+            'project__name'
+        )
+
+        if search_query:
+            qs = qs.annotate(search=vector).filter(search=search_query)
+
+        sessions = SessionSerializer(qs, many=True).data
+
+        self.send_json(['session.list', sessions])
+
+    def session_connect(self, **kwargs):
         """
-        Called by receive_json when session_close command is received.
+        Called by receive_json when session.connect command is received.
+        connects user to a specified session, if an id is provided, else,
+        a new session is created if name and project are given.
+        """
+        pk = kwargs.get("pk", None)
+
+        if pk:
+            # get session object
+            try:
+                self.session = self.user.session_set.get(pk=pk)
+            except Session.DoesNotExist:
+                self.send_json(["session.connect", {"status": "error"}])
+                return
+        else:
+            name = kwargs.get("name")
+            project = kwargs.get("project_id")
+
+            self.session = Session.objects.create(
+                name=name,
+                project_id=project,
+                user=self.user
+            )
+
+        # connect
+        async_to_sync(self.channel_layer.group_add)(str(self.session.id), self.channel_name)
+        self.send_json(["session.connect", {"status": "success"}])
+
+    def session_close(self, **kwargs):
+        """
+        Called by receive_json when session.close command is received.
         closes the current sessions.
+
+        Arguments: none.
         """
         self.session = None
 
-    def session_delete(self, session_id):
+        # leave group
+
+        # send status
+        self.send_json({**kwargs, 'status': 'success'})
+
+    def session_delete(self, **kwargs):
         """
-        Called by receive_json when session_delete command is received.
+        Called by receive_json when session.delete command is received.
         Deletes a session specified by id.
+
+        Arguments:
+            pk: id of session.
         """
+        pk = kwargs.get("pk")
+
         try:
-            session = self.user.session_set.get(pk=session_id)
+            session = self.user.session_set.get(pk=pk)
         except Session.DoesNotExist:
-            self.send_json({'action': 'session_delete', 'status': 'error'})
+            self.send_json(['session.delete', {'status': 'error'}])
 
         session.delete()
 
-        self.send_json({'action': 'session_delete', 'status': 'success'})
+        self.send_json(['session.delete', {'status': 'success'}])
 
     def receive_json(self, content):
         """
         Called when a text frame is received.
-        Arguments:  content - decoded JSON (a dictionary)
+        Arguments:  decoded json array.
+        [
+            "message_type",
+            {
+                data
+            }
+        ]
         """
-        action = content.get('action')
+        print(content)
 
-        # if action == 'get_tags':
-        #     self.get_tags()
+        action = content[0]
+        if action == "session.connect":
+            self.session_connect(**content[1])
 
-        # if action == 'get_fields':
-        #     self.get_fields()
-
-        # if action == 'get_experiment_list':
-        #     filters = content.get('filters', {})
-        #     order_by = content.get('order_by', '')
-        #     search = content.get('search', '')
-        #     self.get_experiment_list(filters=filters, order_by=order_by, search=search)
-
-        # if action == 'get_data':
-        #     params = content.get('params', {})
-        #     self.get_data(params)
-        if action == "session_create":
-            pass
-
+        elif action == "group.echo":
+            async_to_sync(self.channel_layer.group_send)(
+                str(self.session.id),
+                {
+                    "type": "group.echo",
+                    "message": content[1]["message"]
+                }
+            )
 
     def disconnect(self, code):
         """
@@ -203,5 +245,6 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         self.send_json({'data': json.dumps(ExperimentSerializer(qs, many=True).data)})
 
-    def something_test(self, event):
-        self.send_json({'response': 'ok'})
+    def group_echo(self, event):
+        print(event)
+        self.send_json(event["message"])
