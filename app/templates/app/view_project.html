@@ -45,15 +45,15 @@
                 <ul>
                     <li>
                         <div class="text-muted">Total Experiments</div>
-                        <strong>{{ experiments|length }} </strong>
+                        <strong id="total-tour">{{ experiments|length }} </strong>
                     </li>
                     <li class="d-none d-md-table-cell">
-                        <div class="text-muted">Participants</div>
-                        <strong>{{ user_count }}</strong>
+                        <div class="text-muted" >Participants</div>
+                        <strong id="participants-tour">{{ user_count }}</strong>
                     </li>
                     <li class="d-none d-md-table-cell">
-                        <div class="text-muted">Progress</div>
-                        <strong>{% task_progress object %} %</strong>
+                        <div class="text-muted" >Progress</div>
+                        <strong id="progress-tour">{% task_progress object %} %</strong>
                     </li>
                 </ul>
             </div>
@@ -74,7 +74,7 @@
     <div class="col">
         <div class="card">
             <div class="card-body">
-                <h2 class="card-title">Experiments</h2>
+                <h2 class="card-title" id="list-tour">Experiments</h2>
                 <div class="card-block">
                     <table class="table table-responsive-sm table-hover">
                         <thead>
@@ -122,5 +122,6 @@
     var type="PRJ"
 </script>
 <script src='{% static "app/js/watch.js"%}'></script>
+<script src='{% static "app/js/hopscotch-tours/projectSingle.js"%}'></script>
 
 {% endblock %}
