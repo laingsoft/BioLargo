@@ -8,7 +8,6 @@ from django.contrib.postgres.aggregates import StringAgg
 from .serializers import SessionSerializer, ExperimentSerializer
 import json
 from .utils import json_field_arrayAgg
-from django.contrib.postgres.aggregates import ArrayAgg
 
 TOOLS = {
     'max': tools.MaxTool,
@@ -196,7 +195,6 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         fields_dict = {}
         for field in fields:
             fields_dict.update(json_field_arrayAgg(field))
-
 
         qs = self.user.company.experimentdata_set \
             .filter(experiment_id__in=experiments) \
