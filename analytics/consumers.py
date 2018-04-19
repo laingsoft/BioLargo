@@ -7,6 +7,8 @@ from django.contrib.postgres.search import SearchVector
 from django.contrib.postgres.aggregates import StringAgg
 from .serializers import SessionSerializer, ExperimentSerializer
 import json
+from .utils import json_field_arrayAgg
+from django.contrib.postgres.aggregates import ArrayAgg
 
 TOOLS = {
     'max': tools.MaxTool,
@@ -23,6 +25,9 @@ TOOLS = {
 class AnalyticsConsumer(JsonWebsocketConsumer):
     """
     This consumer handles websocket connections for analysis.
+
+    Sends everything that isn't a session operation to the group.
+    Not sure if this really needs to be changed.
     """
 
     def connect(self):
@@ -31,12 +36,47 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         else, close.
         """
         self.user = self.scope["user"]
+        self.session = None
 
         if self.user.is_anonymous:
             self.close()
 
         else:
             self.accept()
+
+    def receive_json(self, content):
+        """
+        Called when a text frame is received.
+        Arguments:  decoded json array.
+        [
+            "message_type",
+            dict(other_data)
+        ]
+        """
+        action = content[0]
+        if action == "session.connect":
+            self.session_connect(**content[1])
+
+        elif action == "session.close":
+            self.session_close()
+
+        elif action == "session.delete":
+            self.session_delete(**content[1])
+
+        elif action == "session.list":
+            self.session_list(**content[1])
+
+        else:
+            if not self.session:
+                self.send_json([action, {"error": "No session selected."}])
+                return
+            async_to_sync(self.channel_layer.group_send)(
+                str(self.session.id),
+                {
+                    "type": action,
+                    **content[1]
+                }
+            )
 
     def session_list(self, **kwargs):
         """
@@ -101,14 +141,19 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         self.session = None
 
         # leave group
+        async_to_sync(self.channel_layer.group_discard)(
+            str(self.session.id),
+            self.channel_name
+        )
 
         # send status
-        self.send_json({**kwargs, 'status': 'success'})
+        self.send_json(["session.close", {"status": "success"}])
 
     def session_delete(self, **kwargs):
         """
         Called by receive_json when session.delete command is received.
-        Deletes a session specified by id.
+        Deletes a session specified by id. Assumes that the session is
+        not currently connected.
 
         Arguments:
             pk: id of session.
@@ -124,96 +169,43 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         self.send_json(['session.delete', {'status': 'success'}])
 
-    def receive_json(self, content):
+    def data_tags(self, event):
         """
-        Called when a text frame is received.
-        Arguments:  decoded json array.
-        [
-            "message_type",
-            {
-                data
-            }
-        ]
-        """
-        print(content)
-
-        action = content[0]
-        if action == "session.connect":
-            self.session_connect(**content[1])
-
-        elif action == "group.echo":
-            async_to_sync(self.channel_layer.group_send)(
-                str(self.session.id),
-                {
-                    "type": "group.echo",
-                    "message": content[1]["message"]
-                }
-            )
-
-    def disconnect(self, code):
-        """
-        Called when websocket connetion is closed.
-        """
-        pass
-
-    def get_tags(self):
-        """
-        returns a list of tags of data set.
+        returns a list of all tags used in company.
         """
         data = self.user.company.tag_set.all().values_list('name', flat=True)
-        self.send_json({'data': list(data)})
+        self.send_json([event["type"], list(data)])
 
-    def get_fields(self):
+    def data_fieldNames(self, event):
+        """
+        Returns a set of fields in selected experimetns.
+        """
         fields_list = self.base_qs.values_list('experimentData', flat=True)
         fields = reduce(lambda a, b: {**a, **b}, fields_list, {}).keys()
 
-        self.send_json({'fields': list(fields)})
+        self.send_json([event["type"], list(fields)])
 
-    def create_action(self, experiments):
+    def data_fieldData(self, event):
         """
-        Creates new action object for
+        returns data from requested field(s) from a list of
+        experiments.
         """
-        pass
+        experiments = event.get("experiments")
+        fields = event.get("fields")
 
-    def get_data(self, exp_set, params):
-        """
-        returns requested data. Will apply and transformations and aggregation.
-        Handled by the database. Used when getting data for graphs.
+        fields_dict = {}
+        for field in fields:
+            fields_dict.update(json_field_arrayAgg(field))
 
-        exp_set: a list of ids of experiments to get data from
-        params: a dictionary.
 
-        params dictionary format:
-        {
-            filters: {}
-            expressions: [""] // list of expressions or fields
-                ex. 'RemainingCFU [CFU/mL]' or
-                LOG('StockCFU [CFU/mL]') - LOG('RemainingCFU [CFU/mL]')"
-                Single quotes around field names required.
-            group_by: [] // A list of fields to group by.
-            replicates: boolean value. effect grouping.
-        }
+        qs = self.user.company.experimentdata_set \
+            .filter(experiment_id__in=experiments) \
+            .values('experiment') \
+            .annotate(**fields_dict)
 
-        Ex.
-        {
-            filters: {id: [1,2,3]},
-            expression: "AVG(LOG('StockCFU [CFU/mL]') - LOG('RemainingCFU [CFU/mL]'))"
-            group_by: ["Time [min]"]
-        }
+        self.send_json([event["type"], list(qs)])
 
-        Result: average log removal of experiments 1, 2 and 3 over time
-        """
-
-        # get action object with id.
-        # base experimentdata for this action
-        # qs = self.base_qs.filter(experiment__id__in=exp_set)
-
-        # if there is a group_by, aggregate.
-        # else, annotate and or return requested field values.
-
-        self.send_json({'data': 'get data test'})
-
-    def get_experiment_list(self, **kwargs):
+    def data_experiments(self, event):
         """
         Used for selecting experiments for analysis tool.
         Returns a list of experiments.
@@ -223,9 +215,9 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         """
         qs = self.user.company.experiment_set.all()
 
-        q = kwargs.get("search", '')  # search query
-        filters = kwargs.get("filters", {})
-        order_by = kwargs.get("order_by", None)
+        q = event.get("search", '')  # search query
+        filters = event.get("filters", {})
+        order_by = event.get("order_by", None)
 
         # Search vector used
         vector = SearchVector(
@@ -243,8 +235,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         if order_by:
             qs = qs.order_by(order_by)
 
-        self.send_json({'data': json.dumps(ExperimentSerializer(qs, many=True).data)})
+        self.send_json([event["type"], json.dumps(ExperimentSerializer(qs, many=True).data)])
 
     def group_echo(self, event):
-        print(event)
-        self.send_json(event["message"])
+        self.send_json([event["type"], event["message"]])
