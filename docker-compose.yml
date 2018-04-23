@@ -9,7 +9,7 @@ services:
       - ./config/nginx:/etc/nginx/conf.d
       - uploads:/uploads
       - static:/static
-      - ./analytics-frontend/pasteur/build:/analytics_frontend
+      - ./analytics-frontend/build:/analytics_frontend
     depends_on:
       - web
   db:
