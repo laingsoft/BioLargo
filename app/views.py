@@ -32,8 +32,9 @@ def index(request):
     company = request.user.company
 
     latest = Experiment.objects.filter(company=company).order_by('-id')[:10]
+    tasks = Task.objects.filter(company=company, assigned=request.user, status='N')
 
-    return render(request, 'app/index.html', {'latest': latest, 'show_tutorial': request.user.show_tutorial})
+    return render(request, 'app/index.html', {'latest': latest,'tasks': tasks, 'show_tutorial': request.user.show_tutorial})
 
 
 @login_required
