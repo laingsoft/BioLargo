@@ -25,6 +25,13 @@ from project_management.models import Project
 def index(request):
     pass
 
+@api_view(['POST'])
+def set_tutorial(request):
+    request.user.show_tutorial = request.POST["val"] == "true"
+    request.user.save()
+    return JsonResponse({"success":True})
+
+
 @api_view(['GET'])
 def analysis_page(request):
     company = request.user.company

@@ -33,7 +33,7 @@ def index(request):
 
     latest = Experiment.objects.filter(company=company).order_by('-id')[:10]
 
-    return render(request, 'app/index.html', {'latest': latest})
+    return render(request, 'app/index.html', {'latest': latest, 'show_tutorial': request.user.show_tutorial})
 
 
 @login_required

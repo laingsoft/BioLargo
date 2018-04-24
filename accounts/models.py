@@ -69,6 +69,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    show_tutorial = models.BooleanField(default=True)
 
     # For accessing management panel
     is_admin = models.BooleanField(default=False)

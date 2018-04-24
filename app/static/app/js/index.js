@@ -4,6 +4,22 @@
  *
  */
 
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 function showUserStats(data) {
     var exp_data = [{
         type: 'line',
@@ -90,6 +106,23 @@ function socket_dispach(e) {
     ACTIONS[recv['action']](recv['data']);
 };
 
+function set_tutorial_val(val){
+    var csrftoken = getCookie('csrftoken')
+    $.ajax({
+        beforeSend: function(xhr, settings){
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        },
+        url: "/api/set_tutorial/",
+        dataType: 'json',
+        method: 'POST',
+        data: {"val": val},
+        success: function(data) {
+	    console.log("tutorial status updated");
+
+        }
+    });
+}
+
 
 $(document).ready(function() {
     // Do some basic setup stuff
@@ -109,4 +142,12 @@ $(document).ready(function() {
         window.location.href = "/app/experiment/" + $(this).data('id')
     })
 
+    //Show the tutorial
+    if (show_tutorial){
+	hopscotch.startTour(tour);
+    }
+    
+
 })
+
+

@@ -1,5 +1,6 @@
 var tour = {
     id: "hello-pasteur",
+    onClose: function(){set_tutorial_val("false");},
     steps:[
 	{
 	    title:"At a Glance",
