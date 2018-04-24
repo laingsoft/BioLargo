@@ -176,11 +176,12 @@ def experimentrm(request, exp_id):
 @login_required
 def get_csv(request, exp_id, header=0):
     company = request.user.company
+    experiment = Experiment.objects.get(id=exp_id)
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="'+exp_id+'.csv"'
+    response['Content-Disposition'] = 'attachment; filename="'+experiment.friendly_name+'.csv"'
     vals = ExperimentData.objects.filter(company=company, experiment=exp_id)
     newdata = []
-    [newdata.append(json.loads(i.experimentData)) for i in vals]
+    [newdata.append(i.experimentData) for i in vals]
     fieldnames = []
     [fieldnames.append(k) for k in newdata[0]]
     writer = csv.DictWriter(response, fieldnames)
