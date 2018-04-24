@@ -3,41 +3,25 @@ from django.contrib.postgres.fields.jsonb import KeyTextTransform
 from django.db.models import FloatField
 from django.db.models.functions import Cast
 from .aggregates import Mode, Percentile
-# from statistics import median, mode, stdev, variance
 import re
-from django.utils.text import slugify
-from functools import reduce
-from django.db.models import Func, F
-
-
-# Some math functions from postgres.
-class Log(Func):
-    function = 'log'
-
-
-class Ln(Func):
-    function = 'ln'
-
-
-class Sqrt(Func):
-    function = 'sqrt'
-
-
-class Abs(Func):
-    function = 'abs'
+from django.db.models import F
+from .operations import OPERATIONS
+from .utils import json_field_format
 
 
 class Tool:
     """
     Base tool for all analysis. Contains information to query database.
     parameters:
-        - base_qs: Base queryset of ExperimentData (stored by the session)
-        - filters: a dictionary of additional filters for qs.
-        - fields: a list of field names (string) for operation.
     """
-    def __init__(self, base_qs, field, *args, **kwargs):
-        self.base_qs = base_qs
-        self.field = field
+    def __init__(self, **kwargs):
+        self.company = kwargs.get("company")
+        self.experiments = kwargs.get("experiments")
+
+    def get_base_queryset(self):
+        qs = self.company.experimentdata_set.filter(
+            experiment__in=self.experiments)
+        return qs
 
     def evaluate(self):
         pass
@@ -47,25 +31,18 @@ class EquationTool(Tool):
     """
     Calculates equations.
     Takes same arguements as Tool, without the fields argument, and
-    with an additional equations list.
+    with an additional equations list. Assumes that the equation is
+    properly formatted, with brackets around functions, where needed.
+    Formatting is not check explicitly.
     """
-    BINARY_OPS = {'+', '-', '*', '/', '^'}
-    UNARY_OPS = {
-        'LOG': Log,
-        'LN': Ln,
-        'SQRT': Sqrt,
-        'ABS': Abs
-    }
+    pattern = re.compile("('[^']+'|[\\+\\-*\\/]|\w+|[\\(\\)])")
 
-    def __init__(self, base_qs, *args, **kwargs):
-        super().__init__(base_qs, None, **kwargs)
-        self.equations = kwargs.get('equations')  # a list of strings
-        self.vars = dict()  # a dictionary of annotations needed. key=slugify('field')
-        self.annotations()
+    def __init__(self, *args, **kwargs):
+        self.vars = {}
 
     def tokenize_equation(self, equation):
         """
-        Breaks equation up into a list of individual tokens.
+        Breaks equation up into a list of individual tokens using regex.
 
         Ex.
         "AVG(LOG('StockCFU [CFU/mL]') - LOG('RemainingCFU [CFU/mL]'))"
@@ -74,85 +51,75 @@ class EquationTool(Tool):
         ['AVG', '(', 'LOG', '(', "'StockCFU [CFU/mL]'", ')', '-',
         'LOG', '(', "'RemainingCFU [CFU/mL]'", ')', ')']
         """
-        pattern = "('[^']+'|[\\+\\-*\\/]|\w+|[\\(\\)])"
-        pattern = re.compile(pattern)
-        return pattern.findall(equation)
 
-    def get_field(self, field_name):
-        """
-        gets json fields. field_name is the json key.
-        """
-        return Cast(
-                KeyTextTransform(
-                    field_name,
-                    'experimentData'),
-                FloatField())
+        return self.pattern.findall(equation)
 
-    def combine_annotations(self, annotations):
+    def to_postfix(self, tokens):
         """
-        Combines a list of dictionaries of annotations into one dictionary.
+        Turns the tokenized infix expression into postfix form.
+        (is actually postfix, but it'll be popped from back)
+        Returns a list
         """
-        return reduce(lambda a, b: {**a, **b}, annotations, {})
-
-    def build_annotation(self, tokens):
-        """
-        Builds the annotation part of the equation to be evaluated.
-        """
+        postfix = []
         op_stack = []
-        var_stack = []
-        open_bracket = 0  # for syntax checking.
-
         for token in tokens:
-            if token == '(':
-                open_bracket += 1
+            if token in OPERATIONS:
+                op = OPERATIONS[token]
 
-            elif token == ')':
-                # check if there is an open bracket
-                if not open_bracket:
-                    # Syntax error if there is no open bracket at all.
-                    raise ValueError
-                open_bracket -= 1
+                if op_stack[-1] > op[2]:
+                    popped = op_stack.pop()
+                    while popped != '(' and op_stack:
+                        postfix.append(popped)
+                        popped = op_stack.pop()
 
-                op = op_stack.pop()
-                while op != '(':
-                    if op in self.UNARY_OPS:
-                        pass
-                    if op in self.BINARY_OPS:
-                        pass
+                    if popped == '(':
+                        # append back a bracket if popped out.
+                        op_stack.append('(')
 
+                else:
+                    op_stack.append(op)
 
-                # pop from var stack
-                # perform operation
-                # append back to var stack.
+            elif token[0] == "'":
+                token_clean = token.strip("'")
+                self.vars.update(json_field_format(token_clean))
+                postfix.append(F(token_clean))
 
-            elif token[0] == '\'':
-                # check if a variable
-                var = self.vars(slugify(token[1:-1]), self.get_field(token[1:-1]))
-                if slugify(token[1:-1]) not in self.vars:
-                    self.vars[slugify(token[1:-1])] = var
-
-                var_stack.append(var)
-
-            elif token in self.UNARY_OPS or token in self.BINARY_OPS:
+            elif token == '(':
                 op_stack.append(token)
 
-            else:
-                # if it doesn't fit anything then it's a syntax error.
-                raise ValueError
+            elif token == ')':
+                op = op_stack.pop()
+                try:
+                    while op != ('('):
+                        postfix.append(op)
+                        op_stack.pop()
+                except IndexError:
+                    raise ValueError("Imbalanced brackets")
+                if op_stack:
+                    # if the bracket indicates a function, then pop function.
+                    if op_stack[-1][2] == 3:
+                        postfix.append(op_stack.pop())
 
-    def evaluate(self):
-        for equation in self.equations:
-            tokens = self.tokenize_equation(equation)
-            self.build_annotation(tokens)
+        # pop any remaining items off the op_stack
+        while op_stack:
+            postfix.append(op_stack.pop())
+
+        return postfix
+
+    def to_django(self, prefix):
+        """
+        takes prefix expression and converts to a form usable by Django's ORM.
+        """
+        pass
 
 
 class BaseAggregateTool(Tool):
     """
-    Base tool for aggregrate functions performed on database.
+    Base tool for aggregrate functions performed on database. Aggreates
+    single fields.
     Aggregate function used must be defined by child classes.
     function: Aggregate function name from postgres
     extra: list of other arguments that need to be passed into function.
-
     """
     function = None
     extra = []

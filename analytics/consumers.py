@@ -1,24 +1,13 @@
 from channels.generic.websocket import JsonWebsocketConsumer
 from asgiref.sync import async_to_sync
 from .models import Session, Action
-import analytics.base_analysis as tools
+# import analytics.base_analysis as tools
 from functools import reduce
 from django.contrib.postgres.search import SearchVector
 from django.contrib.postgres.aggregates import StringAgg
-from .serializers import SessionSerializer, ExperimentSerializer
+from .serializers import SessionSerializer, ExperimentSerializer, ActionSerializer
 import json
 from .utils import json_field_arrayAgg
-
-TOOLS = {
-    'max': tools.MaxTool,
-    'min': tools.MinTool,
-    'avg': tools.AvgTool,
-    'stdv': tools.STDVTool,
-    'variance': tools.VarianceTool,
-    'mode': tools.ModeTool,
-    'median': tools.MedianTool,
-    'equation': tools.EquationTool
-}
 
 
 class AnalyticsConsumer(JsonWebsocketConsumer):
@@ -127,7 +116,8 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
             )
 
         # connect
-        async_to_sync(self.channel_layer.group_add)(str(self.session.id), self.channel_name)
+        async_to_sync(self.channel_layer.group_add)(
+            str(self.session.id), self.channel_name)
         self.send_json(["session.connect", {"status": "success"}])
 
     def session_close(self, **kwargs):
@@ -233,7 +223,15 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         if order_by:
             qs = qs.order_by(order_by)
 
-        self.send_json([event["type"], json.dumps(ExperimentSerializer(qs, many=True).data)])
+        self.send_json([event["type"], json.dumps(
+            ExperimentSerializer(qs, many=True).data)])
 
     def group_echo(self, event):
         self.send_json([event["type"], event["message"]])
+
+    def action_create(self, event):
+        action = async_to_sync(Action.object.create)(
+            action=event.get("params"),
+            session=self.session
+        )
+        self.send_json([event["type"], ActionSerializer(action).data])
