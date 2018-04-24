@@ -21,11 +21,18 @@
     </div>
     <div class="pb-2 col-lg-4 pb-3">
         <div class="card">
-            <p class="card-header">Tasks</p>
-            <div id="tasks">
-                <ul class="list-group">
+          <p class="card-header">Tasks</p>
+	  <div class = "media">
+	    <div class="media-body">
+	      <div id="task-graph" class="float-right media-figure">
+	      </div>
+	      <ul class="list-group">
 		  {% include "app/task_list.html" %}
                 </ul>
+	      
+	    </div>
+	  </div>
+	  
             </div>
         </div>
     </div>

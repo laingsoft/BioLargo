@@ -95,7 +95,7 @@ function showUserUploadGraph(data) {
 }
 
 // ACTIONS is the dispacher graph. Register the functions you want to use here.
-var ACTIONS = { 'get_daily_upload_stats': showUserStats, "get_top_uploaders": showUserUploadGraph };
+var ACTIONS = { 'get_daily_upload_stats': showUserStats, "get_top_uploaders": showUserUploadGraph, "get_tasks": showTaskGraph };
 
 /*
  * Dispacher function. Uses the data sent from the server to tell the client what to do with
@@ -123,6 +123,23 @@ function set_tutorial_val(val){
     });
 }
 
+function showTaskGraph(){
+    var data = [{
+	values: [2,3,5],
+	labels: ["complete", "in-progress", "not-started"],
+	type: "pie",
+	hole: .4,
+	showlegend: false
+    }];
+
+    var layout = {
+	height: 300,
+	width: 300,
+    };
+
+    Plotly.newPlot('task-graph', data, layout, {staticPlot: true})
+    
+}
 
 $(document).ready(function() {
     // Do some basic setup stuff
@@ -146,7 +163,8 @@ $(document).ready(function() {
     if (show_tutorial){
 	hopscotch.startTour(tour);
     }
-    
+
+    showTaskGraph()
 
 })
 
