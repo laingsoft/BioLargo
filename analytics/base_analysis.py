@@ -75,7 +75,7 @@ class EquationTool(Tool):
             if token in OPERATIONS:
                 op = OPERATIONS[token]
 
-                if op_stack and op_stack[-1][2] > op[2]:
+                if op_stack and op_stack[-1] != '(' and op_stack[-1][2] > op[2]:
                     popped = op_stack.pop()
                     while popped != '(' and op_stack:
                         postfix.append(popped)

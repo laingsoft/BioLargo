@@ -186,15 +186,20 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         experiments = event.get("experiments")
         expressions = event.get("expressions")
 
-        qs = EquationTool(
-            company=self.user.company,
-            experiments=experiments,
-            equations=expressions).evaluate()
+        try:
+            qs = EquationTool(
+                company=self.user.company,
+                experiments=experiments,
+                equations=expressions).evaluate()
+        except ValueError as e:
+            self.send_json([event["type"], {"error": str(e)}])
+            return
 
         try:
             data = list(qs)
         except DataError as e:
             self.send_json([event["type"], {"error": str(e)}])
+            return
 
         self.send_json([event["type"], data])
 
