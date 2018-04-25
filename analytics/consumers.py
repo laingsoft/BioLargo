@@ -1,13 +1,13 @@
 from channels.generic.websocket import JsonWebsocketConsumer
 from asgiref.sync import async_to_sync
 from .models import Session, Action
-# import analytics.base_analysis as tools
+from analytics.base_analysis import EquationTool
 from functools import reduce
 from django.contrib.postgres.search import SearchVector
 from django.contrib.postgres.aggregates import StringAgg
 from .serializers import SessionSerializer, ExperimentSerializer, ActionSerializer
 import json
-from .utils import json_field_arrayAgg
+from django.db.utils import DataError
 
 
 class AnalyticsConsumer(JsonWebsocketConsumer):
@@ -174,24 +174,30 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         self.send_json([event["type"], list(fields)])
 
-    def data_fieldData(self, event):
+    def data_get(self, event):
         """
         returns data from requested field(s) from a list of
         experiments.
+
+        Arguments:
+        - Experiments: a list of ids of experiments to get data from
+        - expressions: a list of expressions. can be a single variables or equations
         """
         experiments = event.get("experiments")
-        fields = event.get("fields")
+        expressions = event.get("expressions")
 
-        fields_dict = {}
-        for field in fields:
-            fields_dict.update(json_field_arrayAgg(field))
+        qs = EquationTool(
+            company=self.user.company,
+            experiments=experiments,
+            equations=expressions).evaluate()
 
-        qs = self.user.company.experimentdata_set \
-            .filter(experiment_id__in=experiments) \
-            .values('experiment') \
-            .annotate(**fields_dict)
+        try:
+            data = list(qs)
+        except DataError as e:
+            self.send_json([event["type"], {"error": str(e)}])
 
-        self.send_json([event["type"], list(qs)])
+        self.send_json([event["type"], data])
+
 
     def data_experiments(self, event):
         """
