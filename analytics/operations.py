@@ -22,26 +22,31 @@ class Abs(Func):
 
 
 class Add(Func):
+    function = ''
     arg_joiner = '+'
     arity = 2
 
 
 class Subtract(Func):
+    function = ''
     arg_joiner = '-'
     arity = 2
 
 
 class Divide(Func):
+    function = ''
     arg_joiner = '/'
     arity = 2
 
 
 class Multiply(Func):
+    function = ''
     arg_joiner = '*'
     arity = 2
 
 
 class Exponent(Func):
+    function = ''
     arg_joiner = '^'
     arity = 2
 

@@ -3,7 +3,6 @@ from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from project_management.models import Project
 
-
 class Session(models.Model):
     """
     Stores session info and project used in analysis.

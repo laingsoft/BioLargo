@@ -7,6 +7,7 @@ import re
 from django.db.models import F
 from .operations import OPERATIONS
 from .utils import json_field_format
+from django.contrib.postgres.aggregates import ArrayAgg
 
 
 class Tool:
@@ -15,12 +16,13 @@ class Tool:
     parameters:
     """
     def __init__(self, **kwargs):
-        self.company = kwargs.get("company")
-        self.experiments = kwargs.get("experiments")
+        self.base_qs = self.get_base_queryset(
+            kwargs.get("company"),
+            kwargs.get("experiments"))
 
-    def get_base_queryset(self):
-        qs = self.company.experimentdata_set.filter(
-            experiment__in=self.experiments)
+    def get_base_queryset(self, company, experiments):
+        qs = company.experimentdata_set.filter(
+            experiment__in=experiments)
         return qs
 
     def evaluate(self):
@@ -34,11 +36,18 @@ class EquationTool(Tool):
     with an additional equations list. Assumes that the equation is
     properly formatted, with brackets around functions, where needed.
     Formatting is not check explicitly.
-    """
-    pattern = re.compile("('[^']+'|[\\+\\-*\\/]|\w+|[\\(\\)])")
 
-    def __init__(self, *args, **kwargs):
+    Takes a list of equations to calculate along with the arguments for base
+    tool
+    """
+    pattern = re.compile("('[^']+'|[\\+\\-*\\/]|\w+|[\\(\\)])|\d+")
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
         self.vars = {}
+        self.equations = kwargs.get("equations")
+        self.parsed = {}  # dictionary to pass into annotate later
 
     def tokenize_equation(self, equation):
         """
@@ -66,7 +75,7 @@ class EquationTool(Tool):
             if token in OPERATIONS:
                 op = OPERATIONS[token]
 
-                if op_stack[-1] > op[2]:
+                if op_stack and op_stack[-1][2] > op[2]:
                     popped = op_stack.pop()
                     while popped != '(' and op_stack:
                         postfix.append(popped)
@@ -106,11 +115,48 @@ class EquationTool(Tool):
 
         return postfix
 
-    def to_django(self, prefix):
+    def to_django(self, postfix):
         """
-        takes prefix expression and converts to a form usable by Django's ORM.
+        takes a postfix expression and converts to a form usable by Django's ORM.
+        Errors not caughted by the conversion should be caught here.
         """
-        pass
+        print(postfix)
+        vars = []
+        for item in postfix:
+            print(item)
+            print(vars)
+            if isinstance(item, tuple):  # if is an operation
+                num_args = item[1]
+
+                # check that there are enough arguments for operation.
+                if num_args > len(vars):
+                    raise ValueError("Not enough arguments for operation")
+                args = vars[-num_args:]
+                del vars[-num_args:]
+                # Apply operation and append back to var stack
+                vars.append(item[0](*args))
+            else:
+                # if it's not an operations then it's a variable (no brackets)
+                vars.append(item)
+
+        if len(vars) > 1:
+            raise ValueError("Malformed expression")
+
+        return vars[0]
+
+    def evaluate(self):
+        for e in self.equations:
+            tokens = self.tokenize_equation(e)
+            print(tokens)
+            postfix = self.to_postfix(tokens)
+            self.parsed[e] = ArrayAgg(self.to_django(postfix))
+
+        result = self.base_qs \
+            .annotate(**self.vars) \
+            .values('experiment') \
+            .annotate(**self.parsed)
+
+        return result
 
 
 class BaseAggregateTool(Tool):
