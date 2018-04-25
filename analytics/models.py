@@ -8,7 +8,7 @@ class Session(models.Model):
     Stores session metadata.
     """
     name = models.CharField(max_length=30)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     dataset = JSONField()  # queryset parameters.
 
     class Meta:
@@ -28,5 +28,5 @@ class Action(models.Model):
     action (whatever is needed to generated object with js), what is needed to
     get data set (if using subset of data in session)
     """
-    session = models.ForeignKey(Session)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
     action = JSONField()

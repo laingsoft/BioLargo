@@ -6,7 +6,7 @@ class SOP(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255)
     file = models.FileField(upload_to='SOP/')
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, on_delete = models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -18,6 +18,6 @@ class SOPMaterials(models.Model):
         ('mL', 'mL'),
         )
 
-    SOP = models.ForeignKey(Item)
+    SOP = models.ForeignKey(Item, on_delete = models.CASCADE)
     amount = models.FloatField()
     unit = models.CharField(max_length=3, choices=UNITS)

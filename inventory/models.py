@@ -28,4 +28,4 @@ class Equipment(models.Model):
 class Calibration(models.Model):
     datetime = models.DateTimeField()
     value = models.FloatField()
-    instrument = models.ForeignKey(Equipment)
+    instrument = models.ForeignKey(Equipment, on_delete = models.CASCADE)

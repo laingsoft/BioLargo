@@ -2,7 +2,6 @@ from abc import ABC, abstractclassmethod
 import csv
 from ast import literal_eval
 from app.models import ExperimentData, Fields, Comment
-from magic import from_buffer # file type identification isn't implemented.
 import json
 from datetime import datetime
 from django.db import transaction, IntegrityError

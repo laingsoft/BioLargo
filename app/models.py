@@ -11,7 +11,7 @@ class Tag(models.Model):
     """
     Stores tags for experiments. Stores tag name only.
     """
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, on_delete = models.CASCADE)
     name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -25,15 +25,15 @@ class Experiment(models.Model):
     """
     Store experiments. Does not store the data for each experiment.
     """
-    company = models.ForeignKey(Company)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    company = models.ForeignKey(Company, on_delete = models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     create_timestamp = models.DateTimeField(auto_now_add=True)
     edit_timestamp = models.DateTimeField(auto_now=True)
     tags = models.ManyToManyField(Tag)
     metadata = JSONField(default='')
     friendly_name = models.CharField(max_length=255)
-    sop = models.ForeignKey('SOP.SOP', null=True, blank=True)
+    sop = models.ForeignKey('SOP.SOP', null=True, blank=True, on_delete = models.CASCADE)
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followed_experiments", blank = True)
 
 
@@ -42,7 +42,7 @@ class ExperimentData(models.Model):
     Stores data for each experiment in JSON. The data types are validated
     using the Field data_type
     """
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, on_delete = models.CASCADE)
 
     class Meta:
         verbose_name_plural = "experiment data"
@@ -57,7 +57,7 @@ class Fields(models.Model):
     Stores fields for adding experiments with a data type that is enforced
     on upload.
     """
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, on_delete = models.CASCADE)
     name = models.CharField(max_length=255)
 
     # the data type choices
@@ -86,7 +86,7 @@ class Template(models.Model):
     """
     Stores templates. It is a collection of predefined fields.
     """
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, on_delete = models.CASCADE)
     name = models.CharField(max_length=255)
     fields = models.ManyToManyField(Fields)
     metadata = models.ManyToManyField(Fields, related_name="metadata_fields")
@@ -102,8 +102,8 @@ class Comment(models.Model):
     """
     Stores comments on experiments.
     """
-    company = models.ForeignKey(Company)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    company = models.ForeignKey(Company, on_delete = models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE)
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     content = models.CharField(max_length=255)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -139,8 +139,8 @@ class Notification(models.Model):
         ("PRJ", "project"),
     )
 
-    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications")
-    subject = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="activity")
+    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="notifications", on_delete = models.CASCADE)
+    subject = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="activity", on_delete = models.CASCADE)
     predicate = models.CharField(max_length=3, choices=PREDICATES)
     object_type = models.CharField(max_length=3, choices=OBJECT_TYPES)
     object_pk = models.IntegerField()
