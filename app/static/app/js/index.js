@@ -4,6 +4,22 @@
  *
  */
 
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 function showUserStats(data) {
     var exp_data = [{
         type: 'line',
@@ -79,7 +95,7 @@ function showUserUploadGraph(data) {
 }
 
 // ACTIONS is the dispacher graph. Register the functions you want to use here.
-var ACTIONS = { 'get_daily_upload_stats': showUserStats, "get_top_uploaders": showUserUploadGraph };
+var ACTIONS = { 'get_daily_upload_stats': showUserStats, "get_top_uploaders": showUserUploadGraph, "get_tasks": showTaskGraph };
 
 /*
  * Dispacher function. Uses the data sent from the server to tell the client what to do with
@@ -90,6 +106,40 @@ function socket_dispach(e) {
     ACTIONS[recv['action']](recv['data']);
 };
 
+function set_tutorial_val(val){
+    var csrftoken = getCookie('csrftoken')
+    $.ajax({
+        beforeSend: function(xhr, settings){
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        },
+        url: "/api/set_tutorial/",
+        dataType: 'json',
+        method: 'POST',
+        data: {"val": val},
+        success: function(data) {
+	    console.log("tutorial status updated");
+
+        }
+    });
+}
+
+function showTaskGraph(){
+    var data = [{
+	values: [2,3,5],
+	labels: ["complete", "in-progress", "not-started"],
+	type: "pie",
+	hole: .4,
+	showlegend: false
+    }];
+
+    var layout = {
+	height: 300,
+	width: 300,
+    };
+
+    Plotly.newPlot('task-graph', data, layout, {staticPlot: true})
+    
+}
 
 $(document).ready(function() {
     // Do some basic setup stuff
@@ -109,4 +159,13 @@ $(document).ready(function() {
         window.location.href = "/app/experiment/" + $(this).data('id')
     })
 
+    //Show the tutorial
+    if (show_tutorial){
+	hopscotch.startTour(tour);
+    }
+
+    showTaskGraph()
+
 })
+
+

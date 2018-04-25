@@ -141,7 +141,6 @@ function commentBuilder(commentObject){
 
 }
 function reloadComments(){
-    //commentBuilder("Chuck", "1", "WHAT THE HELL DID YOU JUST SAY TO ME", "05-31-1995");
     $.ajax({
         method: "GET",
         url: "/api/comment/"+id,
