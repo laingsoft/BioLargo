@@ -108,6 +108,8 @@ class EquationTool(Tool):
                     # if the bracket indicates a function, then pop function.
                     if op_stack[-1][2] == 3:
                         postfix.append(op_stack.pop())
+            elif token.isdigit():
+                postfix.append(float(token))
 
         # pop any remaining items off the op_stack
         while op_stack:
@@ -120,34 +122,30 @@ class EquationTool(Tool):
         takes a postfix expression and converts to a form usable by Django's ORM.
         Errors not caughted by the conversion should be caught here.
         """
-        print(postfix)
-        vars = []
+        operands = []
         for item in postfix:
-            print(item)
-            print(vars)
             if isinstance(item, tuple):  # if is an operation
                 num_args = item[1]
 
                 # check that there are enough arguments for operation.
-                if num_args > len(vars):
+                if num_args > len(operands):
                     raise ValueError("Not enough arguments for operation")
-                args = vars[-num_args:]
-                del vars[-num_args:]
+                args = operands[-num_args:]
+                del operands[-num_args:]
                 # Apply operation and append back to var stack
-                vars.append(item[0](*args))
+                operands.append(item[0](*args))
             else:
                 # if it's not an operations then it's a variable (no brackets)
-                vars.append(item)
+                operands.append(item)
 
-        if len(vars) > 1:
+        if len(operands) > 1:
             raise ValueError("Malformed expression")
 
-        return vars[0]
+        return operands[0]
 
     def evaluate(self):
         for e in self.equations:
             tokens = self.tokenize_equation(e)
-            print(tokens)
             postfix = self.to_postfix(tokens)
             self.parsed[e] = ArrayAgg(self.to_django(postfix))
 
