@@ -36,7 +36,12 @@ class Experiment(models.Model):
     sop = models.ForeignKey('SOP.SOP', null=True, blank=True, on_delete = models.CASCADE)
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followed_experiments", blank = True)
 
-
+class ExperimentImages(models.Model):
+    photo = models.ImageField(upload_to = 'uploads/')
+    experiment = models.ForeignKey(Experiment, on_delete = models.CASCADE)
+    meta = models.CharField(max_length = 255)
+    
+    
 class ExperimentData(models.Model):
     """
     Stores data for each experiment in JSON. The data types are validated

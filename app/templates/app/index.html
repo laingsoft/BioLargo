@@ -26,6 +26,9 @@
 	    <div class="media-body">
 	      <div id="task-graph" class="float-right media-figure">
 	      </div>
+	      {% for i in test %}
+	      <img src="/{{i.photo.url}}">
+	      {% endfor %}
 	      <ul class="list-group">
 		  {% include "app/task_list.html" %}
                 </ul>

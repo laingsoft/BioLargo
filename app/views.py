@@ -3,7 +3,7 @@ from django.http import HttpResponse, Http404
 from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from .parsers import Parser, JsonParser
-from .models import Experiment, ExperimentData, Template, Fields, Comment
+from .models import Experiment, ExperimentData, Template, Fields, Comment, ExperimentImages
 from .models import Tag, Notification
 from project_management.models import Project
 from io import TextIOWrapper
@@ -13,7 +13,7 @@ from django.db.models import Count
 from django.db.models.functions import TruncDay
 import json
 import csv
-from .forms import FileUpload, ExperimentForm, ExperimentDataForm, ProjectForm
+from .forms import FileUpload, ExperimentForm, ExperimentDataForm, ProjectForm, ExperimentImageForm
 from io import StringIO
 from django.views.generic import ListView, DetailView
 from .mixins import CompanyObjectsMixin, ExpFilterMixin, ProjectFilterMixin
@@ -33,8 +33,9 @@ def index(request):
 
     latest = Experiment.objects.filter(company=company).order_by('-id')[:10]
     tasks = Task.objects.filter(company=company, assigned=request.user, status='N')[:10]
+    test = ExperimentImages.objects.all()
 
-    return render(request, 'app/index.html', {'latest': latest,'tasks': tasks, 'show_tutorial': request.user.show_tutorial})
+    return render(request, 'app/index.html', {'latest': latest,'tasks': tasks, 'show_tutorial': request.user.show_tutorial, 'test':test})
 
 
 @login_required
@@ -275,4 +276,15 @@ def notif_read(request):
         return JsonResponse({'success': True})
 
 
-
+def ExperimentImageUploadView(request):
+    if request.method == "POST":
+        form = ExperimentImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = ExperimentImages()
+            image.experiment_id = form.cleaned_data['exp_id']
+            image.photo = form.cleaned_data['image']
+            image.meta = form['meta']
+            image.save()
+        
+        
+        return redirect("/app/experiment/"+ str(form.cleaned_data['exp_id']))
