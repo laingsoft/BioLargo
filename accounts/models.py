@@ -38,7 +38,7 @@ class Company(models.Model):
     name = models.CharField(max_length=255)
     address = models.TextField()
     phone = models.CharField(max_length=20)
-    plan = models.ForeignKey(Plan)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
     good_standing = models.BooleanField(default = True)
 
@@ -51,7 +51,7 @@ class Company(models.Model):
 class Payment(models.Model):
     date_payed = models.DateTimeField(_('date payed'), default=timezone.now)
     date_next_due = models.DateTimeField(_('date next due'), default=timezone.now)
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
     balance = models.FloatField()
     
     
@@ -108,7 +108,7 @@ class Invite(models.Model):
     The hash is company + date + email.
 
     """
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     hash = models.CharField(max_length=64)  # SHA256 hash
 

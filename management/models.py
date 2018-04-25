@@ -12,7 +12,7 @@ class Settings(models.Model):
         ("MM-DD-YYYY", "MM-DD-YYYY"),
         ("DD-MM-YYYY", "DD-MM-YYYY"),
         )
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, on_delete = models.CASCADE)
     dateformat = models.CharField(max_length=11, choices=DATE_FORMAT_CHOICES, default=DATE_FORMAT_CHOICES[0][0])
     ataglance = JSONField(default = {})  # May change in the future
 
@@ -24,4 +24,4 @@ class GroupExtra(models.Model):
     """
     group = models.OneToOneField(Group, related_name="extra", on_delete=models.CASCADE)
     description = models.CharField(max_length=255, blank=True)
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, on_delete = models.CASCADE)

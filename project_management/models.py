@@ -10,7 +10,7 @@ class Project(models.Model):
     Stores projects with a start and end date, and a description of the
     project.
     """
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, on_delete = models.CASCADE)
     name = models.CharField(max_length=255)
     start = models.DateField()
     end = models.DateField(null=True, blank=True)
@@ -47,20 +47,20 @@ class Task(models.Model):
         ('C', 'Complete')
         )
 
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, on_delete = models.CASCADE)
     project = models.ForeignKey(Project, related_name="tasks", on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=255)
     assigned = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="tasks",
-        null=True
+        null=True, on_delete = models.CASCADE
         )
     status = models.CharField(max_length=1, choices=STATUS, default='N')
-    related_experiment = models.ForeignKey('app.Experiment', null=True)
+    related_experiment = models.ForeignKey('app.Experiment', null=True,  on_delete = models.CASCADE)
     due_date = models.DateField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    sop = models.ForeignKey('SOP.SOP', null=True, blank=True)
+    sop = models.ForeignKey('SOP.SOP', null=True, blank=True, on_delete = models.CASCADE)
 
     objects = models.Manager()
     incomplete = IncompleteTaskManager()
