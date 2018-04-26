@@ -1,7 +1,7 @@
 # A temporary fix for a Django bug fixed in a later version.
 # https: // code.djangoproject.com/ticket/28811
 # NOTE: Remove this file once this bug is offically fixed
-# NOTE: Also remove the substitution in the app init.
+# NOTE: Also remove the substitution in apps.py
 
 from django.core.exceptions import FieldError
 from django.db.models.expressions import Ref
@@ -35,6 +35,3 @@ def resolve_ref_temp_fix(self, name, allow_joins=True, reuse=None, summarize=Fal
         col = targets[0].get_col(join_list[-1], sources[0])
 
         return col
-
-
-
