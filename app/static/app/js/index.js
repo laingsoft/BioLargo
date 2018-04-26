@@ -137,7 +137,7 @@ function showTaskGraph(){
 	width: 300,
     };
 
-    Plotly.newPlot('task-graph', data, layout, {staticPlot: true})
+    //Plotly.newPlot('task-graph', data, layout, {staticPlot: true})
     
 }
 
