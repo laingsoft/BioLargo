@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from accounts.models import Company
 from project_management.models import Project
+from PredoxWeb.settings import MEDIA_ROOT
 
 # Create your models here.
 
@@ -37,7 +38,7 @@ class Experiment(models.Model):
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followed_experiments", blank = True)
 
 class ExperimentImages(models.Model):
-    photo = models.ImageField(upload_to = 'uploads/')
+    photo = models.ImageField(upload_to = MEDIA_ROOT[1:]+'/user_images')
     experiment = models.ForeignKey(Experiment, on_delete = models.CASCADE)
     meta = models.CharField(max_length = 255)
     

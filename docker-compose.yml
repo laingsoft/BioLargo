@@ -9,6 +9,7 @@ services:
       - ./config/nginx:/etc/nginx/conf.d
       - uploads:/uploads
       - static:/static
+      - media:/media
     depends_on:
       - web
   db:
@@ -36,3 +37,4 @@ services:
 volumes:
   uploads:
   static:
+  media:

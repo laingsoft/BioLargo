@@ -187,6 +187,9 @@ JWT_AUTH = {
     'rest_framework_jwt.utils.jwt_payload_handler',
 }
 
-MEDIA_ROOT = '/uploads/'
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 ASGI_APPLICATION = "PredoxWeb.routing.application"
