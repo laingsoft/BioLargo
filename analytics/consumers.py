@@ -152,16 +152,16 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         Arguments: none.
         """
-        self.session = None
-
-        # leave group
-        async_to_sync(self.channel_layer.group_discard)(
-            str(self.session.id),
-            self.channel_name
-        )
+        if self.session:
+            # leave group
+            async_to_sync(self.channel_layer.group_discard)(
+                str(self.session.id),
+                self.channel_name
+            )
+            self.session = None
 
         # send status
-        self.send_json("SESSION.CLOSE", {"status": "success"})
+        self.send_json("SESSION.CLOSE", {})
 
     def session_delete(self, **kwargs):
         """
