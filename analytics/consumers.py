@@ -35,36 +35,58 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
     def receive_json(self, content):
         """
         Called when a text frame is received.
-        Arguments:  decoded json array.
-        [
-            "message_type",
-            dict(other_data)
-        ]
-        """
-        action = content[0]
-        if action == "session.connect":
-            self.session_connect(**content[1])
+        Expected content format:
 
-        elif action == "session.close":
+        {
+            type: 'String',
+            payload: {
+                key: value
+            }
+        }
+        """
+        type_ = content['type']
+        payload = content.get('payload', {})
+
+        print(payload)
+
+        if type_ == "SESSION.CONNECT":
+            self.session_connect(**payload)
+
+        elif type_ == "SESSION.CLOSE":
             self.session_close()
 
-        elif action == "session.delete":
-            self.session_delete(**content[1])
+        elif type_ == "SESSION.DELETE":
+            self.session_delete(**payload)
 
-        elif action == "session.list":
-            self.session_list(**content[1])
+        elif type_ == "SESSION.LIST":
+            self.session_list(**payload)
 
         else:
             if not self.session:
-                self.send_json([action, {"error": "No session selected."}])
+                self.send_json(
+                    type_,
+                    {"error": "No sessions selected"},
+                    error=True
+                    )
                 return
             async_to_sync(self.channel_layer.group_send)(
-                str(self.session.id),
-                {
-                    "type": action,
-                    **content[1]
+                str(self.session.id), {
+                    "type": type_,
+                    **payload
                 }
             )
+
+    def send_json(self, type, payload, error=False, close=False):
+        """
+        Overriding default conusmer.
+        """
+        super().send(
+            text_data=json.dumps({
+                "type": type,
+                "payload": json.dumps(payload),
+                "error": error
+            })
+        )
 
     def session_list(self, **kwargs):
         """
@@ -88,7 +110,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         sessions = SessionSerializer(qs, many=True).data
 
-        self.send_json(['session.list', sessions])
+        self.send_json('SESSION.LIST', {"sessions": sessions})
 
     def session_connect(self, **kwargs):
         """
@@ -103,7 +125,10 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
             try:
                 self.session = self.user.session_set.get(pk=pk)
             except Session.DoesNotExist:
-                self.send_json(["session.connect", {"status": "error"}])
+                self.send_json(
+                    "session.connect",
+                    {"error: Session does not exist"},
+                    error=True)
                 return
         else:
             name = kwargs.get("name")
@@ -118,7 +143,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         # connect
         async_to_sync(self.channel_layer.group_add)(
             str(self.session.id), self.channel_name)
-        self.send_json(["session.connect", {"status": "success"}])
+        self.send_json("SESSION.CONNECT", {"status": "success"})
 
     def session_close(self, **kwargs):
         """
@@ -136,7 +161,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         )
 
         # send status
-        self.send_json(["session.close", {"status": "success"}])
+        self.send_json("SESSION.CLOSE", {"status": "success"})
 
     def session_delete(self, **kwargs):
         """
@@ -152,18 +177,21 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         try:
             session = self.user.session_set.get(pk=pk)
         except Session.DoesNotExist:
-            self.send_json(['session.delete', {'status': 'error'}])
+            self.send_json(
+                'SESSION.DELETE',
+                {"error": "Session does not exist"},
+                error=True)
 
         session.delete()
 
-        self.send_json(['session.delete', {'status': 'success'}])
+        self.send_json('SESSION.DELETE', {'status': 'success'})
 
     def data_tags(self, event):
         """
         returns a list of all tags used in company.
         """
         data = self.user.company.tag_set.all().values_list('name', flat=True)
-        self.send_json([event["type"], list(data)])
+        self.send_json(event.type, {"tags": list(data)})
 
     def data_fieldNames(self, event):
         """
@@ -172,7 +200,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         fields_list = self.base_qs.values_list('experimentData', flat=True)
         fields = reduce(lambda a, b: {**a, **b}, fields_list, {}).keys()
 
-        self.send_json([event["type"], list(fields)])
+        self.send_json(event["type"], {"fields": list(fields)})
 
     def data_get(self, event):
         """
@@ -192,17 +220,22 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
                 experiments=experiments,
                 equations=expressions).evaluate()
         except ValueError as e:
-            self.send_json([event["type"], {"error": str(e)}])
+            self.send_json(
+                event["type"],
+                {"error": str(e)},
+                error=True)
             return
 
         try:
             data = list(qs)
         except DataError as e:
-            self.send_json([event["type"], {"error": str(e)}])
+            self.send_json(
+                event["type"],
+                {"error": str(e)},
+                error=True)
             return
 
-        self.send_json([event["type"], data])
-
+        self.send_json(event["type"], {"data": data})
 
     def data_experiments(self, event):
         """
@@ -234,15 +267,16 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         if order_by:
             qs = qs.order_by(order_by)
 
-        self.send_json([event["type"], json.dumps(
-            ExperimentSerializer(qs, many=True).data)])
+        self.send_json(
+            event["type"],
+            {"experiments": ExperimentSerializer(qs, many=True).data})
 
     def group_echo(self, event):
-        self.send_json([event["type"], event["message"]])
+        self.send_json(event["type"], {"Message": event["message"]})
 
     def action_create(self, event):
         action = async_to_sync(Action.object.create)(
             action=event.get("params"),
             session=self.session
         )
-        self.send_json([event["type"], ActionSerializer(action).data])
+        self.send_json(event["type"], {"action": ActionSerializer(action).data})
