@@ -189,23 +189,23 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         self.send_json('SESSION.DELETE')
 
-    def data_tags(self, event):
+    def DATA_TAGS(self, event):
         """
         returns a list of all tags used in company.
         """
         data = self.user.company.tag_set.all().values_list('name', flat=True)
-        self.send_json(event.type, {"tags": list(data)})
+        self.send_json(event.type, list(data))
 
-    def data_fieldNames(self, event):
+    def DATA_FIELDLIST(self, event):
         """
         Returns a set of fields in selected experimetns.
         """
         fields_list = self.base_qs.values_list('experimentData', flat=True)
         fields = reduce(lambda a, b: {**a, **b}, fields_list, {}).keys()
 
-        self.send_json(event["type"], {"fields": list(fields)})
+        self.send_json(event["type"], list(fields))
 
-    def data_get(self, event):
+    def DATA_GET(self, event):
         """
         returns data from requested field(s) from a list of
         experiments.
@@ -238,9 +238,9 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
                 error=True)
             return
 
-        self.send_json(event["type"], {"data": data})
+        self.send_json(event["type"], data)
 
-    def data_experiments(self, event):
+    def DATA_EXPERIMENTS(self, event):
         """
         Used for selecting experiments for analysis tool.
         Returns a list of experiments.
@@ -272,14 +272,14 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         self.send_json(
             event["type"],
-            {"experiments": ExperimentSerializer(qs, many=True).data})
+            ExperimentSerializer(qs, many=True).data)
 
-    def group_echo(self, event):
+    def GROUP_ECHO(self, event):
         self.send_json(event["type"], {"Message": event["message"]})
 
-    def action_create(self, event):
+    def ACTION_CREATE(self, event):
         action = async_to_sync(Action.object.create)(
             action=event.get("params"),
             session=self.session
         )
-        self.send_json(event["type"], {"action": ActionSerializer(action).data})
+        self.send_json(event["type"], ActionSerializer(action).data)
