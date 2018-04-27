@@ -31,6 +31,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         else:
             self.accept()
+            self.send_json("CONNECT", {"message": "Connected"})
 
     def receive_json(self, content):
         """
@@ -76,17 +77,17 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
                 }
             )
 
-    def send_json(self, type, payload, error=False, close=False):
+    def send_json(self, type, payload=None, error=False, close=False):
         """
         Overriding default conusmer.
         """
-        super().send(
-            text_data=json.dumps({
-                "type": type,
-                "payload": json.dumps(payload),
-                "error": error
-            })
-        )
+        content = {"type": type}
+        if payload:
+            content["payload"] = payload
+        if error:
+            content["error"] = True
+
+        super().send_json(content)
 
     def session_list(self, **kwargs):
         """
@@ -94,7 +95,9 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         gets a list of all sessions from the user.
 
         Arguments:
-            search: a search query for session name or project name
+            search: a ssuper().send(
+            text_data=json.dumps(content)
+        )earch query for session name or project name
         """
 
         search_query = kwargs.get("search", '')
@@ -143,7 +146,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         # connect
         async_to_sync(self.channel_layer.group_add)(
             str(self.session.id), self.channel_name)
-        self.send_json("SESSION.CONNECT", {"status": "success"})
+        self.send_json("SESSION.CONNECT")
 
     def session_close(self, **kwargs):
         """
@@ -161,7 +164,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
             self.session = None
 
         # send status
-        self.send_json("SESSION.CLOSE", {})
+        self.send_json("SESSION.CLOSE")
 
     def session_delete(self, **kwargs):
         """
@@ -184,7 +187,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         session.delete()
 
-        self.send_json('SESSION.DELETE', {'status': 'success'})
+        self.send_json('SESSION.DELETE')
 
     def data_tags(self, event):
         """
