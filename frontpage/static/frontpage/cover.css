@@ -35,6 +35,34 @@ body {
   text-shadow: 0 .05rem .1rem rgba(0,0,0,.5);
 }
 
+.card-text {
+    color: #000;
+    text-shadow: none;
+}
+
+.card-title{
+    color: #000;
+    text-shadow: none;
+}
+
+.card-body{
+    background: #dbdbdb
+}
+
+.card{
+    margin: 0.5rem;
+}
+
+.pricing-cards{
+    margin:auto;
+    width: 100%;
+}
+#pricing-cards-row{
+    justify-content: center;
+    padding-bottom: 500px;
+}
+
+
 /* Extra markup and styles for table-esque vertical and horizontal centering */
 .site-wrapper {
   display: table;
@@ -57,6 +85,7 @@ body {
 .inner {
   padding: 2rem;
 }
+
 
 
 /*
@@ -155,7 +184,7 @@ body {
   .masthead,
   .mastfoot,
   .cover-container {
-    width: 42rem;
+    width: 100%;
   }
 }
 
@@ -163,3 +192,84 @@ body {
     height: 3rem;
     width: 4rem;
 }
+
+#index{
+    height: 60rem;
+    padding-top: 25rem;
+}
+
+#informatics-img{
+    width: 200px;
+    height: 200px;
+    background: url('/static/common/img/frontpage-sprite.png') 0 0;
+}
+
+#analysis-img{
+    width: 200px;
+    height: 200px;
+    background: url('/static/common/img/frontpage-sprite.png') -200px 200px;
+}
+
+#eln-img{
+    width: 200px;
+    height: 200px;
+    background: url('/static/common/img/frontpage-sprite.png') 0px 200px ;
+}
+
+#sop-img{
+    width: 200px;
+    height: 200px;
+    background: url('/static/common/img/frontpage-sprite.png') 0 ;
+}
+
+#single{
+    width: 200px;
+    height: 200px;
+    background: url('/static/common/img/frontpage-sprite.png') -200px 0px ;
+    margin:auto;
+}
+#bundle{
+    width: 200px;
+    height: 200px;
+    background: url('/static/common/img/frontpage-sprite.png') -400px 0px ;
+    margin:auto;
+}
+#custom{
+    width: 200px;
+    height: 200px;
+    background: url('/static/common/img/frontpage-sprite.png') -200px -200px ;
+    margin: auto;
+}
+
+.index-heading{
+    padding-bottom: 50px;
+}
+
+.feature-row{
+    justify-content: center;
+    padding-bottom: 500px;
+}
+.feature-box{
+    justify-content:center;
+    padding: 10px;
+    margin: 5px;
+    background-color: #5d5a5a;
+    border-radius: 5px;
+    width: 20%
+}
+.feature-title{
+    font-weight: bold;
+    margin:auto;
+    padding-bottom: 25px;
+    width:50%;
+    
+}
+
+.feature-text{
+    text-align:center;
+}
+
+
+
+
+	     

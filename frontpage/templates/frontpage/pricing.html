@@ -1,47 +1,30 @@
-{% extends 'frontpage/base.html' %}
-{% block style_extra %}
-<style type="text/css">
-body {
-    background-color: #fff;
-}
-
-.nav-masthead .nav-link {
-    color: #fff;
-}
-#background {
-    background-image: url(/static/images/bg-resize.jpg);
-    background-repeat: no-repeat;
-    background-size: cover;
-    height: 40%;
-    width: 100%;
-    position: fixed;
-}
-
-.plan {
-    color: #000;
-    text-shadow: none;
-}
-
-</style>
-
-{% endblock %}
-
-{% block content %}
-<div class="row">
-    {% for plan in plans %}
-    <div class="col col-md-6 mx-auto">
-        <div class="card plan">
-            <div class="card-body">
-                <div class="card-title pb-2"><h3>{{ plan.name }}</h3></div>
-                <div class="card-text">
-                    <p>{{ plan.description }}</p>
-                    <h4>${{ plan.price | floatformat:"2" }}</h4>
-                    <div class="small text-muted">per user/month</div>
-                    <a class="btn btn-info btn-block mt-4" href="/accounts/register?p={{ plan.id }}">Buy</a>
-                </div>
-            </div>
-        </div>
+<h2 class="index-heading"> Pricing </h2>
+<div class = "pricing-cards">
+  {% load static %}
+  <div class="row" id="pricing-cards-row"> 
+    <div class="card" style="width:20rem">
+      <img class="card-img-top pricing-box" src="{% static 'common/img/img-trans.gif' %}" id="single">
+      <div class="card-body">
+	<h5 class="card-title">Single Seat</h5>
+	<p class="card-text"> One user, Unlimited Experiments, Unlimited Projects. $12.99 per month </p>
+	<a href="#" class="btn btn-primary"> Sign up now </a>
+      </div>
     </div>
-    {% endfor %}
+    <div class="card" style="width:20rem">
+      <img class="card-img-top pricing-box" src="{% static 'common/img/img-trans.gif' %}" id="bundle">
+      <div class="card-body">
+	<h5 class="card-title">Bundle and save!</h5>
+	<p class="card-text">Register all of the members of your lab! Buy 5 seats, get 2 extra for no extra cost. $64.95 per month </p>
+	<a href="#" class="btn btn-primary"> Sign up now </a>
+      </div>
+    </div>
+    <div class="card" style="width:20rem">
+      <img class="card-img-top pricing-box" src="{% static 'common/img/img-trans.gif' %}" id="custom">
+      <div class="card-body">
+    <h5 class="card-title">Custom Plan</h5>
+    <p class="card-text">Different situation? Contact us and figure out custom pricing.</p>
+    <a href="#" class="btn btn-primary"> Sign up now </a>
+      </div>
+    </div>
+  </div>
 </div>
-{% endblock %}
