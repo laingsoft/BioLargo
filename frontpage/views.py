@@ -19,4 +19,7 @@ def support(request):
 def features(request):
     return render(request, 'frontpage/features.html')
 
+def invest(request):
+    return render(request, 'frontpage/invest.html')
+
 

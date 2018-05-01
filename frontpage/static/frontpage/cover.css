@@ -247,7 +247,6 @@ body {
 
 .feature-row{
     justify-content: center;
-    padding-bottom: 500px;
 }
 .feature-box{
     justify-content:center;
@@ -269,7 +268,12 @@ body {
     text-align:center;
 }
 
-
+.actionbutton{
+    margin:auto;
+    width: 50%;
+    padding-top: 50px;
+    padding-bottom: 25rem;
+}
 
 
 	     
