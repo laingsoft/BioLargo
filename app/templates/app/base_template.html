@@ -21,7 +21,7 @@
     <!-- Main styles for this application -->
     {% block css %}
     <link href="{% static 'app/style.css' %}" rel="stylesheet">
-    <link href="{% static 'app/hopscotch.min.css' %}" rel="stylesheet">
+    <link href="{% static 'common/hopscotch.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'app/icons.css' %}">
     {% endblock %}
     <style type="text/css">
@@ -128,6 +128,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
     <script src="{% static 'common/js/svg-injector.min.js' %}"></script>
+    <script src="{% static 'common/js/hopscotch.min.js' %}"></script>
 
     <!-- CoreUI main scripts -->
     <script src="{% static 'app/js/app.js' %}"></script>
@@ -138,4 +139,7 @@
     {% block script_extra %} {% endblock %}
 </body>
 
+{% include 'app/app_footer.html' %}
 </html>
+
+

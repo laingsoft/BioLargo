@@ -1,0 +1,25 @@
+<div class="card-body border-0 tab-content p-0" id="task-lists">
+  <div class="tab-pane active m-0 p-0" id="todo">
+    <ul class="list-group" id="todo-list">
+      {% for i in tasks %}
+      <li class="list-group-item">
+	<div class="media">
+	  <div class="media-body">
+	    <div>
+              <b>{{i.name}}</b>
+	      <small class="float-right text-muted">Due by: {{i.due_date}}</small>
+	      <div>{{i.description}}</div>
+	    </div>
+	  </div>
+	</div>
+	    
+      </li>
+      {% empty %}
+      <li class="list-group-item">
+	No tasks found
+      </li>
+      
+      {% endfor %}
+    </ul>
+  </div>
+</div>

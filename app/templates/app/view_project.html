@@ -45,15 +45,15 @@
                 <ul>
                     <li>
                         <div class="text-muted">Total Experiments</div>
-                        <strong>{{ experiments|length }} </strong>
+                        <strong id="total-tour">{{ experiments|length }} </strong>
                     </li>
                     <li class="d-none d-md-table-cell">
-                        <div class="text-muted">Participants</div>
-                        <strong>{{ user_count }}</strong>
+                        <div class="text-muted" >Participants</div>
+                        <strong id="participants-tour">{{ user_count }}</strong>
                     </li>
                     <li class="d-none d-md-table-cell">
-                        <div class="text-muted">Progress</div>
-                        <strong>{% task_progress object %} %</strong>
+                        <div class="text-muted" >Progress</div>
+                        <strong id="progress-tour">{% task_progress object %} %</strong>
                     </li>
                 </ul>
             </div>
@@ -73,41 +73,48 @@
 <div class="row">
     <div class="col">
         <div class="card">
-            <div class="card-body">
-                <h2 class="card-title">Experiments</h2>
-                <div class="card-block">
-                    <table class="table table-responsive-sm table-hover">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Upload Date</th>
-                                <th>Scientist</th>
-                                <th>Tags</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% if not experiments %}
-                                <tr><td class="text-center" colspan="4">This project has no experiments</td></tr>
-                            {% endif %}
-
-                            {% for experiment in experiments %}
-                            <tr class="clickable" data-id={{experiment.id}}>
-                                <td>{{ experiment.friendly_name }}</td>
-                                <td>{{ experiment.create_timestamp }}</td>
-                                <td>{{ experiment.user }}</td>
-                                <td>
-                                    {% for tag in experiment.tags.all %}
-                                    {{ tag }}
-                                    {% endfor %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-
-                        </tbody>
-
-                    </table>
-                </div>
+          <div class="card-body">
+	    <div class="row justify-content-between">
+	      <div class="col-9">
+              <h2 class="card-title" id="list-tour">Experiments</h2>
+	      </div>
+	      <div class="col-3">
+		<button class="btn btn-primary float-right"> Add Experiment </button>
+	      </div>
+	    </div>
+            <div class="card-block">
+              <table class="table table-responsive-sm table-hover">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Upload Date</th>
+                    <th>Scientist</th>
+                    <th>Tags</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if not experiments %}
+                  <tr><td class="text-center" colspan="4">This project has no experiments</td></tr>
+                  {% endif %}
+		  
+                  {% for experiment in experiments %}
+                  <tr class="clickable" data-id={{experiment.id}}>
+                    <td>{{ experiment.friendly_name }}</td>
+                    <td>{{ experiment.create_timestamp }}</td>
+                    <td>{{ experiment.user }}</td>
+                    <td>
+                      {% for tag in experiment.tags.all %}
+                      {{ tag }}
+                      {% endfor %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+		  
+                </tbody>
+		
+              </table>
             </div>
+          </div>
         </div>
     </div>
 </div>
@@ -115,12 +122,13 @@
 
 {% block script_extra %}
 <script type="text/javascript">
-    $(".clickable").click(function(){
-        window.location.href = "/app/experiment/" + $(this).data('id')
-    })
-    var id={{object.pk}}
-    var type="PRJ"
+  $(".clickable").click(function(){
+  window.location.href = "/app/experiment/" + $(this).data('id')
+  })
+  var id={{object.pk}}
+  var type="PRJ"
 </script>
 <script src='{% static "app/js/watch.js"%}'></script>
+<script src='{% static "app/js/hopscotch-tours/projectSingle.js"%}'></script>
 
 {% endblock %}

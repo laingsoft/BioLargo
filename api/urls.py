@@ -3,9 +3,7 @@ from . import views
 from rest_framework import routers
 from rest_framework.authtoken import views as authviews
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
-router = routers.DefaultRouter()
-router.register(r'tags', views.tags, 'tag')
-router.register(r'experiment', views.experiments, 'experiment')
+
 
 
 urlpatterns = [
@@ -38,10 +36,11 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^get_company_users/$', views.get_company_users),
     url(r'^get_user', views.get_user),
+    url(r'^set_tutorial', views.set_tutorial),
     url(r'^get_token', obtain_jwt_token),
     url(r'^get_new_token', views.get_new_token),
     url(r'^verifyToken', verify_jwt_token),
-    url(r'^', include(router.urls)),
+   
     
     url(r'^templates/(?P<id>[0-9]+)/$', views.template.as_view(), name="template"),
     url(r'^templates/$', views.template.as_view(), name="templates"),

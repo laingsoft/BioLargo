@@ -5,20 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../../../../favicon.ico">
-
+    
+    {% load static %}
+    <link rel="icon" href="{% static favicon.ico %}">
+    
     <title>Pasteur.io</title>
 
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">    {% load static %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    {% load static %}
     <!-- Custom styles for this template -->
     <link href="{% static 'frontpage/cover.css' %}" rel="stylesheet">
-    {% block style_extra %}
-    {% endblock %}
+
   </head>
 
   <body>
-    <div id="background"></div>
 
     <div class="site-wrapper">
 
@@ -27,33 +28,45 @@
         <div class="cover-container">
 
           <div class="masthead clearfix">
-            <div class="inner">
-              <h3 class="masthead-brand">BioLargo Analytics</h3>
+            <div class="inner" >
+              <h3 class="masthead-brand"><img class="headerLogo" src="{% static 'frontpage/images/pasteur.png' %}"/>Pasteur</h3>
               <nav class="nav nav-masthead">
-                <a class="nav-link active" href="/">Home</a>
-                <a class="nav-link" href="#">Features</a>
-                <a class="nav-link" href="/pricing">Pricing</a>
-                <a class="nav-link" href="#">Contact</a>
+                <a class="nav-link" href="/" id="home-nav">Home</a>
                 <a class="nav-link" href="/app/">Login</a> 
               </nav>
-            </div>
-          </div>
+	    </div>
+	  </div>
+	  {% block content %}
 
-          {% block content %}
-          {% endblock %}
-
-        </div>
-
+	  {% endblock%}
+	  </div>
+	</div>
       </div>
 
+      <!-- Bootstrap core JavaScript
+     ================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src = "{%static 'frontpage/js/base.js' %}"></script>
+
+<footer class = "page-footer font-small blue pt-4 mt-4">
+  <div class="footer-copyright py-3 text-center">
+
+    <div class="footer-copyright py-6 text-center">
+       © 2018 Copyright: <a href="/">Pasteur.Io</a> |
+      Made Proudly in Edmonton
     </div>
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <div class="footer-copyright py-6 text-center">
+      <a href="/support">Support</a>
+      |
+      <a href="/contactus">Contact Us </a>
+      |
+      <a href="/invest">Investors</a>
+    </div>
+   
+   
+  </div>
+</footer>
 
-  </body>
 </html>

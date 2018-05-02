@@ -4,6 +4,7 @@
 </li>
 {% endblock %} {% block content %}
 <div class="row">
+
     <div class="col-lg-8 pb-3 ">
         <div class="card">
           <p class="card-header"> At a Glance</p>
@@ -20,11 +21,18 @@
     </div>
     <div class="pb-2 col-lg-4 pb-3">
         <div class="card">
-            <p class="card-header">Watched</p>
-            <div id="watched">
-                <ul class="list-group">
-                  {% include "app/watched_list.html" %}
+          <p class="card-header">Tasks</p>
+	  <div class = "media">
+	    <div class="media-body">
+	      <div id="task-graph" class="float-right media-figure">
+	      </div>
+	      <ul class="list-group">
+		  {% include "app/task_list.html" %}
                 </ul>
+	      
+	    </div>
+	  </div>
+	  
             </div>
         </div>
     </div>
@@ -44,6 +52,6 @@
 {% endblock %} {% block script_extra %}
 <script src="https://cdn.plot.ly/plotly-basic-latest.min.js"></script>
 <script src="{% static 'app/js/index.js' %}"></script>
-<script src="{% static 'app/js/hopscotch.min.js' %}"></script>
-<script src="{% static 'app/js/indexTour.js' %}"></script>
+<script src="{% static 'app/js/hopscotch-tours/index.js' %}"></script>
+<script type="text/javascript"> var show_tutorial = ("{{show_tutorial}}" == "True") </script>
 {% endblock %}

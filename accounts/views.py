@@ -45,7 +45,7 @@ def register_user(request, linkHash):
 
             auth_login(request, user)
 
-            return redirect("/app")
+            return redirect("/app", {'first_login':True})
 
 
 def company_register(request):
@@ -85,7 +85,7 @@ def company_register(request):
                  Please try again later.", status=500)
 
             auth_login(request, user)
-            return redirect("/app")
+            return redirect("/app" , {'first_login':True})
 
     context = {
         "company_form": company_form,
