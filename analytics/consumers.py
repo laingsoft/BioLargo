@@ -31,7 +31,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         else:
             self.accept()
-            self.send_json("CONNECT", {"message": "Connected"})
+            self.session_list()
 
     def receive_json(self, content):
         """
@@ -65,7 +65,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         else:
             if not self.session:
                 self.send_json(
-                    type_,
+                    type_.lower(),
                     {"error": "No sessions selected"},
                     error=True
                     )
@@ -81,7 +81,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         """
         Overriding default conusmer.
         """
-        content = {"type": type}
+        content = {"type": "SERVER/" + type}
         if payload:
             content["payload"] = payload
         if error:
@@ -146,7 +146,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         # connect
         async_to_sync(self.channel_layer.group_add)(
             str(self.session.id), self.channel_name)
-        self.send_json("SESSION.CONNECT")
+        self.send_json("SESSION.CONNECT", SessionSerializer(self.session).data)
 
     def session_close(self, **kwargs):
         """
@@ -189,14 +189,14 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         self.send_json('SESSION.DELETE')
 
-    def DATA_TAGS(self, event):
+    def data_tags(self, event):
         """
         returns a list of all tags used in company.
         """
         data = self.user.company.tag_set.all().values_list('name', flat=True)
         self.send_json(event.type, list(data))
 
-    def DATA_FIELDLIST(self, event):
+    def data_fieldlist(self, event):
         """
         Returns a set of fields in selected experimetns.
         """
@@ -205,7 +205,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         self.send_json(event["type"], list(fields))
 
-    def DATA_GET(self, event):
+    def data_get(self, event):
         """
         returns data from requested field(s) from a list of
         experiments.
@@ -240,7 +240,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         self.send_json(event["type"], data)
 
-    def DATA_EXPERIMENTS(self, event):
+    def data_experiments(self, event):
         """
         Used for selecting experiments for analysis tool.
         Returns a list of experiments.
@@ -274,10 +274,10 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
             event["type"],
             ExperimentSerializer(qs, many=True).data)
 
-    def GROUP_ECHO(self, event):
+    def group_echo(self, event):
         self.send_json(event["type"], {"Message": event["message"]})
 
-    def ACTION_CREATE(self, event):
+    def action_create(self, event):
         action = async_to_sync(Action.object.create)(
             action=event.get("params"),
             session=self.session
