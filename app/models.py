@@ -38,7 +38,7 @@ class Experiment(models.Model):
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followed_experiments", blank = True)
 
 class ExperimentImages(models.Model):
-    photo = models.ImageField(upload_to = MEDIA_ROOT[1:]+'/user_images')
+    photo = models.ImageField(upload_to ='user_images/')
     experiment = models.ForeignKey(Experiment, on_delete = models.CASCADE)
     meta = models.CharField(max_length = 255)
     
