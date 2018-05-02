@@ -5,7 +5,7 @@ from analytics.base_analysis import EquationTool
 from functools import reduce
 from django.contrib.postgres.search import SearchVector
 from django.contrib.postgres.aggregates import StringAgg
-from .serializers import SessionSerializer, ExperimentSerializer, ActionSerializer
+from .serializers import SessionSerializer, ExperimentSerializer, ActionSerializer, ProjectSerializer
 import json
 from django.db.utils import DataError
 
@@ -121,7 +121,9 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         connects user to a specified session, if an id is provided, else,
         a new session is created if name and project are given.
         """
-        pk = kwargs.get("pk", None)
+        pk = kwargs.get("id", 0)
+
+        assert isinstance(pk, int)
 
         if pk:
             # get session object
@@ -135,13 +137,17 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
                 return
         else:
             name = kwargs.get("name")
-            project = kwargs.get("project_id")
+            project = kwargs.get("project")
 
-            self.session = Session.objects.create(
-                name=name,
-                project_id=project,
-                user=self.user
-            )
+            try:
+                self.session = Session.objects.create(
+                    name=name,
+                    project_id=project,
+                    user=self.user
+                )
+            except DataError as e:
+                self.send_json("SESSION.CONNECT", {'error': "Error creating session"}, error=True)
+                return
 
         # connect
         async_to_sync(self.channel_layer.group_add)(
@@ -240,7 +246,26 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         self.send_json(event["type"], data)
 
-    def data_experiments(self, event):
+
+    def group_echo(self, event):
+        self.send_json(event["type"], {"Message": event["message"]})
+
+    def action_create(self, event):
+        action = async_to_sync(Action.object.create)(
+            action=event.get("params"),
+            session=self.session
+        )
+        self.send_json(event["type"], ActionSerializer(action).data)
+
+    def fetch_projects(self, event):
+        """
+        Returns a list of projects. used for session creation.
+        """
+        qs = self.user.company.project_set()
+        self.send_json(event["type"],
+            ProjectSerializer(qs, many=True).data)
+
+    def fetch_experiments(self, event):
         """
         Used for selecting experiments for analysis tool.
         Returns a list of experiments.
@@ -273,13 +298,3 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         self.send_json(
             event["type"],
             ExperimentSerializer(qs, many=True).data)
-
-    def group_echo(self, event):
-        self.send_json(event["type"], {"Message": event["message"]})
-
-    def action_create(self, event):
-        action = async_to_sync(Action.object.create)(
-            action=event.get("params"),
-            session=self.session
-        )
-        self.send_json(event["type"], ActionSerializer(action).data)
