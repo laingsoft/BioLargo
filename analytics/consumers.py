@@ -65,14 +65,14 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         else:
             if not self.session:
                 self.send_json(
-                    type_.lower(),
+                    type_,
                     {"error": "No sessions selected"},
                     error=True
                     )
                 return
             async_to_sync(self.channel_layer.group_send)(
                 str(self.session.id), {
-                    "type": type_,
+                    "type": type_.lower(),
                     **payload
                 }
             )
@@ -229,7 +229,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
                 error=True)
             return
 
-        self.send_json(event["type"], data)
+        self.send_json(event["type"], {'uuid': event.get("uuid"), 'data':data})
 
 
     def action_create(self, event):
