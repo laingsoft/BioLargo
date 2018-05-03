@@ -195,23 +195,8 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         self.send_json('SESSION.DELETE')
 
-    def data_tags(self, event):
-        """
-        returns a list of all tags used in company.
-        """
-        data = self.user.company.tag_set.all().values_list('name', flat=True)
-        self.send_json(event.type, list(data))
 
-    def data_fieldlist(self, event):
-        """
-        Returns a set of fields in selected experimetns.
-        """
-        fields_list = self.base_qs.values_list('experimentData', flat=True)
-        fields = reduce(lambda a, b: {**a, **b}, fields_list, {}).keys()
-
-        self.send_json(event["type"], list(fields))
-
-    def data_get(self, event):
+    def fetch_data(self, event):
         """
         returns data from requested field(s) from a list of
         experiments.
@@ -246,9 +231,6 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         self.send_json(event["type"], data)
 
-
-    def group_echo(self, event):
-        self.send_json(event["type"], {"Message": event["message"]})
 
     def action_create(self, event):
         action = async_to_sync(Action.object.create)(
@@ -298,3 +280,17 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         self.send_json(
             event["type"],
             ExperimentSerializer(qs, many=True).data)
+
+    def fetch_fields(self, event):
+        """
+        Returns a set of fields in selected experiments.
+        """
+        experiments = event.get("experiments")
+
+        fields_list = self.user.company.experimentdata_set \
+            .filter(experiment_id__in = exFperiments) \
+            .values('experimentData', flat=True)
+
+        fields = reduce(lambda a, b: {**a, **b}, fields_list, {}).keys()
+
+        self.send_json(event["type"], list(fields))
