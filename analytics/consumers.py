@@ -48,7 +48,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         type_ = content['type']
         payload = content.get('payload', {})
 
-        print(payload)
+        print(content)
 
         if type_ == "SESSION.CONNECT":
             self.session_connect(**payload)
