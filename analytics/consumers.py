@@ -81,7 +81,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         """
         Overriding default conusmer.
         """
-        content = {"type": "SERVER/" + type}
+        content = {"type": "SERVER/" + type.upper()}
         if payload:
             content["payload"] = payload
         if error:
@@ -207,6 +207,13 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         """
         experiments = event.get("experiments")
         expressions = event.get("expressions")
+
+        if not (experiments and expressions):
+            self.send_json(
+                event["type"],
+                {"error": "Experiment and Expression fields required."},
+                error=True)
+            return
 
         try:
             qs = EquationTool(
