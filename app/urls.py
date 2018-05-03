@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^tasks/$', UserTaskListView.as_view()),
     url(r'^task_complete/(?P<id>[0-9]+)/?$', task_complete),
     url(r'^analysis/', include(analytics.urls))
+    
     ]

@@ -33,9 +33,9 @@ def index(request):
 
     latest = Experiment.objects.filter(company=company).order_by('-id')[:10]
     tasks = Task.objects.filter(company=company, assigned=request.user, status='N')[:10]
-    test = ExperimentImages.objects.all()
 
-    return render(request, 'app/index.html', {'latest': latest,'tasks': tasks, 'show_tutorial': request.user.show_tutorial, 'test':test})
+    
+    return render(request, 'app/index.html', {'latest': latest,'tasks': tasks, 'show_tutorial': request.user.show_tutorial})
 
 
 @login_required
@@ -149,6 +149,7 @@ class ExperimentDetailView(CompanyObjectsMixin, DetailView):
         context['metadata'] = self.object.metadata
         context['comments'] = Comment.objects.filter(experiment=self.object)
         context['watched'] = self.object.followers.filter(pk=self.request.user.pk).exists()
+        context['images'] = ExperimentImages.objects.filter(experiment = self.object)
 
         return context
 
@@ -288,3 +289,15 @@ def ExperimentImageUploadView(request):
         
         
         return redirect("/app/experiment/"+ str(form.cleaned_data['exp_id']))
+
+@login_required
+def serve_image(request):
+    #needs to check if a user should be able to see the image
+    if True:
+        response = HttpResponse(status=200)
+        response['Content-Type'] = ''
+        response['X-Accel-Redirect'] = '/files'+request.path
+        return response
+    else:
+        return Http404
+

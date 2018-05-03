@@ -114,6 +114,12 @@
 </div>
 </div>
 
+<div class="card col-md-5">
+  {% for i in images %}
+  <img src=/{{i.photo}}>
+  {% endfor %}
+</div>
+
 <div class = "modal fade" id="expModal" tabindex="-1" role="dialog" aria-labelledby="expModal" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
