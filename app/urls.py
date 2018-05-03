@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^get_template', views.get_template, name = 'get_template'),
     url(r'^experiments/$', views.ExperimentListView.as_view(), name='experiment_list_view'),
     url(r'^experiment/(?P<pk>[0-9]+)/$', views.ExperimentDetailView.as_view(), name='experiment'),
+    url(r'^experiment/images/$', views.ExperimentImageUploadView),
     url(r'^experimentjs/(?P<exp_id>[0-9]+)', views.experiment_json, name='experiment_json'),
     url(r'^experimentrm/(?P<exp_id>[0-9]+)', views.experimentrm, name="experimentrm"),
     url(r'^experiment/csv/(?P<exp_id>[0-9]+)', views.get_csv, name='get_csv'),
@@ -23,4 +24,5 @@ urlpatterns = [
     url(r'^tasks/$', UserTaskListView.as_view()),
     url(r'^task_complete/(?P<id>[0-9]+)/?$', task_complete),
     url(r'^analysis/', include(analytics.urls))
+    
     ]

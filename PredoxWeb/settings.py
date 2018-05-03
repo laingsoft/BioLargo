@@ -143,6 +143,8 @@ STATICFILES_DIRS = [
     ]
 
 
+
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -186,5 +188,6 @@ JWT_AUTH = {
 }
 
 MEDIA_ROOT = '/uploads/'
+
 
 ASGI_APPLICATION = "PredoxWeb.routing.application"

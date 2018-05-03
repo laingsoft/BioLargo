@@ -54,8 +54,10 @@
             <button type="submit" class="btn btn-primary">Export CSV</button>
           </div>
         </form>
+	
       </div>
     </div>
+    {% include "app/image_upload_form.html" %}
   </div>
 </div>
 
@@ -110,6 +112,12 @@
     <button class = "btn btn-danger" data-toggle="modal" data-target="#expModal"> Delete This Experiment </button>
   </div>
 </div>
+</div>
+
+<div class="card col-md-5">
+  {% for i in images %}
+  <img src=/{{i.photo}}>
+  {% endfor %}
 </div>
 
 <div class = "modal fade" id="expModal" tabindex="-1" role="dialog" aria-labelledby="expModal" aria-hidden="true">

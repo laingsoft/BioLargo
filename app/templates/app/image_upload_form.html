@@ -1,0 +1,9 @@
+<form action = "/app/experiment/images/" method = "POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  <p>
+    <input id="exp_id"  type="hidden" name = "exp_id" value={{object.id}}>
+    <input id="image" type="file" class = "" name="image">
+    <input id="meta" type="text" class = "" name="meta">
+  </p>
+  <input type="submit" value="submit">
+</form>
