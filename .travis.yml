@@ -3,7 +3,6 @@ python:
   - "3.5" # 3.5 development branch
 
 env:
-  - DJANGO_VERSION=1.11.5
   global:	
     - SECRET_KEY="zl88d=ab=wk!q@h08xi$wer-p2#3%$=mw&%q6$oj$($^!ice1d"
     - DB_NAME=postgres
@@ -15,6 +14,7 @@ env:
 services:
    - postgresql
 # command to install dependencies
+
 install:
   - pip install -r requirements.txt
 
