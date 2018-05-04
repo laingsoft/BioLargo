@@ -4,9 +4,22 @@ python:
 
 env:
   - DJANGO_VERSION=1.11.5
+  global:	
+    - SECRET_KEY="zl88d=ab=wk!q@h08xi$wer-p2#3%$=mw&%q6$oj$($^!ice1d"
+    - DB_NAME=postgres
+    - DB_USER=postgres
+    - DB_PASS=""
+    - DB_HOST=db
+    - DB_PORT="5432"
+
+services:
+   - postgresql
 # command to install dependencies
 install:
   - pip install -r requirements.txt
+
+before_script:
+  - psql -c 'create database postgres;' -U postgres
 # command to run tests
 script:
   - python manage.py test
