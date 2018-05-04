@@ -3,21 +3,15 @@ python:
   - "3.5" # 3.5 development branch
 
 env:
-  global:	
-    - SECRET_KEY="zl88d=ab=wk!q@h08xi$wer-p2#3%$=mw&%q6$oj$($^!ice1d"
-    - DB_NAME=postgres
-    - DB_USER=postgres
-    - DB_PASS=""
-    - DB_HOST=db
-    - DB_PORT="5432"
+  - DOCKER_COMPOSE_VERSION=1.4.2
 
 services:
-   - postgresql
+  - docker
 # command to install dependencies
 
 install:
-  - pip install -r requirements.txt
+  - docker-compose build
 
 # command to run tests
 script:
-  - python manage.py test
+  - docker-compose run web python manage.py test
