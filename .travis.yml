@@ -18,8 +18,6 @@ services:
 install:
   - pip install -r requirements.txt
 
-before_script:
-  - psql -c 'create database postgres;' -U postgres
 # command to run tests
 script:
   - python manage.py test
