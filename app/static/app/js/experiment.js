@@ -109,13 +109,24 @@ function makeChart(jsondata){
 
     });
 }
+
+function ShowImages(imgid){
+    var oimage = document.getElementById(imgid);
+    var imshow = new Image();
+    imshow.src = oimage.src;
+    canvas = document.getElementById("removalChart");
+    context = canvas.getContext("2d");
+    context.drawImage(imshow,0,0, canvas.width, canvas.height);
+}
+
+
 $.ajax({
     url: "/app/experimentjs/"+id,
     dataType: 'json',
     success: function(data) {
        // console.log(data);
         makeTable(data);
-        makeChart(data);
+        //makeChart(data);
         makeMetadata(metadata)
     }
 });
@@ -159,6 +170,13 @@ function reloadComments(){
 
 TABS = {"overviewLink":$("#overview"), "commentLink":$("#commentbox"), "dataLink":$("#data"), "settingsLink":$("#settings")}
 $(document).ready(function(){
+
+
+	
+    $(".img_userimg").click(function(){
+	ShowImages(this.id);
+    });
+    
     $(".nav.tabbar > .nav-item > .nav-link").click(function(e){
         e.preventDefault();
 
@@ -195,4 +213,5 @@ $(document).ready(function(){
             }
         });
     });
+    ShowImages($(".img_userimg")[0].id);
 });

@@ -40,12 +40,12 @@
 </ul>
 <div class="row" id="overview">
   <div class = "gallery">
-    <canvas id="removalChart" class= "col-md-3"></canvas>
+    <canvas id="removalChart"></canvas>
     <div class = "row gallery-small">
       
       {% for i in images %}
       <div class="experiment-images">
-	<img src=/{{i.photo}} height="20em">
+	<img src=/{{i.photo}} class="img_userimg" id = "userimg_{{i.id}}" height="20em">
       </div>
       {% endfor %}
     </div>

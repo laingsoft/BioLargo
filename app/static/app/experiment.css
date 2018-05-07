@@ -51,10 +51,24 @@
 }
 
 .row{
-    padding:10px;
+    padding:1.5rem;
 }
 
 #experimental-data{
     background-color: #FFF;
     margin-bottom: 30px;
 }
+
+.img_userimg:hover{
+    margin-bottom: 2px;
+    border-bottom: 2px solid;
+    border-color: #448AFF;
+}
+
+#removalChart{
+    height: 80%;
+    width: 80%;
+    margin:auto;
+    display:block
+}
+
