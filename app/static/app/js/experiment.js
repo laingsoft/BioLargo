@@ -170,10 +170,25 @@ function reloadComments(){
 
 TABS = {"overviewLink":$("#overview"), "commentLink":$("#commentbox"), "dataLink":$("#data"), "settingsLink":$("#settings")}
 $(document).ready(function(){
-
+    $("#removalChart").click(function(){
+	var img_selection = $(".img_userimg.active")[0];
+	var img = new Image()
+	img.src = img_selection.src;
+	var canvas = document.getElementById("modalCanvas");
+	var context = canvas.getContext("2d");
+	canvas.width = img.naturalWidth;
+	canvas.height = img.naturalHeight;
+	context.drawImage(img, 0, 0);
+	$("#img_modal").modal();
+	
+    })
 
 	
     $(".img_userimg").click(function(){
+	var active = $(".img_userimg.active");
+	active.removeClass("active");
+	
+	$("#"+this.id).addClass("active")
 	ShowImages(this.id);
     });
     
@@ -214,4 +229,6 @@ $(document).ready(function(){
         });
     });
     ShowImages($(".img_userimg")[0].id);
+    $($(".img_userimg")[0]).addClass("active");
+    
 });

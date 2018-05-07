@@ -59,7 +59,7 @@
     margin-bottom: 30px;
 }
 
-.img_userimg:hover{
+.img_userimg:hover, .img_userimg.active{
     margin-bottom: 2px;
     border-bottom: 2px solid;
     border-color: #448AFF;
@@ -72,3 +72,19 @@
     display:block
 }
 
+#img_modal_dialog{
+    max-width: none;
+}
+
+#img_modal_body{
+    margin: auto;
+    max-width:50%;
+    border-style: dotted;
+}
+
+#modalCanvas{
+    margin:auto;
+    max-width: 90%;
+    display:block;
+		  
+}
