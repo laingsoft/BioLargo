@@ -3,6 +3,22 @@ from accounts.models import User
 from rest_framework import serializers
 from project_management.models import Task
 from SOP.models import SOP
+import base64
+from django.core.files import File
+
+class imageSerializer(serializers.ModelSerializer):
+    base64_image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ExperimentImages
+        fields = ['base64_image']
+
+    def get_base64_image(self, obj):
+        f = open(obj.photo.path, 'rb')
+        image = File(f)
+        data = base64.b64encode(image.read())
+        f.close()
+        return data
 
 class userSerializer(serializers.ModelSerializer):
     class Meta:

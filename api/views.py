@@ -469,3 +469,22 @@ class comment(APIView):
     def get(self, request, id):
         comments = Comment.objects.filter(experiment = id)
         return Response(commentSerializer(comments, many = True).data)
+
+
+class Image(APIView):
+#Requires an experiment_id, image file, and metadata text to upload an image    
+    def post(self, request):
+        image = ExperimentImages()
+        image.experiment_id = request.POST['exp_id']
+        image.photo = request.FILES['image']
+        image.meta = request.POST['meta']
+        image.save()
+        return JsonResponse({"upload":True})
+
+#Takes an experiment_id in the url field and returns the image associated with the experiment
+    def get(self, request, exp_id):
+        images = ExperimentImages.objects.filter(experiment = exp_id)
+        if images.exists():
+            return Response(imageSerializer(images, many = True).data, content_type="image/png")
+        else:
+            return JsonResponse({"":""})
