@@ -57,14 +57,16 @@ function deleteExperiment(){
 
 function makeTable(jsondata){
     table = jQuery("#experimental-data"), row = null, data = null;
+    thead = $("#data-table-head")
     console.log(jsondata);
     //$.each(jsondata, function(key, obj){ $.each(jsondata, function(k, v){ console.log(v)})});
-    makeHeaders(jsondata, table);
+    makeHeaders(jsondata, thead);
     $.each(jsondata, function(key, obj){
-        row = $('<tr></tr>'); // Create a new row
-        $.each(obj, function(k, v){
+        row = $('<tr id='+obj[1]+'></tr>'); // Create a new row
+        $.each(obj[0], function(k, v){
             $('<td></td>',{text:v}).appendTo(row);
         });
+	row.addClass("table-row-clickable");
         row.appendTo(table);
     });
 }
@@ -72,7 +74,7 @@ function makeTable(jsondata){
 function makeHeaders(jsondata, table){
     console.log(jsondata);
     row = $('<tr></tr>');
-    for (prop in jsondata[0]){
+    for (prop in jsondata[0][0]){
         //console.log(prop);
         $('<th></th>',{text:prop}).appendTo(row);
     }
