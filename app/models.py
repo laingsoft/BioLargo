@@ -60,6 +60,7 @@ class ExperimentData(models.Model):
 class ExperimentDataAnnotation(models.Model):
     experimentData = models.ForeignKey(ExperimentData)
     text = models.CharField(max_length=255)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE)
 
 class Fields(models.Model):
     """
