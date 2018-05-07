@@ -162,7 +162,7 @@ def experiment_json(request, exp_id):
         raise Http404("Experiment does not exist.")
 
     newval = {}
-    newval = {k: v.experimentData for k, v in enumerate(data)}
+    newval = {k: (v.experimentData, v.id) for k, v in enumerate(data)}
     return JsonResponse(newval)
 
 @login_required

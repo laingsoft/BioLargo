@@ -57,6 +57,9 @@ class ExperimentData(models.Model):
     experimentData = JSONField()
     # More Experiment Data Here
 
+class ExperimentDataAnnotation(models.Model):
+    experimentData = models.ForeignKey(ExperimentData)
+    text = models.CharField(max_length=255)
 
 class Fields(models.Model):
     """
