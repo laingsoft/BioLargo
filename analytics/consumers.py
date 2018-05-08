@@ -42,7 +42,8 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
             type: 'String',
             payload: {
                 key: value
-            }
+            },
+            meta: {}
         }
         """
         type_ = content['type']
@@ -77,7 +78,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
                 }
             )
 
-    def send_json(self, type, payload=None, error=False, close=False):
+    def send_json(self, type, payload=None, error=False, close=False, meta=None):
         """
         Overriding default conusmer.
         """
@@ -86,6 +87,8 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
             content["payload"] = payload
         if error:
             content["error"] = True
+        if meta:
+            content["meta"] = meta
 
         super().send_json(content)
 
