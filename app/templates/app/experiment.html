@@ -24,34 +24,35 @@
 
 {% block content %}
 <script "javascript">metadata = {{metadata | safe}};</script>
-<ul class="nav tabbar">
-  <li class="nav-item">
-    <a class="nav-link active" href="#overviewlink" id="overviewLink" >{{object.friendly_name}}</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="#commentlink" id="commentLink">Comments</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="#datalink" id="dataLink">Data</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link disabled" href="#" id="settingsLink">Settings</a>
-  </li>
-</ul>
-<div class="row" id="overview">
-  <div class = "gallery">
-    <canvas id="removalChart" data-toggle="img_modal"></canvas>
-    <div class = "row gallery-small">
-      
-      {% for i in images %}
-      <div class="experiment-images">
-	<img src=/{{i.photo}} class="img_userimg" id = "userimg_{{i.id}}" height="20em">
+<div class="d-flex justify-content-end"><div class="manageButtons">
+		<svg class="icon" viewBox="0 0 8 8"><use xlink:href="#wrench"></use></svg>
+	      <a data-toggle="modal" data-target="#expModal"><svg class="icon" viewBox="0 0 8 8"><use xlink:href="#trash"></use></svg> </a></div></div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="card">
+      <h2 class="card-header"> Images </h2>
+
+	<div class = "gallery">
+	  <canvas id="removalChart" data-toggle="img_modal"></canvas>
+	  <div class = "card-footer">
+	    <div class = "row gallery-small">
+	      {% for i in images %}
+	      <div class="experiment-images">
+		<img src=/{{i.photo}} class="img_userimg" id = "userimg_{{i.id}}" height="20em">
+	      </div>
+	      {% endfor %}
+	      <div class="experiment-images add-photo">
+		<a data-target="#upload-modal" data-toggle="modal">
+		  <svg class="icon" viewBox="0 0 8 8"><use xlink:href="#camera-slr"></use></svg>
+		  </a>
+	      </div>
+	    </div>
+	  </div>
+	
       </div>
-      {% endfor %}
     </div>
-    
   </div>
-  <div class = "col" id="metadatacard">
+  <div class = "col-md-8" id="metadatacard">
     <div class = "card">
       <h2 class = "card-header">{{object.friendly_name}} {% include 'app/watch_button.html'%}</h2>
       <div class = "card-body">
@@ -59,79 +60,93 @@
           <table class = "table table-responsive" id="metadata-table">
           </table>
         </div>
-        <form action="/app/experiment/csv/{{object.id}}">
-          <div class="form-group pl-2">
-            <input type="checkbox" class="form-check-input">Include Header</input>
-            <button type="submit" class="btn btn-primary">Export CSV</button>
-          </div>
-        </form>
-	
       </div>
     </div>
-    {% include "app/image_upload_form.html" %}
   </div>
 </div>
 
-<div class = "row" style="display: none" id="commentbox">
-  <div class="col-md-6 mx-auto">
-
-    <ul class ="list-group" id="commentList">
-      {% for comment in comments %}
-      <li class = "list-group-item" id="c{{ comment.pk }}">
-        <div class = "media">
-          <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
-          <div class = "media-body">
-            <h5 class = "mt-0">{{comment.user.first_name}} {{comment.user.last_name}}</h5>
-            <div class="commentContent">
-              <p>{{comment.content}}</p>
+<div class="row">
+  <div class = "col-md-4"  id="commentbox">
+    <div class="card">
+      <h2 class="card-header">Comments</h2>
+      <ul class ="list-group" id="commentList">
+	{% for comment in comments %}
+	<li class = "list-group-item" id="c{{ comment.pk }}">
+          <div class = "media">
+            <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
+            <div class = "media-body">
+              <h5 class = "mt-0">{{comment.user.first_name}} {{comment.user.last_name}}</h5>
+              <div class="commentContent">
+		<p>{{comment.content}}</p>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end">
+              <small>{{ comment.timestamp }}</small>
             </div>
           </div>
-          <div class="d-flex justify-content-end">
-            <small>{{ comment.timestamp }}</small>
-          </div>
-        </div>
-      </li>
-      {% endfor %}
-    </ul>
+	</li>
+	{% endfor %}
+      </ul>
+      
+      <div class="card-footer">
+	<div class="form-group">
+          <div class="row commentSubmit">
+            {% csrf_token %}
+            <textarea type="text" class="form-control col"  id="newCommentInput" rows="4" cols="50"></textarea>
+	    
+            <button class="btn btn-primary col-md-1" id="submitCommentButton">Submit</button>
+	  </div>
+	</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8" id="data">
+    <div class="card">
+      <div class="card-header">
+	<h2>Raw Data
+	<span class="float-right">
+	  <form action="/app/experiment/csv/{{object.id}}">
+	    <div class="form-group">
 
-    <div class="col-md-12">
-      <div class="form-group">
-        <div class="row commentSubmit">
-          {% csrf_token %}
-          <textarea type="text" class="form-control col"  id="newCommentInput" rows="4" cols="50"></textarea>
-
-        </div>
-        <button class="btn btn-primary col-md-1" id="submitCommentButton">Submit</button>
+	      <button type="submit" class="btn btn-primary">Export</button>
+	    </div>
+	  </form>
+	</span>
+	</h2>
+      </div>
+      <div class="table">
+	<div class="form-group">
+          <table id = "experimental-data" class = "table table-hover">
+	    <thead id="data-table-head">
+	    </thead>
+	    <tbody>
+	    </tbody>
+          </table>
+	</div>
       </div>
     </div>
   </div>
 </div>
-<div class="col-md-12 col-sm-12" style="display: none;" id="data">
 
-    <div class="table">
-      <div class="form-group">
-        <table id = "experimental-data" class = "table table-hover">
-	  <thead id="data-table-head">
-	  </thead>
-	  <tbody>
-	  </tbody>
-        </table>
+</div>
+<div class="modal fade" id="upload-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+	<h2 class="modal-title">Upload Images</h2>
+	<button type="button" class = "close" data-dismiss="modal" aria-label="close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+	{% include "app/image_upload_form.html" %}
       </div>
     </div>
-</div>
-
-</div>
-<div class="card mt-2" style="display: none;" id="settings">
-  <h2 class = "card-header">Dangerous Stuff </h2>
-  <div class = "card-block col-md-1 col-sm-1 my-2">
-    <button class = "btn btn-danger" data-toggle="modal" data-target="#expModal"> Delete This Experiment </button>
   </div>
 </div>
-</div>
 
-<div class="card col-md-5 attached-images">
 
-</div>
+
 
 <div class = "modal fade" id="expModal" tabindex="-1" role="dialog" aria-labelledby="expModal" aria-hidden="true">
   <div class="modal-dialog" role="document">

@@ -3,18 +3,8 @@
     overflow-y: auto;
 }
 
-.commentContent{
-    text-align: center;
-    border: aliceblue;
-    margin-bottom:10px;
-    border-style:solid;
-}
 
-.list-group-item{
-    margin: 10px;
-    
 
-}
 
 .row.commentSubmit{
     margin-top: 10px;
@@ -42,16 +32,15 @@
     border-color:#448AFF;
 }
 
-.animated.fadeIn{
-    background-color: #FFF;
-}
+
 
 #metadatacard{
-    margin:5px;
+
 }
 
-.row{
-    padding:1.5rem;
+#commentList{
+    overflow-y: scroll;
+    max-height: 40em;
 }
 
 #experimental-data{
@@ -65,12 +54,6 @@
     border-color: #448AFF;
 }
 
-#removalChart{
-    height: 80%;
-    width: 80%;
-    margin:auto;
-    display:block
-}
 
 #img_modal_dialog{
     max-width: none;
@@ -88,3 +71,5 @@
     display:block;
 		  
 }
+
+
