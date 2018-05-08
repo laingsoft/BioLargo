@@ -300,4 +300,3 @@ def serve_image(request):
         return response
     else:
         return Http404
-
