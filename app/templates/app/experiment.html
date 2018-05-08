@@ -25,8 +25,17 @@
 {% block content %}
 <script "javascript">metadata = {{metadata | safe}};</script>
 <div class="d-flex justify-content-end"><div class="manageButtons">
-		<svg class="icon" viewBox="0 0 8 8"><use xlink:href="#wrench"></use></svg>
-	      <a data-toggle="modal" data-target="#expModal"><svg class="icon" viewBox="0 0 8 8"><use xlink:href="#trash"></use></svg> </a></div></div>
+    <div class="captionedIcon">
+      <svg class="icon" viewBox="0 0 8 8"><use xlink:href="#wrench"></use></svg>
+      <small class="caption">Manage</small>
+    </div>
+    <div class="captionedIcon">
+      <a data-toggle="modal" data-target="#expModal"><svg class="icon" viewBox="0 0 8 8"><use xlink:href="#trash"></use></svg>
+	<small class="caption">Delete</small>
+      </a>
+    </div>
+  </div>
+</div>
 <div class="row">
   <div class="col-md-4">
     <div class="card">
@@ -35,17 +44,18 @@
 	<div class = "gallery">
 	  <canvas id="removalChart" data-toggle="img_modal"></canvas>
 	  <div class = "card-footer">
+	    <div class="d-flex float-right add-photo">
+	      <a data-target="#upload-modal" data-toggle="modal" class="captionedIcon">
+		<svg class="icon" viewBox="0 0 8 8"><use xlink:href="#camera-slr"></use></svg>
+		<small class="caption">Upload</small>
+	      </a>
+	    </div>
 	    <div class = "row gallery-small">
 	      {% for i in images %}
 	      <div class="experiment-images">
 		<img src=/{{i.photo}} class="img_userimg" id = "userimg_{{i.id}}" height="20em">
 	      </div>
 	      {% endfor %}
-	      <div class="experiment-images add-photo">
-		<a data-target="#upload-modal" data-toggle="modal">
-		  <svg class="icon" viewBox="0 0 8 8"><use xlink:href="#camera-slr"></use></svg>
-		  </a>
-	      </div>
 	    </div>
 	  </div>
 	
