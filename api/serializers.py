@@ -11,7 +11,7 @@ class imageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ExperimentImages
-        fields = ['base64_image']
+        fields = ['id', 'base64_image']
 
     def get_base64_image(self, obj):
         f = open(obj.photo.path, 'rb')

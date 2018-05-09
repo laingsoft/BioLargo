@@ -472,19 +472,23 @@ class comment(APIView):
 
 
 class Image(APIView):
-#Requires an experiment_id, image file, and metadata text to upload an image    
+    #Requires an experiment_id, image file, and metadata text to upload an image    
     def post(self, request):
         image = ExperimentImages()
         image.experiment_id = request.POST['exp_id']
         image.photo = request.FILES['image']
         image.meta = request.POST['meta']
         image.save()
-        return JsonResponse({"upload":True})
+        return JsonResponse({"upload" : True, "id" : image.id})
 
-#Takes an experiment_id in the url field and returns the image associated with the experiment
-    def get(self, request, exp_id):
-        images = ExperimentImages.objects.filter(experiment = exp_id)
+    #Takes an experiment_id in the url field and returns the image associated with the experiment
+    def get(self, request, id):
+        images = ExperimentImages.objects.filter(experiment = id)
         if images.exists():
             return Response(imageSerializer(images, many = True).data, content_type="image/png")
         else:
-            return JsonResponse({"":""})
+            return Response(status = 404)
+    #Takes the ID of the image to delete        
+    def delete(self, request, id):
+        image = ExperimentImages.objects.filter(id = id)
+        return JsonResponse({"delete":image.delete()})
