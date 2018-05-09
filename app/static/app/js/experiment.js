@@ -1,18 +1,18 @@
 // Experiment Javascript
 function makeMetadata(data){
     table = $("#metadata-table");
-    row = $('<tr></tr>')
+    row = $('<tr></tr>');
     $.each(data, function(key, obj){
 
         $('<td></td>',{text:key}).appendTo(row);
     })
-    row.appendTo(table);
-    row = $('<tr></tr>')
+	row.appendTo(table);
+    row = $('<tr></tr>');
     $.each(data, function(key, obj){
 
         $('<td></td>',{text:obj}).appendTo(row);
     })
-    row.appendTo(table);
+	row.appendTo(table);
 
 
 }
@@ -57,8 +57,8 @@ function deleteExperiment(){
 
 function makeTable(jsondata){
     table = jQuery("#experimental-data"), row = null, data = null;
-    thead = $("#data-table-head")
-    console.log(jsondata);
+    thead = $("#data-table-head");
+    //console.log(jsondata);
     //$.each(jsondata, function(key, obj){ $.each(jsondata, function(k, v){ console.log(v)})});
     makeHeaders(jsondata, thead);
     $.each(jsondata, function(key, obj){
@@ -69,10 +69,21 @@ function makeTable(jsondata){
 	row.addClass("table-row-clickable");
         row.appendTo(table);
     });
+
+    //add the clickhandler to the rows
+    $("#experimental-data tr").click(function(){
+	if (this.attributes.expanded){
+	    this.nextElementSibling.remove();
+	    this.attributes.expanded=false;
+	}else{
+	    appendAnnotationForm(this.id);
+	    this.attributes.expanded=true;
+	};
+	});
 }
 
 function makeHeaders(jsondata, table){
-    console.log(jsondata);
+    //console.log(jsondata);
     row = $('<tr></tr>');
     for (prop in jsondata[0][0]){
         //console.log(prop);
@@ -81,35 +92,6 @@ function makeHeaders(jsondata, table){
     row.appendTo(table);
 
 
-}
-
-
-
-
-function makeChart(jsondata){
-    var time = [];
-    var removal = [];
-    var test = [1,2,3,4,5,6,7,8,9,5,4,2,7,8];
-    $.each(jsondata, function(key, obj){
-        time.push(obj["Time [min]"]);
-        removal.push(Math.log(obj["StockCFU [CFU/mL]"]) - Math.log(obj["RemainingCFU [CFU/mL]"]));
-    });
-    console.log(removal)
-    var ctx = document.getElementById("removalChart");
-    var removalChart = new Chart(ctx, {
-        type: 'line',
-
-        data: {
-            labels:time,
-            datasets:[
-                {
-                    label: "Stock / Remaining (log10)",
-                    data:removal,
-                }
-            ]
-        }
-
-    });
 }
 
 function ShowImages(imgid){
@@ -126,10 +108,12 @@ $.ajax({
     url: "/app/experimentjs/"+id,
     dataType: 'json',
     success: function(data) {
-       // console.log(data);
+	// console.log(data);
         makeTable(data);
         //makeChart(data);
-        makeMetadata(metadata)
+        makeMetadata(metadata);
+	ShowImages($(".img_userimg")[0].id);
+	$($(".img_userimg")[0]).addClass("active");
     }
 });
 
@@ -137,18 +121,18 @@ function commentBuilder(commentObject){
     console.log(commentObject);
     var comment = `<li class = "list-group-item">
         <div class = "media">
-          <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
-          <div class = "media-body">
-            <h5 class = "mt-0">`+commentObject.user.first_name+`</h5>
-            <div class="commentContent">
-              <p>`+commentObject.content+`</p>
-            </div>
-          </div>
-          <div class="d-flex justify-content-end">
-            <small>`+ new Date(commentObject.timestamp) +`</small>
-          </div>
+        <img src = "https://www.gravatar.com/avatar/e3569fea24b8a64d7b6cf0fd57234ee9?s=40" class="d-flex mr-3">
+        <div class = "media-body">
+        <h5 class = "mt-0">`+commentObject.user.first_name+`</h5>
+        <div class="commentContent">
+        <p>`+commentObject.content+`</p>
         </div>
-      </li>`;
+        </div>
+        <div class="d-flex justify-content-end">
+        <small>`+ new Date(commentObject.timestamp) +`</small>
+        </div>
+        </div>
+	</li>`;
     $("#commentList").append(comment);
 
 
@@ -161,8 +145,8 @@ function reloadComments(){
         data: {},
         success: function(data) {
             $("#commentList").empty();
-            console.log('response')
-            console.log(data);
+            //console.log('response')
+            //console.log(data);
             for (var key in data){
                 commentBuilder(data[key]);
             }
@@ -170,11 +154,19 @@ function reloadComments(){
     });
 }
 
-TABS = {"overviewLink":$("#overview"), "commentLink":$("#commentbox"), "dataLink":$("#data"), "settingsLink":$("#settings")}
+function appendAnnotationForm(id){
+    
+    var form ='<tr class="annotation-form"><td><form class="form-group"><label for="annotation">Comment</label><textarea class="form-control" id="annotation" rows="2"></textarea><button class="btn btn-primary">Submit</button></form></td></tr>';
+    $("#"+id).after(form);
+
+}
+
+var TABS = {"overviewLink":$("#overview"), "commentLink":$("#commentbox"), "dataLink":$("#data"), "settingsLink":$("#settings")};
 $(document).ready(function(){
+
     $("#removalChart").click(function(){
 	var img_selection = $(".img_userimg.active")[0];
-	var img = new Image()
+	var img = new Image();
 	img.src = img_selection.src;
 	var canvas = document.getElementById("modalCanvas");
 	var context = canvas.getContext("2d");
@@ -182,38 +174,23 @@ $(document).ready(function(){
 	canvas.height = img.naturalHeight;
 	context.drawImage(img, 0, 0);
 	$("#img_modal").modal();
-	
-    })
-
-	
+    });
+    
     $(".img_userimg").click(function(){
 	var active = $(".img_userimg.active");
 	active.removeClass("active");
-	
-	$("#"+this.id).addClass("active")
+	$("#"+this.id).addClass("active");
 	ShowImages(this.id);
     });
     
-    $(".nav.tabbar > .nav-item > .nav-link").click(function(e){
-        e.preventDefault();
 
-        var oldtab =  $(".nav.tabbar > .nav-item > .nav-link.active")[0]
-        var newtab = $(this)[0];
-
-        TABS[oldtab.id].hide();
-        TABS[newtab.id].show();
-        $("#"+ oldtab.id).removeClass("active");
-        $("#"+this.id).addClass("active");
-
-
-    });
 
     $("#submitCommentButton").click(function(e){
-        var content = $("#newCommentInput")
-        content.prop("disabled",true)
-        var text = content.val()
-        var data = {'content':text, 'exp_id':id}
-        console.log(data);
+        var content = $("#newCommentInput");
+        content.prop("disabled",true);
+        var text = content.val();
+        var data = {'content':text, 'exp_id':id};
+        //console.log(data);
         $.ajax({
             beforeSend: function(xhr, settings){
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
@@ -225,12 +202,16 @@ $(document).ready(function(){
             success: function(data) {
                 content.prop("disabled", false);
                 content.val('');
-                reloadComments()
+                reloadComments();
 
             }
         });
     });
-    ShowImages($(".img_userimg")[0].id);
-    $($(".img_userimg")[0]).addClass("active");
     
+
+
+
 });
+
+
+
