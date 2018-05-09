@@ -71,7 +71,15 @@ function makeTable(jsondata){
     });
 
     //add the clickhandler to the rows
-    $("#experimental-data tr").click(function(){appendAnnotationForm(this.id)});
+    $("#experimental-data tr").click(function(){
+	if (this.attributes.expanded){
+	    this.nextElementSibling.remove();
+	    this.attributes.expanded=false;
+	}else{
+	    appendAnnotationForm(this.id);
+	    this.attributes.expanded=true;
+	};
+	});
 }
 
 function makeHeaders(jsondata, table){
@@ -147,7 +155,7 @@ function reloadComments(){
 }
 
 function appendAnnotationForm(id){
-    $(".annotation-form").remove();
+    
     var form ='<tr class="annotation-form"><td><form class="form-group"><label for="annotation">Comment</label><textarea class="form-control" id="annotation" rows="2"></textarea><button class="btn btn-primary">Submit</button></form></td></tr>';
     $("#"+id).after(form);
 
