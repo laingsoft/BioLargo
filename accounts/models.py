@@ -11,7 +11,7 @@ from django.utils import timezone
 # Create your models here.
 
 
-    
+
 
 
 class Plan(models.Model):
@@ -47,14 +47,14 @@ class Company(models.Model):
 
     def __repr__(self):
         return self.name
-    
+
 class Payment(models.Model):
     date_payed = models.DateTimeField(_('date payed'), default=timezone.now)
     date_next_due = models.DateTimeField(_('date next due'), default=timezone.now)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     balance = models.FloatField()
-    
-    
+
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     """
@@ -92,15 +92,22 @@ class User(AbstractBaseUser, PermissionsMixin):
         '''
         Returns the first_name plus the last_name
         '''
-
-        name = self.first_name + ' ' + self.last_name or self.email
-        return name
+        if self.first_name or self.last_name:
+            return self.first_name + ' ' + self.last_name
+        else:
+            return self.email
 
     def get_short_name(self):
         '''
         Returns the short name for the user.
         '''
-        return self.first_name
+        return self.first_name or self.email
+
+    def __str__(self):
+        return self.get_full_name()
+
+    def __repr__(self):
+        return self.get_full_name()
 
 
 class Invite(models.Model):

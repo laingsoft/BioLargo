@@ -242,13 +242,6 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         self.send_json(event["type"], {'uuid': event.get("uuid"), 'data':data})
 
 
-    def action_create(self, event):
-        action = async_to_sync(Action.object.create)(
-            action=event.get("params"),
-            session=self.session
-        )
-        self.send_json(event["type"], ActionSerializer(action).data)
-
     def fetch_projects(self, event):
         """
         Returns a list of projects. used for session creation.
@@ -304,3 +297,10 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         fields = reduce(lambda a, b: {**a, **b}, fields_list, {}).keys()
 
         self.send_json(event["type"], list(fields))
+
+    def tool_save(self, event):
+        """
+        Saves a tool. If the id given is a string, then a new object is created
+        else, tool is updated.
+        """
+        self.send_json(event["type"], {})
