@@ -488,3 +488,22 @@ class Image(APIView):
             return Response(imageSerializer(images, many = True).data, content_type="image/png")
         else:
             return JsonResponse({"":""})
+
+
+class Annotation(APIView):
+
+    def post(self, request):
+        # Adds a new annotation to a given data point of an experiment.
+        # Requires the id of the line, the text itself, and the user
+        annotation = ExperimentDataAnnotation()
+        annotation.experimentData_id = request.POST['data_id']
+        annotation.text = request.POST['text']
+        annotation.user = request.user
+        annotation.save()
+        return JsonResponse({"upload":True})
+
+    def get(self, request, exp_id):
+        #returns all of the given annotations for a given EXPERIMENT
+        annotations = ExperimentDataAnnotation.objects.filter(experimentData__experiment_id = exp_id)
+        print(annotations)
+        return Response(experimentDataAnnotationSerializer(annotations, many=True).data)

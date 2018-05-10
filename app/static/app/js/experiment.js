@@ -72,13 +72,13 @@ function makeTable(jsondata){
 
     //add the clickhandler to the rows
     $("#experimental-data tr").click(function(){
-	if (this.attributes.expanded){
-	    this.nextElementSibling.remove();
-	    this.attributes.expanded=false;
-	}else{
-	    appendAnnotationForm(this.id);
-	    this.attributes.expanded=true;
-	};
+
+	var form = document.getElementById("annotation-form")
+	if (form != null){
+	    $("#annotation-form").remove();
+	}
+	appendAnnotationForm(this.id);
+
 	});
 }
 
@@ -154,10 +154,53 @@ function reloadComments(){
     });
 }
 
+function loadAnnotations(data){
+    for (var i=0; i< data.length; i++){
+	console.log(data[i]);
+	$("#"+data[i].experimentData.id).addClass("annotated");
+    }
+}
+
+function getAnnotations(){
+        $.ajax({
+        method: "GET",
+        url: "/api/annotation/"+id,
+        dataType: 'json',
+            data: {},
+        success: function(data) {
+            loadAnnotations(data);
+        }
+    });
+
+}
+
 function appendAnnotationForm(id){
-    
-    var form ='<tr class="annotation-form"><td><form class="form-group"><label for="annotation">Comment</label><textarea class="form-control" id="annotation" rows="2"></textarea><button class="btn btn-primary">Submit</button></form></td></tr>';
+    //append the form
+    var form ='<tr class="annotation-form" id="annotation-form"><td><label for="annotation">Comment</label><textarea class="form-control" id="annotation" rows="2"></textarea><button class="btn btn-primary submitAnnotation">Submit</button></td></tr>';
     $("#"+id).after(form);
+
+    //add a clickhandler for it
+
+    $(".submitAnnotation").click(function(e){
+	var content = $("#annotation");
+	var text = content.val();
+	var data = {'text':text, 'data_id':id}
+	console.log(data);
+	$.ajax({
+            beforeSend: function(xhr, settings){
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            },
+            url: "/api/annotation/",
+            dataType: 'json',
+            method: 'POST',
+            data: data,
+            success: function(data) {
+		console.log("sent");
+
+            }
+        });
+    });
+    
 
 }
 
@@ -207,7 +250,11 @@ $(document).ready(function(){
             }
         });
     });
-    
+
+
+	
+
+	
 
 
 

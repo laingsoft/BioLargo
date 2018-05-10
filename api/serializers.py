@@ -123,5 +123,15 @@ class SimpleTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         exclude = ('company', 'timestamp')
-
-
+        
+class SimpleExperimentDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExperimentData
+        fields = ["id","experiment"]
+    
+class experimentDataAnnotationSerializer(serializers.ModelSerializer):
+    experimentData = SimpleExperimentDataSerializer()
+    user = SimpleUserSerializer()
+    class Meta:
+        model = ExperimentDataAnnotation
+        fields = '__all__'

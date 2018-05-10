@@ -50,4 +50,7 @@ urlpatterns = [
 
     url(r'^comment/(?P<id>[0-9]+)/$', views.comment.as_view()),
     url(r'^comment/$', views.comment.as_view()),
+
+    url(r'^annotation/(?P<exp_id>[0-9]+)/$', views.Annotation.as_view()),
+    url(r'^annotation/$', views.Annotation.as_view()),
 ]
