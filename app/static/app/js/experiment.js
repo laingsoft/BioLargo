@@ -67,6 +67,7 @@ function makeTable(jsondata){
             $('<td></td>',{text:v}).appendTo(row);
         });
 	row.addClass("table-row-clickable");
+	row.append('<td width="5px;"><svg class="icon table-menu" viewBox="0 0 8 8"><use xlink:href="#ellipses"></use></svg></td>');
         row.appendTo(table);
     });
 
@@ -89,6 +90,7 @@ function makeHeaders(jsondata, table){
         //console.log(prop);
         $('<th></th>',{text:prop}).appendTo(row);
     }
+    $('<th> </th>').appendTo(row);
     row.appendTo(table);
 
 
@@ -114,6 +116,7 @@ $.ajax({
         makeMetadata(metadata);
 	ShowImages($(".img_userimg")[0].id);
 	$($(".img_userimg")[0]).addClass("active");
+	getAnnotations();
     }
 });
 
@@ -130,7 +133,7 @@ function commentBuilder(commentObject){
         </div>
         <div class="d-flex justify-content-end">
         <small>`+ new Date(commentObject.timestamp) +`</small>
-        </div>
+        </div> 
         </div>
 	</li>`;
     $("#commentList").append(comment);
@@ -157,7 +160,8 @@ function reloadComments(){
 function loadAnnotations(data){
     for (var i=0; i< data.length; i++){
 	console.log(data[i]);
-	$("#"+data[i].experimentData.id).addClass("annotated");
+	//$("#"+data[i].experimentData.id).addClass("annotated");
+	$("#"+data[i].experimentData.id).after("<div class='annotation-hidden'>"+data[i].text+"</div><br></br>")
     }
 }
 
@@ -173,6 +177,7 @@ function getAnnotations(){
     });
 
 }
+
 
 function appendAnnotationForm(id){
     //append the form
