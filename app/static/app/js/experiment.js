@@ -74,11 +74,11 @@ function makeTable(jsondata){
     //add the clickhandler to the rows
     $("#experimental-data tr").click(function(){
 
-	var form = document.getElementById("annotation-form")
-	if (form != null){
-	    $("#annotation-form").remove();
-	}
-	appendAnnotationForm(this.id);
+	//var form = document.getElementById("annotation-form")
+	//if (form != null){
+	//    $("#annotation-form").remove();
+	//}
+	//appendAnnotationForm(this.id);
 
 	});
 }
@@ -172,7 +172,7 @@ function getAnnotations(){
         dataType: 'json',
             data: {},
         success: function(data) {
-            loadAnnotations(data);
+            //loadAnnotations(data);
         }
     });
 
