@@ -5,6 +5,7 @@ from accounts.models import Company
 class SOP(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255)
+    procedure = models.TextField()
     file = models.FileField(upload_to='SOP/')
     company = models.ForeignKey(Company, on_delete = models.CASCADE)
 

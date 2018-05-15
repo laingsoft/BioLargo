@@ -115,7 +115,7 @@ class Comment(models.Model):
     company = models.ForeignKey(Company, on_delete = models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE)
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
-    content = models.CharField(max_length=255)
+    content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
 
