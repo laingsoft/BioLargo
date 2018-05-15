@@ -19,7 +19,7 @@ from rest_framework.response import Response
 from django.db import IntegrityError, DataError
 from app.models import *
 from accounts.models import User
-from SOP.models import SOP
+from SOP.models import SOP as standardOp
 from project_management.models import Project
 
 def index(request):
@@ -133,11 +133,6 @@ def mark_task_in_progress(request, id):
     return JsonResponse({'success' : True})
 
 
-@api_view(['GET'])
-def get_sop(request):
-    serializer = SimpleSOPSerializer
-    sops = SOP.objects.filter(company = request.user.company)
-    return Response(serializer(sops, many = True).data)
 
 
 @api_view(['GET'])
@@ -469,3 +464,69 @@ class comment(APIView):
     def get(self, request, id):
         comments = Comment.objects.filter(experiment = id)
         return Response(commentSerializer(comments, many = True).data)
+
+
+class Image(APIView):
+    #Requires an experiment_id, image file, and metadata text to upload an image    
+    def post(self, request):
+        image = ExperimentImages()
+        image.experiment_id = request.POST['exp_id']
+        image.photo = request.FILES['image']
+        image.meta = request.POST['meta']
+        image.save()
+        return JsonResponse({"upload" : True, "id" : image.id})
+
+    #Takes an experiment_id in the url field and returns the image associated with the experiment
+    def get(self, request, id):
+        images = ExperimentImages.objects.filter(experiment = id)
+        if images.exists():
+            return Response(imageSerializer(images, many = True).data, content_type="image/png")
+        else:
+            return Response(status = 404)
+    #Takes the ID of the image to delete        
+    def delete(self, request, id):
+        image = ExperimentImages.objects.filter(id = id)
+        return JsonResponse({"delete":image.delete()})
+
+
+class Annotation(APIView):
+
+    def post(self, request):
+        # Adds a new annotation to a given data point of an experiment.
+        # Requires the id of the line, the text itself, and the user
+        annotation = ExperimentDataAnnotation()
+        annotation.experimentData_id = request.POST['data_id']
+        annotation.text = request.POST['text']
+        annotation.user = request.user
+        annotation.save()
+        return JsonResponse({"upload":True})
+
+    def get(self, request, exp_id):
+        #returns all of the given annotations for a given EXPERIMENT
+        annotations = ExperimentDataAnnotation.objects.filter(experimentData__experiment_id = exp_id)
+        return Response(experimentDataAnnotationSerializer(annotations, many=True).data)
+
+class SOP(APIView):
+    def put (self, request):
+        sop = standardOp()
+        sop.name = request.POST['name']
+        sop.description = request.POST['description']
+        sop.procedure =  request.POST['procedure']
+        sop.company = request.user.company
+        print(sop)
+        sop.save()
+        return JsonResponse({"upload":True})
+    
+    def post(self, request, id):
+        sop = standardOp().objects.get(id=id)
+        sop.name = request.POST['name']
+        sop.description = request.POST['description']
+        sop.procedure =  request.POST['procedure']
+        sop.company = request.user.company
+        print(sop)
+        sop.save()
+        return JsonResponse({"upload":True})
+    def get(self,request, id):
+        serializer = SimpleSOPSerializer
+        sops = SOP.objects.filter(company = request.user.company)
+        return Response(serializer(sops, many = True).data)

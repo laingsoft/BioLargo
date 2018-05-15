@@ -1,6 +1,6 @@
 from django import forms
 from .models import Template
-from .models import Tag, Project, Experiment
+from .models import Tag, Project, Experiment, ExperimentImages
 
 
 class ExperimentDataForm(forms.Form):
@@ -25,6 +25,10 @@ class ExperimentDataForm(forms.Form):
 class FileUpload(forms.Form):
     upload_file = forms.FileField(label='Select file to upload')
 
+class ExperimentImageForm(forms.Form):
+    image = forms.ImageField()
+    meta = forms.CharField()
+    exp_id = forms.IntegerField()
 
 class ExperimentForm(forms.ModelForm):
     """

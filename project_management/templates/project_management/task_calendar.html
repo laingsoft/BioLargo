@@ -48,59 +48,59 @@
 <script src=" https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.js"></script>
 
 <script type="text/template" id="modalTemplate">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="taskModalLabel"><%= name %>
-                <% if (status === 'C') { %>
-                    <span class="badge badge-success ml-3">Completed</span>
-                <% }  else if (status === 'I') { %>
-                    <span class="badge badge-warning ml-3">In progress</span>
-                <% } %>
-
-                </h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            </div>
-            <div class="modal-body">
-                <h5>Task Name</h5>
-                <p><%= name %></p>
-                <h5>Project</h5>
-                <p><a href="/management/projects/<%= project.id %>"><%= project.name %></a></p>
-                <h5>Description</h5>
-                <p><%= description %></p>
-                <h5>Assigned</h5>
-                <% if (assigned) { %>
-                <p><a href="/accounts/user/<%= assigned.id %>"><%= assigned.name %></a></p>
-                <% } else { %>
-                <p>No user assigned</p>
-                <% } %>
-                <h5>Due Date</h5>
-                <% if (due_date)  { %>
-                    <p><%= due_date %></p>
-                <% } else { %>
-                    <p>No due date set. </p>
-                <% } %>
-                <% if (sop) { %>
-                    <h5>SOP</h5>
-                    <p><a href="/sop/download/<%= sop.id %>"> <%= sop.name %></p>
-                <% } %>
-
-                <%if (status === 'C' && related_experiment) { %>
-                <h5>Related Experiment</h5>
-                <p><%= related_experiment %></p>
-                <% } %>
-
-            </div>
-            <div class="modal-footer">
-                <select class="btn btn-primary mr-auto" style="appearance: none; -moz-appearance:none;" id="status" name="status">
-                    <option value="N" <% if (status === 'N') { %> selected <% } %>>Not started</option>
-                    <option value="I" <% if (status === 'I') { %> selected <% } %>>In progress</option>
-                    <option value="C" <% if (status === 'C') { %> selected <% } %>>Complete</option>
-                </select>
-                <button type="button" class="btn btn-danger" data-dismiss="modal" id="close-btn">close</button>
-            </div>
-        </div>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="taskModalLabel"><%= name %>
+          <% if (status === 'C') { %>
+          <span class="badge badge-success ml-3">Completed</span>
+          <% }  else if (status === 'I') { %>
+          <span class="badge badge-warning ml-3">In progress</span>
+          <% } %>
+	  
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <h5>Task Name</h5>
+        <p><%= name %></p>
+        <h5>Project</h5>
+        <p><a href="/management/projects/<%= project.id %>"><%= project.name %></a></p>
+        <h5>Description</h5>
+        <p><%= description %></p>
+        <h5>Assigned</h5>
+        <% if (assigned) { %>
+        <p><a href="/accounts/user/<%= assigned.id %>"><%= assigned.name %></a></p>
+        <% } else { %>
+        <p>No user assigned</p>
+        <% } %>
+        <h5>Due Date</h5>
+        <% if (due_date)  { %>
+        <p><%= due_date %></p>
+        <% } else { %>
+        <p>No due date set. </p>
+        <% } %>
+        <% if (sop) { %>
+        <h5>SOP</h5>
+        <p><a href="/sop/download/<%= sop.id %>"> <%= sop.name %></p>
+        <% } %>
+	
+        <%if (status === 'C' && related_experiment) { %>
+        <h5>Related Experiment</h5>
+        <p><%= related_experiment %></p>
+        <% } %>
+	
+      </div>
+      <div class="modal-footer">
+        <select class="btn btn-primary mr-auto" style="appearance: none; -moz-appearance:none;" id="status" name="status">
+          <option value="N" <% if (status === 'N') { %> selected <% } %>>Not started</option>
+          <option value="I" <% if (status === 'I') { %> selected <% } %>>In progress</option>
+          <option value="C" <% if (status === 'C') { %> selected <% } %>>Complete</option>
+        </select>
+        <button type="button" class="btn btn-danger" data-dismiss="modal" id="close-btn">close</button>
+      </div>
     </div>
+  </div>
 </script>
 
 <script type="text/template" id="taskTemplate">

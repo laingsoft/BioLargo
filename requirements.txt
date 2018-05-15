@@ -8,3 +8,4 @@ markdown
 django-filter
 djangorestframework-jwt
 pyfcm
+pillow == 5.1.0

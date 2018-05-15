@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from app.views import serve_image
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 from fcm_django.api.rest_framework import FCMDeviceAuthorizedViewSet
 
@@ -30,5 +31,6 @@ urlpatterns = [
     url(r'management/',include('management.urls')),
     url(r'inventory/', include('inventory.urls')),
     url(r'sop/', include('SOP.urls')),
-    url(r'management/projects/', include('project_management.urls'))
+    url(r'management/projects/', include('project_management.urls')),
+    url(r'^user_images/', serve_image),
 ]

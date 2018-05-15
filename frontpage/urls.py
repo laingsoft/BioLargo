@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'contactus/$', views.contactus),
     url(r'support/$', views.support),
     url(r'features/$', views.features),
+    url(r'invest/$', views.invest)
     ]

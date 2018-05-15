@@ -3,7 +3,7 @@ from django.http import HttpResponse, Http404
 from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from .parsers import Parser, JsonParser
-from .models import Experiment, ExperimentData, Template, Fields, Comment
+from .models import Experiment, ExperimentData, Template, Fields, Comment, ExperimentImages
 from .models import Tag, Notification
 from project_management.models import Project
 from io import TextIOWrapper
@@ -13,7 +13,7 @@ from django.db.models import Count
 from django.db.models.functions import TruncDay
 import json
 import csv
-from .forms import FileUpload, ExperimentForm, ExperimentDataForm, ProjectForm
+from .forms import FileUpload, ExperimentForm, ExperimentDataForm, ProjectForm, ExperimentImageForm
 from io import StringIO
 from django.views.generic import ListView, DetailView
 from .mixins import CompanyObjectsMixin, ExpFilterMixin, ProjectFilterMixin
@@ -34,6 +34,7 @@ def index(request):
     latest = Experiment.objects.filter(company=company).order_by('-id')[:10]
     tasks = Task.objects.filter(company=company, assigned=request.user, status='N')[:10]
 
+    
     return render(request, 'app/index.html', {'latest': latest,'tasks': tasks, 'show_tutorial': request.user.show_tutorial})
 
 
@@ -148,6 +149,7 @@ class ExperimentDetailView(CompanyObjectsMixin, DetailView):
         context['metadata'] = self.object.metadata
         context['comments'] = Comment.objects.filter(experiment=self.object)
         context['watched'] = self.object.followers.filter(pk=self.request.user.pk).exists()
+        context['images'] = ExperimentImages.objects.filter(experiment = self.object)
 
         return context
 
@@ -160,7 +162,7 @@ def experiment_json(request, exp_id):
         raise Http404("Experiment does not exist.")
 
     newval = {}
-    newval = {k: v.experimentData for k, v in enumerate(data)}
+    newval = {k: (v.experimentData, v.id) for k, v in enumerate(data)}
     return JsonResponse(newval)
 
 @login_required
@@ -275,4 +277,26 @@ def notif_read(request):
         return JsonResponse({'success': True})
 
 
+def ExperimentImageUploadView(request):
+    if request.method == "POST":
+        form = ExperimentImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = ExperimentImages()
+            image.experiment_id = form.cleaned_data['exp_id']
+            image.photo = form.cleaned_data['image']
+            image.meta = form['meta']
+            image.save()
+        
+        
+        return redirect("/app/experiment/"+ str(form.cleaned_data['exp_id']))
 
+@login_required
+def serve_image(request):
+    #needs to check if a user should be able to see the image
+    if True:
+        response = HttpResponse(status=200)
+        response['Content-Type'] = ''
+        response['X-Accel-Redirect'] = '/files'+request.path
+        return response
+    else:
+        return Http404

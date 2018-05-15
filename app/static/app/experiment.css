@@ -3,18 +3,8 @@
     overflow-y: auto;
 }
 
-.commentContent{
-    text-align: center;
-    border: aliceblue;
-    margin-bottom:10px;
-    border-style:solid;
-}
 
-.list-group-item{
-    margin: 10px;
-    
 
-}
 
 .row.commentSubmit{
     margin-top: 10px;
@@ -42,19 +32,80 @@
     border-color:#448AFF;
 }
 
-.animated.fadeIn{
-    background-color: #FFF;
-}
+
 
 #metadatacard{
-    margin:5px;
+
 }
 
-.row{
-    padding:10px;
+#commentList{
+    overflow-y: scroll;
+    max-height: 40em;
 }
 
 #experimental-data{
     background-color: #FFF;
     margin-bottom: 30px;
 }
+
+.img_userimg:hover, .img_userimg.active{
+    margin-bottom: 2px;
+    border-bottom: 2px solid;
+    border-color: #448AFF;
+}
+
+
+#img_modal_dialog{
+    max-width: none;
+}
+
+#img_modal_body{
+    margin: auto;
+    max-width:50%;
+    border-style: dotted;
+}
+
+#modalCanvas{
+    margin:auto;
+    max-width: 90%;
+    display:block;
+		  
+}
+
+#removalChart {
+    display:block;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-right: auto;
+    margin-left: auto;
+    border: dashed aliceblue;
+}
+
+.gallery-small{
+    margin: auto;
+    width: 50%;
+
+
+}
+
+.captionedIcon{
+    text-align:center;
+    margin-top: -0.5em; 
+}
+
+.caption{
+    display: block;
+}
+
+.manageButtons{
+    display: flex;    
+    margin: 5px;
+
+}
+
+.annotated{
+    border: solid 5px;
+
+}
+
+

@@ -1,6 +1,6 @@
 from .models import SOP
 from app.mixins import CompanyObjectsMixin, CompanyObjectCreateMixin
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, UpdateView, DetailView
 from management.mixins import ManagerTestMixin
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -39,10 +39,8 @@ def SOPDownloadView(request, file_id):
     raise Http404
 
 
-class SOPUpdateView(ManagerTestMixin, CompanyObjectsMixin, UpdateView):
+class SOPUpdateView(ManagerTestMixin, CompanyObjectsMixin, DetailView):
     model = SOP
-    fields = ('name', 'description')
-    success_url = '/management/sop'
 
 
 @login_required

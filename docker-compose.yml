@@ -10,6 +10,7 @@ services:
       - uploads:/uploads
       - static:/static
       - ./analytics-frontend/build:/analytics_frontend
+      - media:/media
     depends_on:
       - web
   db:
@@ -38,3 +39,4 @@ services:
 volumes:
   uploads:
   static:
+  media:

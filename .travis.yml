@@ -3,10 +3,15 @@ python:
   - "3.5" # 3.5 development branch
 
 env:
-  - DJANGO_VERSION=1.11.5
+  - DOCKER_COMPOSE_VERSION=1.4.2
+
+services:
+  - docker
 # command to install dependencies
+
 install:
   - docker-compose build
+
 # command to run tests
 script:
   - docker-compose run web python manage.py test

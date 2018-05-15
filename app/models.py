@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from accounts.models import Company
 from project_management.models import Project
+from PredoxWeb.settings import MEDIA_ROOT
 
 # Create your models here.
 
@@ -36,7 +37,12 @@ class Experiment(models.Model):
     sop = models.ForeignKey('SOP.SOP', null=True, blank=True, on_delete = models.CASCADE)
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followed_experiments", blank = True)
 
-
+class ExperimentImages(models.Model):
+    photo = models.ImageField(upload_to ='user_images/')
+    experiment = models.ForeignKey(Experiment, on_delete = models.CASCADE)
+    meta = models.CharField(max_length = 255)
+    
+    
 class ExperimentData(models.Model):
     """
     Stores data for each experiment in JSON. The data types are validated
@@ -51,6 +57,10 @@ class ExperimentData(models.Model):
     experimentData = JSONField()
     # More Experiment Data Here
 
+class ExperimentDataAnnotation(models.Model):
+    experimentData = models.ForeignKey(ExperimentData)
+    text = models.CharField(max_length=255)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE)
 
 class Fields(models.Model):
     """
@@ -105,7 +115,7 @@ class Comment(models.Model):
     company = models.ForeignKey(Company, on_delete = models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE)
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
-    content = models.CharField(max_length=255)
+    content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
 

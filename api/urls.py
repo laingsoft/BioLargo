@@ -7,7 +7,9 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify
 
 
 urlpatterns = [
-    url(r'^sop/$', views.get_sop),
+    url(r'^sop/(P<id>[0-9]+)/$', views.SOP.as_view()),
+    url(r'^sop/$', views.SOP.as_view()),
+    
     url(r'^get_tasks/(?P<task_status>[N,C,I])/(?P<page>[0-9]+)/$', views.get_tasks),
     url(r'^task_in_progress/(?P<id>[0-9]+)/$', views.mark_task_in_progress),
     url(r'^task_complete/(?P<id>[0-9]+)/$', views.mark_task_complete),
@@ -26,6 +28,9 @@ urlpatterns = [
     url(r'^experiments/(?P<page>[0-9]+)/$', views.experiments.as_view()),
     url(r'^experiments/search/(?P<search>.*)/$', views.experiments_search),
     
+    url(r'^experiment_images/(?P<id>[0-9]+)/$', views.Image.as_view()),
+    url(r'^experiment_images/$', views.Image.as_view()),
+
 
     url(r'^project_stats/(?P<id>[0-9]+)/$', views.get_project_stats),
     url(r'^project_with_project_id/(?P<id>[0-9]+)/$', views.get_project_with_project_id),
@@ -47,4 +52,7 @@ urlpatterns = [
 
     url(r'^comment/(?P<id>[0-9]+)/$', views.comment.as_view()),
     url(r'^comment/$', views.comment.as_view()),
+
+    url(r'^annotation/(?P<exp_id>[0-9]+)/$', views.Annotation.as_view()),
+    url(r'^annotation/$', views.Annotation.as_view()),
 ]
