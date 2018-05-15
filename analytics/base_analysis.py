@@ -4,9 +4,9 @@ from django.db.models import FloatField
 from django.db.models.functions import Cast
 from .aggregates import Mode, Percentile
 import re
-from django.db.models import F
+from django.db.models import F, ExpressionWrapper
 from .operations import OPERATIONS
-from .utils import json_field_format
+from .utils import json_field_format, isNum
 from django.contrib.postgres.aggregates import ArrayAgg
 
 
@@ -93,6 +93,9 @@ class EquationTool(Tool):
                 self.vars.update(json_field_format(token_clean))
                 postfix.append(F(token_clean))
 
+            elif isNum(token):
+                postfix.append(float(token))
+
             elif token == '(':
                 op_stack.append(token)
 
@@ -108,8 +111,6 @@ class EquationTool(Tool):
                     # if the bracket indicates a function, then pop function.
                     if op_stack[-1][2] == 3:
                         postfix.append(op_stack.pop())
-            elif token.isdigit():
-                postfix.append(float(token))
 
         # pop any remaining items off the op_stack
         while op_stack:
@@ -130,10 +131,10 @@ class EquationTool(Tool):
                 # check that there are enough arguments for operation.
                 if num_args > len(operands):
                     raise ValueError("Not enough arguments for operation")
-                args = operands[-num_args:]
+                args = [Cast(x, FloatField) if isinstance(x, F) else x for x in operands[-num_args:]]
                 del operands[-num_args:]
                 # Apply operation and append back to var stack
-                operands.append(item[0](*args))
+                operands.append(ExpressionWrapper(item[0](*args), output_field=FloatField()))
             else:
                 # if it's not an operations then it's a variable (no brackets)
                 operands.append(item)
@@ -147,14 +148,18 @@ class EquationTool(Tool):
         for e in self.equations:
             tokens = self.tokenize_equation(e)
             postfix = self.to_postfix(tokens)
-            self.parsed[e] = ArrayAgg(self.to_django(postfix))
+            self.parsed[e] = self.to_django(postfix)
+            print(self.parsed)
+
+        print(self.vars)
 
         result = self.base_qs \
             .annotate(**self.vars) \
             .values('experiment') \
             .annotate(**self.parsed)
 
-        return result
+        print(result)
+        return []
 
 
 class BaseAggregateTool(Tool):

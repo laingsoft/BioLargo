@@ -24,31 +24,26 @@ class Abs(Func):
 class Add(Func):
     function = ''
     arg_joiner = '+'
-    arity = 2
 
 
 class Subtract(Func):
     function = ''
     arg_joiner = '-'
-    arity = 2
 
 
 class Divide(Func):
     function = ''
     arg_joiner = '/'
-    arity = 2
 
 
 class Multiply(Func):
     function = ''
     arg_joiner = '*'
-    arity = 2
 
 
 class Exponent(Func):
     function = ''
     arg_joiner = '^'
-    arity = 2
 
 
 # A dictionary of operations with the number of expressions needed, and order.
@@ -63,7 +58,7 @@ OPERATIONS = {
     "sum": (Sum, 1, 3),
     "sqrt": (Sqrt, 1, 3),
     "abs": (Abs, 1, 3),
-    "+": (Add, 1, 2),
+    "+": (Add, 2, 2),
     "-": (Subtract, 2, 2),
     "*": (Multiply, 2, 1),
     "^": (Exponent, 2, 0),

@@ -48,6 +48,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         """
         type_ = content['type']
         payload = content.get('payload', {})
+        meta = content.get('meta', {})
 
         print(content)
 
@@ -74,11 +75,12 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
             async_to_sync(self.channel_layer.group_send)(
                 str(self.session.id), {
                     "type": type_.lower(),
-                    **payload
+                    **payload,
+                    **meta
                 }
             )
 
-    def send_json(self, type, payload=None, error=False, close=False, meta=None):
+    def send_json(self, type, payload=None, error=False, meta=None):
         """
         Overriding default conusmer.
         """
@@ -239,7 +241,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
                 error=True)
             return
 
-        self.send_json(event["type"], {'uuid': event.get("uuid"), 'data':data})
+        self.send_json(event["type"], {'data':data}, meta={'uuid': event.get('uuid')})
 
 
     def fetch_projects(self, event):

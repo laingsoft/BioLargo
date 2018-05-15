@@ -5,11 +5,10 @@ from django.db.models.functions import Cast
 
 
 def json_field_format(field_name):
-    return {field_name: Cast(
+    return {field_name:
                 KeyTextTransform(
                     field_name,
-                    'experimentData'),
-                FloatField())}
+                    'experimentData')}
 
 
 def json_field_arrayAgg(field_name):
@@ -18,3 +17,11 @@ def json_field_arrayAgg(field_name):
                     field_name,
                     'experimentData'),
                 FloatField()))}
+
+def isNum(n):
+    try:
+        float(n)
+    except ValueError:
+        return False
+
+    return True
