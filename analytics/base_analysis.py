@@ -158,8 +158,7 @@ class EquationTool(Tool):
             .values('experiment') \
             .annotate(**self.parsed)
 
-        print(result)
-        return []
+        return result
 
 
 class BaseAggregateTool(Tool):
