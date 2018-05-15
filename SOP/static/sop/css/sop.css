@@ -1,0 +1,5 @@
+.underlined-hover:hover {
+    text-decoration-line: underline;
+    text-decoration-style: dashed;
+
+}
