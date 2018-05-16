@@ -507,8 +507,12 @@ class Annotation(APIView):
         return Response(experimentDataAnnotationSerializer(annotations, many=True).data)
 
 class SOP(APIView):
-    def put (self, request):
-        sop = standardOp()
+    #if no ID is present when handing the request, the request will just create a new object
+    def post(self, request):
+        if request.POST["id"]:
+            sop = standardOp.objects.get(id=request.POST["id"])
+        else:
+            sop = standardOp()
         sop.name = request.POST['name']
         sop.description = request.POST['description']
         sop.procedure =  request.POST['procedure']
@@ -517,16 +521,7 @@ class SOP(APIView):
         sop.save()
         return JsonResponse({"upload":True})
     
-    def post(self, request, id):
-        sop = standardOp().objects.get(id=id)
-        sop.name = request.POST['name']
-        sop.description = request.POST['description']
-        sop.procedure =  request.POST['procedure']
-        sop.company = request.user.company
-        print(sop)
-        sop.save()
-        return JsonResponse({"upload":True})
     def get(self,request, id):
         serializer = SimpleSOPSerializer
-        sops = SOP.objects.filter(company = request.user.company)
+        sops = standardOp.objects.filter(company = request.user.company)
         return Response(serializer(sops, many = True).data)

@@ -12,14 +12,15 @@ $(document).ready(function(){
 	var procedure = JSON.stringify(quill.getContents());
 	var data = {"name":name,
 		    "description": description,
-		    "procedure": procedure
+		    "procedure": procedure,
+		    "id": id
 		   };
 	console.log(data);
 	$.ajax({
             beforeSend: function(xhr, settings){
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
             },
-            url: "/api/sop/"+id,
+            url: "/api/sop/",
             dataType: 'json',
             method: 'POST',
             data: data,

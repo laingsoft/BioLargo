@@ -7,7 +7,7 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify
 
 
 urlpatterns = [
-    url(r'^sop/(P<id>[0-9]+)/$', views.SOP.as_view()),
+    url(r'^sop/(?P<id>[0-9]+)/$', views.SOP.as_view()),
     url(r'^sop/$', views.SOP.as_view()),
     
     url(r'^get_tasks/(?P<task_status>[N,C,I])/(?P<page>[0-9]+)/$', views.get_tasks),
