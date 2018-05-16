@@ -3,6 +3,7 @@ from accounts.models import User
 from rest_framework import serializers
 from project_management.models import Task
 from SOP.models import SOP
+from inventory.models import Item
 import base64
 from django.core.files import File
 
@@ -135,3 +136,8 @@ class experimentDataAnnotationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExperimentDataAnnotation
         fields = '__all__'
+        
+class SimpleInventoryItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = ["name",'description']

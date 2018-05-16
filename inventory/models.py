@@ -4,11 +4,15 @@ from accounts.models import Company
 # Create your models here.
 
 class Item(models.Model):
+    name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     company = models.ForeignKey(Company, on_delete = models.CASCADE)
+    on_hand = models.IntegerField()
+    
 
     def get_absolute_url(self):
-        return "inventory/item/%i/" % self.id
+        return "/inventory/item/%i" %self.id
+
 
 class ItemField(models.Model):
     field_type = models.CharField(max_length=255)
@@ -28,4 +32,4 @@ class Equipment(models.Model):
 class Calibration(models.Model):
     datetime = models.DateTimeField()
     value = models.FloatField()
-    instrument = models.ForeignKey(Equipment, on_delete = models.CASCADE)
+    equipment = models.ForeignKey(Equipment, on_delete = models.CASCADE)

@@ -21,6 +21,7 @@ from app.models import *
 from accounts.models import User
 from SOP.models import SOP as standardOp
 from project_management.models import Project
+from inventory.models import Item, ItemField
 
 def index(request):
     pass
@@ -519,7 +520,7 @@ class SOP(APIView):
         sop.company = request.user.company
         print(sop)
         sop.save()
-        return JsonResponse({"upload":True})
+        return JsonResponse({"upload":True, "id":sop.id})
     
     def get(self,request, id):
         serializer = SimpleSOPSerializer
@@ -528,4 +529,22 @@ class SOP(APIView):
 
     def delete(self, request, id):
         sop = standardOp.objects.filter(id=id)
-        return JsonReponse({"delete":sop.delete()})
+        return JsonResponse({"delete":sop.delete()})
+
+
+class InventoryItem(APIView):
+    def post(self, request):
+        if request.POST['id']:
+            item = Item.objects.get(id=request.POST["id"])
+        else:
+            item = Item()
+        item.name = request.POST["name"]
+        item.description = request.POST["description"]
+        item.company = request.user.company
+        item.save()
+        return JsonRepsonse({"Upload": True, "id":item.id})
+    
+    def get(self, request, id):
+        serializer = SimpleInventoryItemSerializer
+        items = Item.objects.filter(id=id)
+        return Response(serializer(items, many= True).data)

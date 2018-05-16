@@ -114,9 +114,9 @@
   var id = {{object.id}};
   var quill = new Quill('#procedure', {modules: { toolbar: true },theme: 'snow'});
   var procedure = {{ object.procedure | safe}};
-  var deltaproc = JSON.parse(procedure);
-  quill.setContents(deltaproc);
+  quill.setContents(procedure);
   {% else %}
+  var id = null;
   var quill = new Quill('#procedure', {modules: { toolbar: true },theme: 'snow'});
   {% endif %}
 </script>
