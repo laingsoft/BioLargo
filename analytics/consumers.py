@@ -260,7 +260,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         Takes filter, order_by and search as parameters.
         filter is a dictionary with fields to filter by.
         """
-        qs = self.user.company.experiment_set.all()
+        qs = self.session.project.experiment_set.all()
 
         q = event.get("search", '')  # search query
         filters = event.get("filters", {})
