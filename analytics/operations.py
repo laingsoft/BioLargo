@@ -3,8 +3,8 @@ from operator import add, pow, sub, truediv, mul
 
 # Unrelated to math, but used for the return value:
 class to_json(Func):
-    function = 'row_to_json'
-
+    function = 'to_json'
+    template = '%(function)s((%(expressions)s))'
 
 class Log(Func):
     function = 'log'

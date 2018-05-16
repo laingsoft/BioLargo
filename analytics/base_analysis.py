@@ -1,13 +1,14 @@
 from django.db.models import Max, Min, Sum, Avg, StdDev, Variance
 from django.contrib.postgres.fields.jsonb import KeyTextTransform
 from django.db.models import FloatField
+from django.contrib.postgres.fields import JSONField
 from django.db.models.functions import Cast
 from .aggregates import Mode, Percentile
 import re
 from django.db.models import F, ExpressionWrapper
-from .operations import OPERATIONS
+from .operations import OPERATIONS, to_json
 from .utils import json_field_format, isNum
-from django.contrib.postgres.aggregates import ArrayAgg
+from django.contrib.postgres.aggregates import ArrayAgg, JSONBAgg
 
 
 class Tool:
@@ -134,7 +135,7 @@ class EquationTool(Tool):
                 args = [Cast(x, FloatField()) if isinstance(x, F) else x for x in operands[-num_args:]]
                 del operands[-num_args:]
                 # Apply operation and append back to var stack
-                operands.append(item[0](*args))
+                operands.append(ExpressionWrapper(item[0](*args), FloatField()))
             else:
                 # if it's not an operations then it's a variable (no brackets)
                 operands.append(item)
@@ -149,16 +150,15 @@ class EquationTool(Tool):
             tokens = self.tokenize_equation(e)
             postfix = self.to_postfix(tokens)
             self.parsed[e] = self.to_django(postfix)
-        print("PARSED", self.parsed)
-        print("VARS", self.vars)
 
         result = self.base_qs \
             .annotate(**self.vars) \
+            .annotate(**self.parsed) \
             .values('experiment') \
-            .annotate(**self.parsed)
+            .annotate(data=ArrayAgg(ExpressionWrapper(to_json(*list(self.parsed.keys())), JSONField())))
 
+        print(result.query)
         return result
-
 class BaseAggregateTool(Tool):
     """
     Base tool for aggregrate functions performed on database. Aggreates
