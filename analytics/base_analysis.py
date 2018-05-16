@@ -73,8 +73,8 @@ class EquationTool(Tool):
         postfix = []
         op_stack = []
         for token in tokens:
-            if token in OPERATIONS:
-                op = OPERATIONS[token]
+            if token.lower() in OPERATIONS:
+                op = OPERATIONS[token.lower()]
 
                 if op_stack and op_stack[-1] != '(' and op_stack[-1][2] > op[2]:
                     popped = op_stack.pop()
@@ -157,8 +157,9 @@ class EquationTool(Tool):
             .values('experiment') \
             .annotate(data=ArrayAgg(ExpressionWrapper(to_json(*list(self.parsed.keys())), JSONField())))
 
-        print(result.query)
         return result
+
+
 class BaseAggregateTool(Tool):
     """
     Base tool for aggregrate functions performed on database. Aggreates
