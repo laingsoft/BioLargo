@@ -1,4 +1,9 @@
 from django.db.models import Func, Avg, Sum
+from operator import add, pow, sub, truediv, mul
+
+# Unrelated to math, but used for the return value:
+class to_json(Func):
+    function = 'row_to_json'
 
 
 class Log(Func):
@@ -20,34 +25,6 @@ class Abs(Func):
     function = 'abs'
     arity = 1
 
-
-class Add(Func):
-    function = ''
-    arg_joiner = '+'
-    arity = 2
-
-
-class Subtract(Func):
-    function = ''
-    arg_joiner = '-'
-    arity = 2
-
-
-class Divide(Func):
-    function = ''
-    arg_joiner = '/'
-    arity = 2
-
-class Multiply(Func):
-    function = ''
-    arg_joiner = '*'
-    arity = 2
-
-class Exponent(Func):
-    function = ''
-    arg_joiner = '^'
-    arity = 2
-
 # A dictionary of operations with the number of expressions needed, and order.
 # 0: exponents
 # 1: multiplication and division
@@ -60,9 +37,9 @@ OPERATIONS = {
     "sum": (Sum, 1, 3),
     "sqrt": (Sqrt, 1, 3),
     "abs": (Abs, 1, 3),
-    "+": (Add, 2, 2),
-    "-": (Subtract, 2, 2),
-    "*": (Multiply, 2, 1),
-    "^": (Exponent, 2, 0),
-    "/": (Divide, 2, 1)
+    "+": (add, 2, 2),
+    "-": (sub, 2, 2),
+    "*": (mul, 2, 1),
+    "^": (pow, 2, 0),
+    "/": (truediv, 2, 1)
 }

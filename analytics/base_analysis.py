@@ -131,10 +131,10 @@ class EquationTool(Tool):
                 # check that there are enough arguments for operation.
                 if num_args > len(operands):
                     raise ValueError("Not enough arguments for operation")
-                args = [Cast(x, FloatField) if isinstance(x, F) else x for x in operands[-num_args:]]
+                args = [Cast(x, FloatField()) if isinstance(x, F) else x for x in operands[-num_args:]]
                 del operands[-num_args:]
                 # Apply operation and append back to var stack
-                operands.append(ExpressionWrapper(item[0](*args), output_field=FloatField()))
+                operands.append(item[0](*args))
             else:
                 # if it's not an operations then it's a variable (no brackets)
                 operands.append(item)
@@ -149,9 +149,8 @@ class EquationTool(Tool):
             tokens = self.tokenize_equation(e)
             postfix = self.to_postfix(tokens)
             self.parsed[e] = self.to_django(postfix)
-            print(self.parsed)
-
-        print(self.vars)
+        print("PARSED", self.parsed)
+        print("VARS", self.vars)
 
         result = self.base_qs \
             .annotate(**self.vars) \
@@ -159,7 +158,6 @@ class EquationTool(Tool):
             .annotate(**self.parsed)
 
         return result
-
 
 class BaseAggregateTool(Tool):
     """
