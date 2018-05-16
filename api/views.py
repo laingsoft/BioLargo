@@ -525,3 +525,7 @@ class SOP(APIView):
         serializer = SimpleSOPSerializer
         sops = standardOp.objects.filter(company = request.user.company)
         return Response(serializer(sops, many = True).data)
+
+    def delete(self, request, id):
+        sop = standardOp.objects.filter(id=id)
+        return JsonReponse({"delete":sop.delete()})
