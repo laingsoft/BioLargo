@@ -13,6 +13,7 @@
 	    <div id="product-headsup-details" class="col-md-8">
 	      <h2 id="name">Select an Item</h2>
 	      <p id="description">Select an Item to see a description</p>
+	      <p id="on-hand"></p>
 	      <div id="product-headsup-attr">
 	      </div>
 	    </div>
@@ -47,16 +48,17 @@
       </div>
       <table class="table table-hover">
 	<thead>
-	  
+	  <th>
           <div class="d-flex float-right">
             <a class="" href="/inventory/add">+</a>
           </div>
-	  
+	  </th>
 	</thead>
 	{% for items in object_list %}
 	<tr class="inventory-list-item">
           <td id="name">{{items.item.name}}</td>
-          <td id="description">{{items.item.description}}</td>
+          <td id="description">{{items.item.description}}</td>.
+	  <td id="onhand">{{items.item.on_hand}}</td>
           <td>
             {% for field in items.fields %}
             {{field.field_type}}: {{field.field_value}}</br>

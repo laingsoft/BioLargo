@@ -140,4 +140,4 @@ class experimentDataAnnotationSerializer(serializers.ModelSerializer):
 class SimpleInventoryItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = ["name",'description']
+        fields = ["name",'description', 'on_hand']
