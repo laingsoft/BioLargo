@@ -1,0 +1,19 @@
+var quill = new Quill('#procedure', {
+  modules: { toolbar: true },
+  theme: 'snow'
+});
+
+quill.setContents({
+  "ops": [
+    {
+      "insert": "adsfasdfasdfType out your procedure here\n"
+    }
+  ]
+})
+
+$(document).ready(function(){
+    $(".underlined-hover").click(function(){
+	this.contentEditable = true;
+    })
+})
+

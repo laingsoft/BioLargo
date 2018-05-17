@@ -14,12 +14,6 @@ class SOP(models.Model):
         return self.name
 
 class SOPMaterials(models.Model):
-    UNITS = (
-        ('L', 'L'),
-        ('g', 'g'),
-        ('mL', 'mL'),
-        )
-
-    SOP = models.ForeignKey(Item, on_delete = models.CASCADE)
+    SOP = models.ForeignKey(SOP, on_delete = models.CASCADE)
     amount = models.FloatField()
-    unit = models.CharField(max_length=3, choices=UNITS)
+    item = models.ForeignKey(Item)

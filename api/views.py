@@ -21,6 +21,7 @@ from app.models import *
 from accounts.models import User
 from SOP.models import SOP as standardOp
 from project_management.models import Project
+from inventory.models import Item, ItemField
 
 def index(request):
     pass
@@ -507,26 +508,43 @@ class Annotation(APIView):
         return Response(experimentDataAnnotationSerializer(annotations, many=True).data)
 
 class SOP(APIView):
-    def put (self, request):
-        sop = standardOp()
+    #if no ID is present when handing the request, the request will just create a new object
+    def post(self, request):
+        if request.POST["id"]:
+            sop = standardOp.objects.get(id=request.POST["id"])
+        else:
+            sop = standardOp()
         sop.name = request.POST['name']
         sop.description = request.POST['description']
         sop.procedure =  request.POST['procedure']
         sop.company = request.user.company
         print(sop)
         sop.save()
-        return JsonResponse({"upload":True})
+        return JsonResponse({"upload":True, "id":sop.id})
     
-    def post(self, request, id):
-        sop = standardOp().objects.get(id=id)
-        sop.name = request.POST['name']
-        sop.description = request.POST['description']
-        sop.procedure =  request.POST['procedure']
-        sop.company = request.user.company
-        print(sop)
-        sop.save()
-        return JsonResponse({"upload":True})
     def get(self,request, id):
         serializer = SimpleSOPSerializer
-        sops = SOP.objects.filter(company = request.user.company)
+        sops = standardOp.objects.filter(company = request.user.company)
         return Response(serializer(sops, many = True).data)
+
+    def delete(self, request, id):
+        sop = standardOp.objects.filter(id=id)
+        return JsonResponse({"delete":sop.delete()})
+
+
+class InventoryItem(APIView):
+    def post(self, request):
+        if request.POST['id']:
+            item = Item.objects.get(id=request.POST["id"])
+        else:
+            item = Item()
+        item.name = request.POST["name"]
+        item.description = request.POST["description"]
+        item.company = request.user.company
+        item.save()
+        return JsonRepsonse({"Upload": True, "id":item.id})
+    
+    def get(self, request, id):
+        serializer = SimpleInventoryItemSerializer
+        items = Item.objects.filter(id=id)
+        return Response(serializer(items, many= True).data)

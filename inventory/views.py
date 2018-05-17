@@ -21,7 +21,7 @@ class ItemCreate(CreateView):
     Allows the user to create an inventory item for their company.
     '''
     model = Item
-    fields = ['description']
+    fields = ['name','description', 'on_hand']
 
     def form_valid(self, form):
         form.instance.company = self.request.user.company
@@ -40,6 +40,3 @@ class ItemDetail(DetailView):
         context['fields'] = Fields
         return context
         
-# Create your views here.
-def index(request):
-    return render(request, 'inventory/index.html')

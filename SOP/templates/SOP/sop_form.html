@@ -1,0 +1,123 @@
+{% extends "app/base_template.html" %}
+{% load static %}
+{% block breadcrumb %}
+<li class="breadcrumb-item">
+    <a href="/app">Dashboard</a>
+</li>
+<li class="breadcrumb-item">
+    <a href="/app/sop">SOP</a>
+</li>
+<li class="breadcrumb-item active">
+    {{object.name}}
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <h2 class="card-header">Standard Operating Procedure</h2>
+      <div class="card-body">
+	<h2 id="sop-name" class="underlined-hover">{% if object.name %} {{object.name}} {% else %} <i>Title</i> {% endif %}</h2>
+	<p id="sop-description" class="underlined-hover">{% if object.description %} {{object.description}} {% else %} <i> Description </i> {% endif %}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <h2 class="card-header">Used by </h2>
+      <div class="card-body border-0 tab-content p-0" id="project-lists">
+	<div class="tab-pane active m-0 p-0" id="project">
+	  <ul class="list-group" id="project-list">
+	    {% for i in experiments %}
+	    <li class="list-group-item">
+	      <div class="media">
+		<div class="media-body">
+		  <div>
+		    <b>{{i.friendly_name}}</b>
+		    <div>{{i.description}}</div>
+		  </div>
+		</div>
+	      </div>
+	      
+	    </li>
+	    {% empty %}
+	    <li class="list-group-item">
+	      Not connected to any project
+	    </li>
+	    
+	    {% endfor %}
+	  </ul>
+	</div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <h2 class="card-header">Procedure</h2>
+      <div class="card-body">
+        <div class="card-block">
+          <div id = "procedure">
+	    <p> Type out your procedure here </p>
+	  </div>
+          <button class="btn btn-primary" id="submitSOP">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card">
+      <h2 class="card-header">Materials</h2>
+      <div class="card-body border-0 tab-content p-0" id="project-lists">
+	<div class="tab-pane active m-0 p-0" id="project">
+	  <ul class="list-group" id="project-list">
+	    {% for i in materials %}
+	    <li class="list-group-item">
+	      <div class="media">
+		<div class="media-body">
+		  <div>
+		    <b>{{i.name}}</b>
+		    <div>{{i.description}}</div>
+		  </div>
+		</div>
+	      </div>
+	      
+	    </li>
+	    {% empty %}
+	    <li class="list-group-item">
+	      No Materials Added
+	    </li>
+	    
+	    {% endfor %}
+	  </ul>
+	</div>
+    </div>
+  </div>
+  
+    
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script_extra %}
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script src="{% static 'sop/js/sop.js' %}"></script>
+<link href="{% static 'sop/css/sop.css' %}" rel="stylesheet">
+<script src="{% static 'common/js/selectize.min.js' %}"></script>
+<script type="text/javascript">
+  {% if object.id %}
+  var id = {{object.id}};
+  var quill = new Quill('#procedure', {modules: { toolbar: true },theme: 'snow'});
+  var procedure = {{ object.procedure | safe}};
+  quill.setContents(procedure);
+  {% else %}
+  var id = null;
+  var quill = new Quill('#procedure', {modules: { toolbar: true },theme: 'snow'});
+  {% endif %}
+</script>
+{% endblock %}

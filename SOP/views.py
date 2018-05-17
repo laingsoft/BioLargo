@@ -6,6 +6,7 @@ from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from api.serializers import SimpleSOPSerializer
+from app.models import Experiment
 
 class SOPListView(ManagerTestMixin, CompanyObjectsMixin, ListView):
     model = SOP
@@ -41,6 +42,14 @@ def SOPDownloadView(request, file_id):
 
 class SOPUpdateView(ManagerTestMixin, CompanyObjectsMixin, DetailView):
     model = SOP
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        print(kwargs['object'].id)
+        context = super().get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        context['experiments'] = Experiment.objects.filter(sop = kwargs['object'])
+        return context
+    template_name = 'SOP/sop_form.html'
 
 
 @login_required
