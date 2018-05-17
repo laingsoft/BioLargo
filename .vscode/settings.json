@@ -1,4 +1,0 @@
-{
-    "python.pythonPath": "${workspaceFolder}/predox/bin/python",
-    "python.linting.enabled": false
-}
