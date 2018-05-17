@@ -11,17 +11,20 @@ class ItemList(ListView):
     template_name = "inventory/item_list.html"
     def get(self, request, *args, **kwargs):
         retval = Item.objects.filter(company = request.user.company)
+        categories = set()
         objects = []
         for i in retval:
+            categories.add(i.category)
             objects.append( { "fields":ItemField.objects.filter(item_pointer = i), "item":i})
-        return render(request, self.template_name, {"object_list":objects})
+
+        return render(request, self.template_name, {"object_list":objects, "categories":categories})
     
 class ItemCreate(CreateView):
     '''
     Allows the user to create an inventory item for their company.
     '''
     model = Item
-    fields = ['name','description', 'on_hand']
+    fields = ['name','description', 'on_hand', 'category']
 
     def form_valid(self, form):
         form.instance.company = self.request.user.company

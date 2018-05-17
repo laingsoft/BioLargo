@@ -5,7 +5,6 @@ function searchInventory() {
     table = document.getElementById("inventory-table");
     tr = table.getElementsByTagName("tr");
     for (i=0; i< tr.length; i++){
-	console.log(tr[i]);
 	td = tr[i].getElementsByTagName("td")[0];
 	if (td){
 	    if (td.innerHTML.toUpperCase().indexOf(filter) > -1){
@@ -28,12 +27,27 @@ $(document).ready(function(){
 	$("#product-headsup-details > #name").text(this.children.name.textContent);
 	$("#product-headsup-details > #description").text(this.children.description.textContent);
 	$("#product-headsup-details > #on-hand").text("Quantity On Hand: "+ this.children.onhand.textContent);
-
+	
 	//update the statistics portion of the page
 	//todo
 
 	//Get the info from the associated attrs that are related to the inventory item.
+
+	//make it active, and the others non-active
+	$(".inventory-list-item").removeClass("active");
+	$(this).addClass("active");
 	
+    });
+
+    $("#inventory-filterby").change(function(){
+	var filter = this.value;
+	console.log(filter);
+	console.log(filter == "All");
+	$(".inventory-list-item").hide();
+	$("[itemcategory="+filter+"]").show();
+	if (filter == "All"){
+	    $(".inventory-list-item").show();
+	}
     });
 
 

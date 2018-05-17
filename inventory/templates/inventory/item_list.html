@@ -38,8 +38,14 @@
     <div class = "card">
       <div class="card-header">
 	<div class="form-group">
-	  <div class="d-flex float-left">
-	    <select class="form-control" placeholder="Category"><option>Category</option></select>
+	  <div class="d-flex float-left form-inline">
+	    <label for="inventory-filterby">Category: </label>
+	    <select class="form-control" id="inventory-filterby">
+	      <option>All</option>
+	      {% for category in categories %}
+	      <option>{{category}}</option>
+	      {% endfor %}
+	    </select>
 	  </div>
 	  <div class="d-flex float-right">
 	    <input type="text" class="form-control" placeholder="Search" id="inventory-search" onKeyUp="searchInventory()"></input>
@@ -58,9 +64,9 @@
 	  </th>
 	</thead>
 	{% for items in object_list %}
-	<tr class="inventory-list-item">
+	<tr class="inventory-list-item" itemCategory="{{items.item.category}}">
           <td id="name">{{items.item.name}}</td>
-          <td id="description">{{items.item.description}}</td>.
+          <td id="description">{{items.item.description}}</td>
 	  <td id="onhand">{{items.item.on_hand}}</td>
           <td>
             <div class="d-flex float-right">
@@ -91,5 +97,6 @@
 {% load static %}
 {% block script_extra %}
 <script src=" {% static 'inventory/js/inventory.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'inventory/css/inventory.css' %}"/>
 
 {% endblock %}

@@ -7,6 +7,7 @@ class Item(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     company = models.ForeignKey(Company, on_delete = models.CASCADE)
+    category = models.CharField(max_length=255)
     on_hand = models.IntegerField()
     
 
