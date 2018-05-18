@@ -1,4 +1,9 @@
 {% extends "app/base_template.html" %}
+{% load static %}
+{% block css_extra %}
+<link rel='stylesheet' href="{% static "common/selectize.bootstrap3.css" %}">
+{% endblock %}
+
 {% block content %}
 <div class="row">
   <div class="col-md-8">
@@ -95,9 +100,10 @@
 
 
 {% endblock %}
-{% load static %}
+
 {% block script_extra %}
 <script src=" {% static 'inventory/js/inventory.js' %}"></script>
+<script src="{% static 'common/js/selectize.min.js' %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static 'inventory/css/inventory.css' %}"/>
 
 {% endblock %}

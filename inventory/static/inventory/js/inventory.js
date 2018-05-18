@@ -50,6 +50,9 @@ $(document).ready(function(){
 	}
     });
 
-
+    $("#id_category").selectize({
+	create:true,
+	sortField: 'text'
+    });
 
 });
