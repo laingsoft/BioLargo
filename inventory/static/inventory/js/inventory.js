@@ -20,7 +20,10 @@ function searchInventory() {
 
 
 
+
+
 $(document).ready(function(){
+    var editToggle = false;
     $(".inventory-list-item").click(function(){
 	console.log(this)
 	// update the Information area of the page
@@ -53,6 +56,28 @@ $(document).ready(function(){
     $("#id_category").selectize({
 	create:true,
 	sortField: 'text'
+    });
+
+    $("#item-edit-toggle").click(function(){
+	console.log(editToggle);
+	if(!editToggle){
+	    var editButtons = $("<div></div>");
+	    var submit = $("<button>Submit</button>");
+	    var cancel = $("<button>Cancel</button>");
+	    submit.addClass("btn btn-primary");
+	    cancel.addClass("btn btn-cancel");
+	    submit.appendTo(editButtons);
+	    cancel.appendTo(editButtons);
+	    editButtons.addClass("d-flex float-right");
+	    editButtons.appendTo("#inventory-item-edit");
+	    editToggle = true;
+	}else{
+	    $("#inventory-item-edit").empty();
+	    editToggle = false;
+	    
+	}
+	
+
     });
 
 });

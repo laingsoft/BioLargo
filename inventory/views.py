@@ -43,3 +43,4 @@ class ItemDetail(DetailView):
         context['fields'] = Fields
         return context
         
+

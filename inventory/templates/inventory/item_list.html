@@ -2,6 +2,7 @@
 {% load static %}
 {% block css_extra %}
 <link rel='stylesheet' href="{% static "common/selectize.bootstrap3.css" %}">
+<link rel="stylesheet" type="text/css" href="{% static 'inventory/css/inventory.css' %}"/>
 {% endblock %}
 
 {% block content %}
@@ -16,11 +17,21 @@
 	      <canvas id="product-headsup-image" height="300" width="300"></canvas>
 	    </div>
 	    <div id="product-headsup-details" class="col-md-8">
-	      <h2 id="name">Select an Item</h2>
-	      <p id="description">Select an Item to see a description</p>
-	      <p id="on-hand"></p>
+	      <div class="wrench-hover">
+		<svg class="wrench icon d-flex float-right" id="item-edit-toggle">
+                    <use xlink:href="#wrench" class="icon-monitor"></use>
+                </svg>
+	      </div>
+	      
+	      <h2 id="name" class="hoverable editable">Select an Item</h2>
+	      <p id="description" class="hoverable editable">Select an Item to see a description</p>
+	       <p id="on-hand" class="hoverable editable"></p>
 	      <div id="product-headsup-attr">
 	      </div>
+
+	      <div id="inventory-item-edit">
+	      </div>
+	      
 	    </div>
 	  </div>
 	</div>
@@ -104,6 +115,6 @@
 {% block script_extra %}
 <script src=" {% static 'inventory/js/inventory.js' %}"></script>
 <script src="{% static 'common/js/selectize.min.js' %}"></script>
-<link rel="stylesheet" type="text/css" href="{% static 'inventory/css/inventory.css' %}"/>
+
 
 {% endblock %}

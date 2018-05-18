@@ -1,3 +1,12 @@
 .inventory-list-item.active{
     background-color: rgba(0, 0, 0, 0.075);
 }
+
+.hoverable:hover{
+    text-decoration: underline dashed;
+
+}
+
+.wrench:hover{
+    fill: #000
+}

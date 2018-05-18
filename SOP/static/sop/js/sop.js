@@ -1,6 +1,7 @@
 
 
 $(document).ready(function(){
+    $("#material-selector").selectize()
     $(".underlined-hover").click(function(){
 	this.contentEditable = true;
     });

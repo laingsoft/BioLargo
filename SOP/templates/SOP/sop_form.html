@@ -1,5 +1,10 @@
 {% extends "app/base_template.html" %}
 {% load static %}
+
+{% block css_extra %}
+<link rel='stylesheet' href="{% static "common/selectize.bootstrap3.css" %}">
+{% endblock %}
+
 {% block breadcrumb %}
 <li class="breadcrumb-item">
     <a href="/app">Dashboard</a>
@@ -70,10 +75,12 @@
   </div>
   <div class="col-md-4">
     <div class="card">
-      <h2 class="card-header">Materials</h2>
+      <div class="card-header"><h2>Materials</h2></div>
       <div class="card-body border-0 tab-content p-0" id="project-lists">
+	<div class="material-insert"><input placeholder="Type to add a material" type="text" id="material-selector"></input></div>
 	<div class="tab-pane active m-0 p-0" id="project">
 	  <ul class="list-group" id="project-list">
+	    
 	    {% for i in materials %}
 	    <li class="list-group-item">
 	      <div class="media">
