@@ -59,7 +59,7 @@
 	  <th>In Stock</th>
 	  <th>
           <div class="d-flex float-right">
-            <a class="" href="/inventory/add">+</a>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-item-modal">Add</button>
           </div>
 	  </th>
 	</thead>
@@ -91,6 +91,7 @@
   
 </div>
 
+{% include 'inventory/add_item_modal.html' %}
 
 
 {% endblock %}
