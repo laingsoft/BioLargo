@@ -100,3 +100,19 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Ignore migrations
+
+accounts/migrations/*
+analytics/migrations/*
+api/migrations/*
+app/migrations/*
+fcm_django/migrations/*
+frontpage/migrations/*
+inventory/migrations/*
+management/migrations/*
+project_management/migrations*
+SOP/migrations/*
+
+#keep the init migrate
+!*/migrations/__init__.py
