@@ -2,6 +2,8 @@ from django.conf.urls import url, include
 from . import views
 from project_management.views import UserTaskListView, task_complete
 import analytics.urls
+import SOP.urls
+import inventory.urls
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
@@ -23,6 +25,8 @@ urlpatterns = [
     url(r'^notif_read/$', views.notif_read),
     url(r'^tasks/$', UserTaskListView.as_view()),
     url(r'^task_complete/(?P<id>[0-9]+)/?$', task_complete),
-    url(r'^analysis/', include(analytics.urls))
+    url(r'^analysis/', include(analytics.urls)),
+    url(r'^sop/', include(SOP.urls)),
+    url(r'^inventory/', include(inventory.urls))
     
     ]

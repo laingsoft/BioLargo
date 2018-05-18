@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, DetailView
 from .models import Item, ItemField
+from django.contrib.auth.decorators import login_required
+
+
 
 class ItemList(ListView):
     '''
@@ -18,7 +21,8 @@ class ItemList(ListView):
             objects.append( { "fields":ItemField.objects.filter(item_pointer = i), "item":i})
 
         return render(request, self.template_name, {"object_list":objects, "categories":categories})
-    
+
+
 class ItemCreate(CreateView):
     '''
     Allows the user to create an inventory item for their company.
@@ -29,6 +33,7 @@ class ItemCreate(CreateView):
     def form_valid(self, form):
         form.instance.company = self.request.user.company
         return super(ItemCreate, self).form_valid(form)
+
 
 class ItemDetail(DetailView):
     '''
