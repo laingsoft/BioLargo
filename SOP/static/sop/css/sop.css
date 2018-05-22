@@ -3,3 +3,11 @@
     text-decoration-style: dashed;
 
 }
+
+#alert{
+    position: fixed;
+    bottom: 0px;
+    right: 50px;
+    z-index: 1080;
+
+}

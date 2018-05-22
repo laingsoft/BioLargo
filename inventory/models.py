@@ -12,7 +12,7 @@ class Item(models.Model):
     
 
     def get_absolute_url(self):
-        return "/inventory/"
+        return "/app/inventory/"
 
 
 class ItemField(models.Model):
