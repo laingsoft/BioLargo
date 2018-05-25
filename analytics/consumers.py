@@ -31,7 +31,6 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
         else:
             self.accept()
-            self.session_list()
 
     def receive_json(self, content):
         """
@@ -137,7 +136,7 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
             except Session.DoesNotExist:
                 self.send_json(
                     "session.connect",
-                    {"error: Session does not exist"},
+                    {"error": "Session does not exist"},
                     error=True)
                 return
         else:
