@@ -527,7 +527,7 @@ class SOP(APIView):
         if id != None:
             sop = (standardOp.objects.get(id = id, company = request.user.company))
             #Return only specific attribute(s) from the SOP, don't need everything in the model
-            return Response([sop.procedure])
+            return Response(SOPSerializer(sop).data)
         else:
             #No ID was passed in, so return all the SOP's for the company
             serializer = SimpleSOPSerializer
