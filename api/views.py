@@ -510,9 +510,11 @@ class Annotation(APIView):
 class SOP(APIView):
     #if no ID is present when handing the request, the request will just create a new object
     def post(self, request):
-        if request.POST["id"]:
-            sop = standardOp.objects.get(id=request.POST["id"])
-        else:
+
+        try:
+            id = request.POST["id"]
+            sop = standardOp.objects.get(id = id)
+        except KeyError:
             sop = standardOp()
         sop.name = request.POST['name']
         sop.description = request.POST['description']
@@ -521,7 +523,8 @@ class SOP(APIView):
         print(sop)
         sop.save()
         return JsonResponse({"upload":True, "id":sop.id})
-    
+
+
     def get(self, request, id = None):
         #If an ID is passed in, get the SOP with that specific ID
         if id != None:
