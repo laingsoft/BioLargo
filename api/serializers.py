@@ -110,12 +110,15 @@ class SimpleUserSerializer(serializers.ModelSerializer):
     def get_name(self, obj):
         return obj.get_full_name()
 
+class SOPSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SOP
+        fields = '__all__'
 
 class SimpleSOPSerializer(serializers.ModelSerializer):
     class Meta:
         model = SOP
         fields = ('name', 'id')
-
 
 class SimpleTaskSerializer(serializers.ModelSerializer):
     project = SimpleProjectSerializer()

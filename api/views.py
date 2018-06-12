@@ -518,14 +518,21 @@ class SOP(APIView):
         sop.description = request.POST['description']
         sop.procedure =  request.POST['procedure']
         sop.company = request.user.company
-        print(sop)
         sop.save()
         return JsonResponse({"upload":True, "id":sop.id})
-    
-    def get(self,request, id):
-        serializer = SimpleSOPSerializer
-        sops = standardOp.objects.filter(company = request.user.company)
-        return Response(serializer(sops, many = True).data)
+
+
+    def get(self, request, id = None):
+        #If an ID is passed in, get the SOP with that specific ID
+        if id != None:
+            sop = (standardOp.objects.get(id = id, company = request.user.company))
+            #Return only specific attribute(s) from the SOP, don't need everything in the model
+            return Response(SOPSerializer(sop).data)
+        else:
+            #No ID was passed in, so return all the SOP's for the company
+            serializer = SimpleSOPSerializer
+            sops = standardOp.objects.filter(company = request.user.company)
+            return Response(serializer(sops, many = True).data)
 
     def delete(self, request, id):
         sop = standardOp.objects.filter(id=id)
