@@ -18,12 +18,31 @@ function searchInventory() {
 
 }
 
+function appendCheckbox(){
+    var table = document.getElementById("inventory-table");
+    tr = table.getElementsByTagName("tr");
+    if (!checkBoxToggle){
+	$(tr[0]).prepend("<th>Select</th>")
+	for (i=1; i<tr.length; i++){
+	    $(tr[i]).prepend("<td><input type='checkbox' id='"+tr[i].attributes.itemid + "'></input></td>");
+	};
+	checkBoxToggle = true;
+    } else{
+	for (i=0; i<tr.length; i++){
+	    $(tr[i]).children()[0].remove();
+	}
+	checkBoxToggle = false;
+    }
+	
+}
 
 
 
 
+var checkBoxToggle = false;
 $(document).ready(function(){
     var editToggle = false;
+
     $(".inventory-list-item").click(function(){
 	console.log(this)
 	// update the Information area of the page

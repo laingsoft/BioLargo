@@ -76,11 +76,13 @@
 	  <th>
           <div class="d-flex float-right">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-item-modal">Add</button>
+	    <button type="button" class="btn btn-secondary" onClick="appendCheckbox()">Edit</button>
+	    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="delete-item-modal" style="display: none;">Delete</button>
           </div>
 	  </th>
 	</thead>
 	{% for items in object_list %}
-	<tr class="inventory-list-item" itemCategory="{{items.item.category}}">
+	<tr class="inventory-list-item" itemCategory="{{items.item.category}}" itemId="{{items.item.id}}">
           <td id="name">{{items.item.name}}</td>
           <td id="description">{{items.item.description}}</td>
 	  <td id="onhand">{{items.item.on_hand}}</td>
@@ -93,7 +95,7 @@
 		</button>
 		
 		<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-		  <a class="drowdown-item" href="">Delete</a><br>
+		  <a class="drowdown-item" data-toggle="modal" data-target="#delete-item-modal" href="">Delete</a><br>
 		  <a class="drowdown-item" href="item/{{items.item.id}}">Edit </a>
 		</div>
               </div>
@@ -108,7 +110,7 @@
 </div>
 
 {% include 'inventory/add_item_modal.html' %}
-
+{% include 'inventory/delete_item_modal.html' %}
 
 {% endblock %}
 
