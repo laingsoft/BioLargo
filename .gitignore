@@ -114,5 +114,7 @@ management/migrations/*
 project_management/migrations*
 SOP/migrations/*
 
+PredoxWeb/settings_secret.py
+
 #keep the init migrate
 !*/migrations/__init__.py
