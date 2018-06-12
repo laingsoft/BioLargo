@@ -104,3 +104,21 @@ venv.bak/
 # VSCode settings
 .vscode
 
+# Ignore migrations
+
+accounts/migrations/*
+analytics/migrations/*
+api/migrations/*
+app/migrations/*
+fcm_django/migrations/*
+frontpage/migrations/*
+inventory/migrations/*
+management/migrations/*
+project_management/migrations*
+SOP/migrations/*
+
+PredoxWeb/settings_secret.py
+
+#keep the init migrate
+!*/migrations/__init__.py
+

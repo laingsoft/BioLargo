@@ -1,6 +1,17 @@
+function showAlert(){
+    var alert  = $("<div id='alert' class='row'><div class='alert alert-success'>Experiment Updated!</div></div>");
+    alert.appendTo($("body")[0]);
+}
 
+function removeAlert(){
+    var alert = $("#alert")
+    alert.fadeOut("slow", function(){
+	alert.remove();
+    });
+}
 
 $(document).ready(function(){
+    $("#material-selector").selectize()
     $(".underlined-hover").click(function(){
 	this.contentEditable = true;
     });
@@ -25,8 +36,9 @@ $(document).ready(function(){
             method: 'POST',
             data: data,
             success: function(data) {
-		console.log("worked");
-
+		showAlert();
+		setTimeout(removeAlert, 3000);
+		
             }
         });
     });

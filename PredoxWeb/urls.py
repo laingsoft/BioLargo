@@ -29,8 +29,8 @@ urlpatterns = [
     url(r'api-token-auth/', obtain_jwt_token),
     url(r'api-token-refresh/', refresh_jwt_token),
     url(r'management/',include('management.urls')),
-    url(r'inventory/', include('inventory.urls')),
-    url(r'sop/', include('SOP.urls')),
+   # url(r'inventory/', include('inventory.urls')),
+   # url(r'sop/', include('SOP.urls')),
     url(r'management/projects/', include('project_management.urls')),
     url(r'^user_images/', serve_image),
 ]

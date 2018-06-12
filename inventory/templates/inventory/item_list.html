@@ -1,4 +1,10 @@
 {% extends "app/base_template.html" %}
+{% load static %}
+{% block css_extra %}
+<link rel='stylesheet' href="{% static "common/selectize.bootstrap3.css" %}">
+<link rel="stylesheet" type="text/css" href="{% static 'inventory/css/inventory.css' %}"/>
+{% endblock %}
+
 {% block content %}
 <div class="row">
   <div class="col-md-8">
@@ -11,11 +17,21 @@
 	      <canvas id="product-headsup-image" height="300" width="300"></canvas>
 	    </div>
 	    <div id="product-headsup-details" class="col-md-8">
-	      <h2 id="name">Select an Item</h2>
-	      <p id="description">Select an Item to see a description</p>
-	      <p id="on-hand"></p>
+	      <div class="wrench-hover">
+		<svg class="wrench icon d-flex float-right" id="item-edit-toggle">
+                    <use xlink:href="#wrench" class="icon-monitor"></use>
+                </svg>
+	      </div>
+	      
+	      <h2 id="name" class="hoverable editable">Select an Item</h2>
+	      <p id="description" class="hoverable editable">Select an Item to see a description</p>
+	       <p id="on-hand" class="hoverable editable"></p>
 	      <div id="product-headsup-attr">
 	      </div>
+
+	      <div id="inventory-item-edit">
+	      </div>
+	      
 	    </div>
 	  </div>
 	</div>
@@ -38,32 +54,38 @@
     <div class = "card">
       <div class="card-header">
 	<div class="form-group">
-	  <div class="d-flex float-left">
-	    <select class="form-control" placeholder="Category"><option>Category</option></select>
+	  <div class="d-flex float-left form-inline">
+	    <label for="inventory-filterby">Category: </label>
+	    <select class="form-control" id="inventory-filterby">
+	      <option>All</option>
+	      {% for category in categories %}
+	      <option>{{category}}</option>
+	      {% endfor %}
+	    </select>
 	  </div>
 	  <div class="d-flex float-right">
-	    <input type="text" class="form-control" placeholder="Search"></input>
+	    <input type="text" class="form-control" placeholder="Search" id="inventory-search" onKeyUp="searchInventory()"></input>
 	  </div>
 	</div>
       </div>
-      <table class="table table-hover">
+      <table class="table table-hover" id="inventory-table">
 	<thead>
+	  <th>Name</th>
+	  <th>Description</th>
+	  <th>In Stock</th>
 	  <th>
           <div class="d-flex float-right">
-            <a class="" href="/inventory/add">+</a>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-item-modal">Add</button>
+	    <button type="button" class="btn btn-secondary" onClick="appendCheckbox()">Edit</button>
+	    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="delete-item-modal" style="display: none;">Delete</button>
           </div>
 	  </th>
 	</thead>
 	{% for items in object_list %}
-	<tr class="inventory-list-item">
+	<tr class="inventory-list-item" itemCategory="{{items.item.category}}" itemId="{{items.item.id}}">
           <td id="name">{{items.item.name}}</td>
-          <td id="description">{{items.item.description}}</td>.
+          <td id="description">{{items.item.description}}</td>
 	  <td id="onhand">{{items.item.on_hand}}</td>
-          <td>
-            {% for field in items.fields %}
-            {{field.field_type}}: {{field.field_value}}</br>
-            {% endfor %}
-          </td>
           <td>
             <div class="d-flex float-right">
               <div class="dropdown">
@@ -73,7 +95,7 @@
 		</button>
 		
 		<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-		  <a class="drowdown-item" href="">Delete</a><br>
+		  <a class="drowdown-item" data-toggle="modal" data-target="#delete-item-modal" href="">Delete</a><br>
 		  <a class="drowdown-item" href="item/{{items.item.id}}">Edit </a>
 		</div>
               </div>
@@ -87,11 +109,14 @@
   
 </div>
 
-
+{% include 'inventory/add_item_modal.html' %}
+{% include 'inventory/delete_item_modal.html' %}
 
 {% endblock %}
-{% load static %}
+
 {% block script_extra %}
 <script src=" {% static 'inventory/js/inventory.js' %}"></script>
+<script src="{% static 'common/js/selectize.min.js' %}"></script>
+
 
 {% endblock %}

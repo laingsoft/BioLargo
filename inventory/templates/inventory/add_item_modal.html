@@ -1,0 +1,35 @@
+<div class="modal" tabindex="-1" role="dialog" id="add-item-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add an Item</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="add/" method="POST">
+	  <div class="form-group">
+	    <label for="id_name">Name</label>
+	    <input id="id_name" type="text" class="form-control"  name="name">
+	    {% csrf_token %}
+	    <label for="id_description">Description</label>
+	    <input id="id_description" type="text" class="form-control" name="description">
+	    <label for="id_category">Category</label>
+	    <select id="id_category" name="category" class="form-control">
+	      {% for category in categories %}
+	      <option>{{category}}</option>
+	      {% endfor %}
+	    </select>
+	    <label for="id_onhand"> On Hand </label>
+	    <input id="id_on_hand" type="number" class="form-control" name="on_hand">
+	  </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	</form>
+      </div>
+    </div>
+  </div>
+</div>

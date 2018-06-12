@@ -7,11 +7,12 @@ class Item(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     company = models.ForeignKey(Company, on_delete = models.CASCADE)
+    category = models.CharField(max_length=255)
     on_hand = models.IntegerField()
     
 
     def get_absolute_url(self):
-        return "/inventory/item/%i" %self.id
+        return "/app/inventory/"
 
 
 class ItemField(models.Model):
