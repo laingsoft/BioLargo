@@ -23,4 +23,5 @@ class Action(models.Model):
     get data set, etc.
     """
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
-    action = JSONField()
+    uuid = models.CharField(max_length=36)
+    action = JSONField(default=dict)

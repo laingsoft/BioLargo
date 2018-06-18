@@ -49,8 +49,6 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
         payload = content.get('payload', {})
         meta = content.get('meta', {})
 
-        print(content)
-
         if type_ == "SESSION.CONNECT":
             self.session_connect(**payload)
 
@@ -301,7 +299,32 @@ class AnalyticsConsumer(JsonWebsocketConsumer):
 
     def tool_save(self, event):
         """
-        Saves a tool. If the id given is a string, then a new object is created
-        else, tool is updated.
+        Saves a tool. IF exists (UUID), update, else create.
         """
-        self.send_json(event["type"], {})
+        uuid = event["meta"].get("id")
+
+        action = Action.objects.get_or_create(
+            uuid=uuid,
+            session=self.session
+        )
+
+        action[0].action = event["payload"]
+
+        action[0].save()
+
+        self.send_json(event["type"], {"uuid": uuid})
+
+
+    def session_sync(self, event):
+        """
+        Fetches all the actions stored on the server and sends to client
+        sends as
+        [[uuid, action], [uuid, action], ...]
+
+
+        """
+        actions = self.session.action_set.all()
+
+        actions = [[item.uuid, item.action] for item in actions]
+
+        self.send_json(event["type"], actions)
