@@ -58,4 +58,7 @@ urlpatterns = [
 
     url(r'^annotation/(?P<exp_id>[0-9]+)/$', views.Annotation.as_view()),
     url(r'^annotation/$', views.Annotation.as_view()),
+
+    url(r'^field/(?P<field_id>[0-9]+)/$', views.FieldApi.as_view()),
+    url(r'^field/$', views.FieldApi.as_view()),
 ]

@@ -59,13 +59,16 @@
 
 {% block script_extra %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js"></script>
+<script src="{% static '/js/template_form.js' %}"></script>
 <script type="text/javascript">
-    $("#{{ form.fields.auto_id }}").selectize({
-        plugins: ['remove_button']
-    });
+$("#{{ form.fields.auto_id }}").selectize({
+plugins: ['remove_button'],
+create: CreateField
+});
 
-    $("#{{ form.metadata.auto_id }}").selectize({
-        plugins: ['remove_button']
-    });
+$("#{{ form.metadata.auto_id }}").selectize({
+    plugins: ['remove_button'],
+    create: CreateField
+});
 </script>
 {% endblock %}

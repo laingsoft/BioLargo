@@ -555,3 +555,15 @@ class InventoryItem(APIView):
         serializer = SimpleInventoryItemSerializer
         items = Item.objects.filter(id=id)
         return Response(serializer(items, many= True).data)
+
+class FieldApi(APIView):
+    def post(self, request):
+        field = Fields()
+        field.name = request.POST["name"]
+        field.company = request.user.company
+        field.save()
+        return JsonResponse({"Upload":True, "id":field.id})
+        
+    def get(self, request, field_id):
+        #Not implemented yet
+        return JsonResponse( {"Status": "Not Implemented"})
