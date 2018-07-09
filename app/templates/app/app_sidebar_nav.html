@@ -62,7 +62,7 @@
                 </svg>
                 Procedures</a>
         </li>
-	<!-- Removed for now, will be added in a later update
+	<!--
 	<li class="nav-item">
             <a class="nav-link" href="/app/inventory">
                 <svg class="icon" viewBox="0 0 8 8">
@@ -71,7 +71,6 @@
                 Inventory</a>
         </li>
 	-->
-
 	{% if request.user.is_manager %}
 
 	<li class="nav-title">Management</li>
@@ -95,7 +94,7 @@
         <li class="nav-item">
           <a class="nav-link" href="/management/projects/calendar">
             <svg class="icon ">
-              <use xlink:href="#clipboard"></use>
+              <use xlink:href="#calendar"></use>
             </svg>
             <span class="">Calendar</span>
           </a>
