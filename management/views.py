@@ -260,7 +260,7 @@ class FieldDeleteView(ManagerTestMixin, CompanyObjectsMixin, DeleteView):
     View for editing fields.
     """
     model = Fields
-    template_name = "management/fields_delete.html"
+    template_name = "management/fields_confirm_delete.html"
     success_url = "/management/fields"
 
 

@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^fields/$', views.FieldListView.as_view()),
     url(r'^fields/create/$', views.FieldCreateView.as_view()),
     url(r'^fields/edit/(?P<pk>\d+)/$', views.FieldUpdateView.as_view()),
+    url(r'^fields/delete/(?P<pk>\d+)/$', views.FieldDeleteView.as_view()),
     url(r'^experiments/$', views.ExperimentListView.as_view()),
     url(r'^experiments/edit/(?P<pk>\d+)/$', views.ExperimentUpdateView.as_view()),
     url(r'^experiments/delete/(?P<pk>\d+)/$', views.ExperimentDeleteView.as_view()),
