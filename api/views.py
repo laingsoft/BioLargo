@@ -565,5 +565,5 @@ class FieldApi(APIView):
         return JsonResponse({"Upload":True, "id":field.id})
         
     def get(self, request, field_id):
-        #Not implemented yet
-        return JsonResponse( {"Status": "Not Implemented"})
+        fields = Fields.objects.filter(company = request.user.company)
+        return Response(fieldSerializer(fields, many = True).data)
