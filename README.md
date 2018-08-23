@@ -3,7 +3,9 @@ BioLargo Data storage and analysis  project.
 Project is currently on hold. 
 ## Contributors
 Kirsten Kwong -- kkwong02
+
 Fady Machaalani -- fadymach
+
 Charles Laing -- laingsoft
 
 Contact: Charles Laing -- chuck@laingsoft.org
