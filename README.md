@@ -10,7 +10,7 @@ Charles Laing -- laingsoft
 
 Contact: Charles Laing -- chuck@laingsoft.org
 
-Built using Docker and Django.
+## Building and Running
 
 Analytics frontend submodule is needed to run. To get, run 
 ```
